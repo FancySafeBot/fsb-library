@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include <doctest/doctest.h>
 #include "fsb_body_tree_sample.h"
 
