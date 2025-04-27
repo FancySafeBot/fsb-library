@@ -29,7 +29,6 @@
       "inherits": "common",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "FSB_BUILD_TESTING": "OFF",
         "FSB_ENABLE_DOCS": "OFF",
         "FSB_ENABLE_EXAMPLES": "OFF"
       }
@@ -44,7 +43,7 @@
     },
     {
       "name": "instrument",
-      "displayName": "Instrumentation with address, UB, and memory sanitizers",
+      "displayName": "Instrumentation with address and memory sanitizers",
       "inherits": "common",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Instrument"
@@ -85,9 +84,15 @@
       "targets": ["Documentation-FancySafeBot"]
     },
     {
-      "name": "fsb-test",
+      "name": "fsb-test-debug",
       "displayName": "FSB Library Unit Tests Build",
       "configurePreset": "debug",
+      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
+    },
+    {
+      "name": "fsb-test-release",
+      "displayName": "FSB Library Unit Tests Build",
+      "configurePreset": "release",
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
     },
     {
@@ -117,11 +122,20 @@
         },
         {
           "type": "build",
-          "name": "fsb-test"
+          "name": "fsb-test-debug"
         },
         {
           "type": "build",
           "name": "fsb-examples"
+        }
+      ]
+    },
+    {
+      "name": "docs",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "debug"
         },
         {
           "type": "build",

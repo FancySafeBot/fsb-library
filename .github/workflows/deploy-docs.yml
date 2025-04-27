@@ -31,13 +31,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-  
+
       - name: Install apt dependencies
         run: sudo apt install -y graphviz doxygen
-  
+
       - name: Build Documentation
-        run: cmake --build --preset "fsb-doc"
-  
+        run: cmake --workflow --preset "docs"
+
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
