@@ -36,3 +36,7 @@ build
 
 # OS
 .DS_Store
+
+# IDE
+.idea
+cmake-build-*
