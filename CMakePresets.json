@@ -1,0 +1,159 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "common",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "build/${presetName}",
+      "cacheVariables": {
+        "CPM_SOURCE_CACHE": "build/CPM"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "FSB_BUILD_TESTING": "OFF",
+        "FSB_ENABLE_DOCS": "OFF",
+        "FSB_ENABLE_EXAMPLES": "OFF"
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "Coverage",
+      "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Coverage"
+      }
+    },
+    {
+      "name": "instrument",
+      "displayName": "Instrumentation with address, UB, and memory sanitizers",
+      "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Instrument"
+      }
+    },
+    {
+      "name": "profile",
+      "displayName": "Profiling with gprof",
+      "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Profile"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "fsb-release",
+      "displayName": "FSB Library Release Build",
+      "configurePreset": "release",
+      "targets": ["fsbcore", "fsbposix", "fsburdf"]
+    },
+    {
+      "name": "fsb-debug",
+      "displayName": "FSB Library Debug Build",
+      "configurePreset": "debug",
+      "targets": ["fsbcore", "fsbposix", "fsburdf"]
+    },
+    {
+      "name": "fsb-examples",
+      "displayName": "FSB Examples",
+      "configurePreset": "debug",
+      "targets": ["fsb_examples"]
+    },
+    {
+      "name": "fsb-doc",
+      "displayName": "FSB Library Documentation",
+      "configurePreset": "debug",
+      "targets": ["Documentation-FancySafeBot"]
+    },
+    {
+      "name": "fsb-test",
+      "displayName": "FSB Library Unit Tests Build",
+      "configurePreset": "debug",
+      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
+    },
+    {
+      "name": "fsb-test-coverage",
+      "displayName": "FSB Library Test Coverage Build",
+      "configurePreset": "coverage",
+      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
+    },
+    {
+      "name": "fsb-test-instrument",
+      "displayName": "FSB Library Test Address Sanitizer Build",
+      "configurePreset": "instrument",
+      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "default",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "debug"
+        },
+        {
+          "type": "build",
+          "name": "fsb-debug"
+        },
+        {
+          "type": "build",
+          "name": "fsb-test"
+        },
+        {
+          "type": "build",
+          "name": "fsb-examples"
+        },
+        {
+          "type": "build",
+          "name": "fsb-doc"
+        }
+      ]
+    },
+    {
+      "name": "coverage",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "coverage"
+        },
+        {
+          "type": "build",
+          "name": "fsb-test-coverage"
+        }
+      ]
+    },
+    {
+      "name": "release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "release"
+        },
+        {
+          "type": "build",
+          "name": "fsb-release"
+        }
+      ]
+    }
+  ]
+}

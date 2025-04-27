@@ -1,0 +1,30 @@
+---
+Checks: "*,
+        -abseil-*,
+        -altera-*,
+        -android-*,
+        -fuchsia-*,
+        -google-*,
+        -llvm*,
+        -zircon-*,
+        -modernize-use-trailing-return-type,
+        -modernize-avoid-c-arrays,
+        -cppcoreguidelines-avoid-c-arrays,
+        -cppcoreguidelines-avoid-magic-numbers,
+        -readability-magic-numbers,
+        -readability-math-missing-parentheses,
+        -misc-use-anonymous-namespace,
+        -modernize-use-designated-initializers,
+        -cppcoreguidelines-pro-bounds-constant-array-index,
+        -bugprone-easily-swappable-parameters
+        -performance-enum-size
+"
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none
+
+CheckOptions:
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: 'x|y|z'
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: 'x|y|z'
