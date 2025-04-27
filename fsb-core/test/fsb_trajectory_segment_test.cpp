@@ -1,4 +1,6 @@
 
+#include <array>
+#include <memory>
 #include <doctest/doctest.h>
 #include "fsb_test_macros.h"
 #include "fsb_trapezoidal_velocity.h"
