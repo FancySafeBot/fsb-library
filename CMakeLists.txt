@@ -197,7 +197,6 @@ set(COMPILE_FLAGS_COMMON
     -Wsign-compare
     -Wformat-overflow
     -Wmissing-declarations
-    -Wswitch-default
     -Wparentheses
     -Wnon-virtual-dtor
     -Wold-style-cast
