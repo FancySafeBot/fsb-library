@@ -74,7 +74,7 @@ ninja fsb_tutorial_fk
 The robot model is loaded from a URDF file. For this example, we can copy over the URDF file from the `fsb-library` repository test data at [github.com/FancySafeBot/fsb-library/fsb-urdf/test/data/ur5/ur5.urdf](https://github.com/FancySafeBot/fsb-library/fsb-urdf/test/data/ur5/ur5.urdf) to the current directory.
 
 ```sh
-mkdir -p data && wget https://github.com/FancySafeBot/fsb-library/blob/main/fsb-urdf/test/data/ur5/ur5.urdf -O data/ur5.urdf
+mkdir -p data && curl https://raw.githubusercontent.com/FancySafeBot/fsb-library/refs/heads/main/fsb-urdf/test/data/ur5/ur5.urdf -o data/ur5.urdf
 ```
 
 ```cpp
