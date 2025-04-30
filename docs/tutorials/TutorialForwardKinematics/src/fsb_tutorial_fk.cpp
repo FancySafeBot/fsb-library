@@ -2,7 +2,7 @@
 #include "fsb_urdf.h"
 #include "fsb_compute_kinematics.h"
 
-int main(void *) {
+int main(void) {
     std::cout <<
         "FancySafeBot Tutorial for forward kinematics with a UR5 Manipulator\n";
 
@@ -21,11 +21,9 @@ int main(void *) {
     fsb::ComputeKinematics kinematics = {};
     kinematics.initialize(body_tree);
 
-    // option to calculate the pose of every rigid body in the robot given a joint configuration.
-    const auto opt = fsb::ForwardKinematicsOption::POSE;
     // Input joint input position
     const fsb::JointSpacePosition joint_position = {};
-    // compute forward kinematics
+    // compute position forward kinematics
     fsb::BodyCartesianPva cartesian_pva = {};
     kinematics.compute_forward_kinematics_pose(joint_position, cartesian_pva);
 

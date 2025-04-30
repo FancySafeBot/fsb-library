@@ -19,7 +19,7 @@ Initialize the CMakeLists.txt file with the following lines:
 cmake_minimum_required(VERSION 3.21)
 project(fsb_tutorial
     DESCRIPTION "FancySafeBot Tutorial for forward kinematics with a UR5 Manipulator"
-    LANGUAGES CXX)
+    LANGUAGES C CXX)
 ```
 
 Add the fancysafebot URDF parser and core library to the CMakeLists.txt file:
@@ -53,7 +53,7 @@ Now we are ready to write the code! The code will be written in the `fsb_tutoria
 
 ```cpp
 #include <iostream>
-int main(void *) {
+int main(void) {
     std::cout <<
         "FancySafeBot Tutorial for forward kinematics with a UR5 Manipulator\n";
     return EXIT_SUCCESS;
@@ -74,7 +74,7 @@ ninja fsb_tutorial_fk
 The robot model is loaded from a URDF file. For this example, we can copy over the URDF file from the `fsb-library` repository test data at [github.com/FancySafeBot/fsb-library/fsb-urdf/test/data/ur5/ur5.urdf](https://github.com/FancySafeBot/fsb-library/fsb-urdf/test/data/ur5/ur5.urdf) to the current directory.
 
 ```sh
-mkdir -p data && wget https://github.com/FancySafeBot/fsb-library/blob/main/fsb-urdf/test/data/ur5/ur5.urdf -O data/ur5.urdf
+mkdir -p data && curl https://raw.githubusercontent.com/FancySafeBot/fsb-library/refs/heads/main/fsb-urdf/test/data/ur5/ur5.urdf -o data/ur5.urdf
 ```
 
 ```cpp
@@ -103,8 +103,6 @@ kinematics.initialize(body_tree);
 Compute the forward kinematics of the robot using the `compute_forward_kinematics_pose` method. The method takes the joint positions as input and returns the pose of all rigid bodies of the robot.
 
 ```cpp
-// option to calculate the pose of every rigid body in the robot given a joint configuration.
-const auto opt = fsb::ForwardKinematicsOption::POSE;
 // Input joint input position
 const fsb::JointSpacePosition joint_position = {};
 // compute forward kinematics
