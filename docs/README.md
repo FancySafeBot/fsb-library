@@ -13,7 +13,7 @@ Here are some topics to get you up and running:
 - @subpage coding_standard
 - @subpage example_projects
 
-Check out the [Tutorials](tutorials/Tutorials.md) section to learn as you go.
+Check out the [Tutorials](tutorials.html) section to learn as you go.
 
 Navigate to the <a href="topics.html">Topics</a> section for
 detailed code documentation.
