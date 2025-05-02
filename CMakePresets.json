@@ -34,6 +34,18 @@
       }
     },
     {
+      "name": "codeql",
+      "displayName": "CodeQL",
+      "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "FSB_BUILD_TESTING": "OFF",
+        "FSB_USE_OPENBLAS": "OFF",
+        "FSB_ENABLE_DOCS": "OFF",
+        "FSB_ENABLE_EXAMPLES": "OFF"
+      }
+    },
+    {
       "name": "coverage",
       "displayName": "Coverage",
       "inherits": "common",
@@ -64,6 +76,12 @@
       "displayName": "FSB Library Release Build",
       "configurePreset": "release",
       "targets": ["fsbcore", "fsbposix", "fsburdf"]
+    },
+    {
+      "name": "fsb-codeql",
+      "displayName": "FSB Library CodeQL Build",
+      "configurePreset": "codeql",
+      "targets": ["fsbcore", "fsbposix"]
     },
     {
       "name": "fsb-debug",
@@ -166,6 +184,19 @@
         {
           "type": "build",
           "name": "fsb-release"
+        }
+      ]
+    },
+    {
+      "name": "codeql",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "codeql"
+        },
+        {
+          "type": "build",
+          "name": "fsb-codeql"
         }
       ]
     }

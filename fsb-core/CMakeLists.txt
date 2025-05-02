@@ -8,7 +8,6 @@ configure_max_sizes(FSBCORE_CONFIG_NAME)
 set(FSBCORE_HEADERS
     include/fsb_configuration.h
     include/fsb_types.h
-    include/fsb_linalg.h
     include/fsb_linalg3.h
     include/fsb_quaternion.h
     include/fsb_rotation.h
@@ -28,7 +27,6 @@ set(FSBCORE_HEADERS
     include/fsb_encoder.h
     include/fsb_spatial.h)
 set(FSBCORE_SOURCES
-    src/fsb_linalg.c
     src/fsb_linalg3.cpp
     src/fsb_quaternion.cpp
     src/fsb_rotation.cpp
@@ -46,6 +44,11 @@ set(FSBCORE_SOURCES
     src/fsb_encoder.cpp
     src/fsb_encoder.cpp
     src/fsb_spatial.cpp)
+
+if (FSB_USE_OPENBLAS)
+    list(APPEND FSBCORE_HEADERS include/fsb_linalg.h)
+    list(APPEND FSBCORE_SOURCES src/fsb_linalg.c)
+endif()
 
 # target name
 set(FSBCORE_TARGET_NAME fsbcore)
