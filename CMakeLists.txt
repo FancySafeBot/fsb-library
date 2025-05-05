@@ -31,6 +31,7 @@ set(DOCTEST_VERSION 2.4.11 CACHE STRING "doctest version")
 set(FSB_CONFIG "default" CACHE STRING "FSB Library configuration")
 
 option(FSB_USE_OPENBLAS "Use OpenBLAS for linear algebra operations" ON)
+option(FSB_USE_CMINPACK "Use CMinpack for Inverse Kinematics" OFF)
 option(FSB_BUILD_TESTING "Enable Tests" ON)
 option(FSB_ENABLE_DOCS "Enable doxygen documentation" ON)
 option(FSB_ENABLE_EXAMPLES "Enable building example applications" ON)

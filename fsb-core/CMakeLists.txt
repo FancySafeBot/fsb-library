@@ -145,22 +145,24 @@ if (FSB_USE_OPENBLAS)
         openblas_static)
 endif()
 
-# Dependency: CMinpack
-CPMAddPackage(
-    NAME CMinpack
-    GITHUB_REPOSITORY devernay/cminpack
-    VERSION ${CMINPACK_VERSION}
-    OPTIONS
-    "CMAKE_POLICY_VERSION_MINIMUM 3.10"
-    "BUILD_SHARED_LIBS OFF"
-    "BUILD_TESTING OFF"
-    "USE_BLAS OFF"
-    "CMINPACK_PRECISION d"
-)
+if (FSB_USE_CMINPACK)
+    # Dependency: CMinpack
+    CPMAddPackage(
+        NAME CMinpack
+        GITHUB_REPOSITORY devernay/cminpack
+        VERSION ${CMINPACK_VERSION}
+        OPTIONS
+        "CMAKE_POLICY_VERSION_MINIMUM 3.10"
+        "BUILD_SHARED_LIBS OFF"
+        "BUILD_TESTING OFF"
+        "USE_BLAS OFF"
+        "CMINPACK_PRECISION d"
+    )
 
-target_link_libraries(
-    ${FSBCORE_TARGET_NAME} PUBLIC
-    cminpack)
+    target_link_libraries(
+        ${FSBCORE_TARGET_NAME} PUBLIC
+        cminpack)
+endif()
 
 # Set sources for documentation (parent scope)
 set(DOCUMENTATION_INPUT_${FSBCORE_TARGET_NAME}
