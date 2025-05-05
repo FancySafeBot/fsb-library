@@ -43,8 +43,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - language: actions
-          build-mode: none
         - language: c-cpp
           build-mode: manual
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
@@ -102,16 +100,18 @@ jobs:
       uses: advanced-security/filter-sarif@v1
       with:
         patterns: |
-          -*
-          +fsbcore/**/*
-          +fsbposix/**/*
-        input: sarif-results/${{ matrix.language }}.sarif
-        output: sarif-results/${{ matrix.language }}.sarif
+          -**/*
+          +fsbcore/src/*
+          +fsbposix/include/*
+          +fsbcore/src/*
+          +fsbposix/include/*
+        input: sarif-results/cpp.sarif
+        output: sarif-results/cpp.sarif
 
     - name: Upload sarif
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: sarif-results/${{ matrix.language }}.sarif
+        sarif_file: sarif-results/cpp.sarif
 
     - name: Upload sarif results as a build artifact
       uses: actions/upload-artifact@v4
