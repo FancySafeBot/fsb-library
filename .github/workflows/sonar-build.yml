@@ -18,11 +18,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up Python 3.12 for gcovr
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install gcovr
+        run: |
+          python -m pip install gcovr
       - name: Install Build Wrapper
         uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
       - name: Run Build Wrapper
         run: |
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --workflow --preset release
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --workflow --preset coverage
+      - name: Run tests to generate coverage statistics
+        run: |
+          ctest --test-dir build/coverage/fsb-core/test
+          ctest --test-dir build/coverage/fsb-posix/test
+          ctest --test-dir build/coverage/fsb-urdf/test
+      - name: Collect coverage into one XML report
+        run: |
+          gcovr --sonarqube > coverage.xml
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
@@ -30,3 +45,4 @@ jobs:
         with:
           args: >
             --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            --define sonar.coverageReportPaths=coverage.xml
