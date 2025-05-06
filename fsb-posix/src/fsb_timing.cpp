@@ -89,7 +89,7 @@ static int clock_nanosleep_abstime (const timespec& req)
 /* clock_nanosleep for CLOCK_MONOTONIC and TIMER_ABSTIME */
 static int clock_nanosleep_abstime (const timespec& req)
 {
-    return clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &req, NULL);
+    return clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &req, nullptr);
 }
 #endif
 

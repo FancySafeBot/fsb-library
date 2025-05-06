@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_JOINT_H
+#define FSB_JOINT_H
 
 #include <array>
 #include <cstddef>
@@ -22,28 +23,28 @@ namespace fsb
 /**
  * @brief Joint type
  */
-enum class JointType
+enum class JointType : uint8_t
 {
-    /** @brief Revolute joint about the x-axis */
-    REVOLUTE_X,
-    /** @brief Revolute joint about the y-axis */
-    REVOLUTE_Y,
-    /** @brief Revolute joint about the z-axis */
-    REVOLUTE_Z,
-    /** @brief Prismatic joint along x-axis */
-    PRISMATIC_X,
-    /** @brief Prismatic joint along y-axis */
-    PRISMATIC_Y,
-    /** @brief Prismatic joint along z-axis */
-    PRISMATIC_Z,
-    /** @brief Spherical joint */
-    SPHERICAL,
-    /** @brief Planar joint in XY plane */
-    PLANAR,
-    /** @brief 6 DoF Cartesian joint */
-    CARTESIAN,
     /** @brief Fixed joint */
-    FIXED
+    FIXED = 0,
+    /** @brief Revolute joint about the x-axis */
+    REVOLUTE_X = 1,
+    /** @brief Revolute joint about the y-axis */
+    REVOLUTE_Y = 2,
+    /** @brief Revolute joint about the z-axis */
+    REVOLUTE_Z = 3,
+    /** @brief Prismatic joint along x-axis */
+    PRISMATIC_X = 4,
+    /** @brief Prismatic joint along y-axis */
+    PRISMATIC_Y = 5,
+    /** @brief Prismatic joint along z-axis */
+    PRISMATIC_Z = 6,
+    /** @brief Spherical joint */
+    SPHERICAL = 7,
+    /** @brief 6 DoF Cartesian joint */
+    CARTESIAN = 8,
+    /** @brief Planar joint in XY plane */
+    PLANAR = 9
 };
 
 /**
@@ -176,3 +177,5 @@ bool joint_validate(const Joint& joint);
  */
 
 } // namespace fsb
+
+#endif // FSB_JOINT_H

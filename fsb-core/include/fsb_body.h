@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_BODY_H
+#define FSB_BODY_H
 
 #include <array>
 #include <cstddef>
@@ -185,3 +186,5 @@ bool body_validate_inertia_is_pd(const Inertia& inertia);
  */
 
 } // namespace fsb
+
+#endif

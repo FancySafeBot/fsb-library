@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_KINEMATICS_H
+#define FSB_KINEMATICS_H
 
 #include "fsb_body.h"
 #include "fsb_body_tree.h"
@@ -19,21 +20,21 @@ namespace fsb
 /**
  * @brief Forward kinematics options
  */
-enum class ForwardKinematicsOption
+enum class ForwardKinematicsOption: uint8_t
 {
     /**
      * @brief Calculate Cartesian pose from joint position
      */
-    POSE,
+    POSE = 0,
     /**
      * @brief Calculate Cartesian pose and velocity from joint position and velocity
      */
-    POSE_VELOCITY,
+    POSE_VELOCITY = 1,
     /**
      * @brief Calculate Cartesian pose, velocity and acceleration from
      *        joint position, velocity, and acceleration
      */
-    POSE_VELOCITY_ACCELERATION
+    POSE_VELOCITY_ACCELERATION = 2
 };
 
 /**
@@ -65,3 +66,5 @@ void body_com_kinematics(
  */
 
 } // namespace fsb
+
+#endif

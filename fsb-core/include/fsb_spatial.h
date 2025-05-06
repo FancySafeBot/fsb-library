@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_SPATIAL_H
+#define FSB_SPATIAL_H
 
 #include "fsb_configuration.h"
 #include "fsb_motion.h"
@@ -75,3 +76,5 @@ Jacobian spatial_jacobian_space_to_body(const Transform& pose, const Jacobian& j
  */
 
 } // namespace fsb
+
+#endif // FSB_SPATIAL_H

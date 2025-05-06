@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FSB_TRAPEZOIDAL_VELOCITY_H
+#define FSB_TRAPEZOIDAL_VELOCITY_H
 
 #include "fsb_types.h"
 #include "fsb_trajectory_types.h"
@@ -15,20 +16,20 @@ namespace fsb
 /**
  * @brief Result of attempting to compute trapezoidal trajectory
  */
-enum class TrapezoidalStatus
+enum class TrapezoidalStatus: uint8_t
 {
     /**
      * @brief Generation of trapezoidal trajectory is successful
      */
-    SUCCESS,
+    SUCCESS = 0,
     /**
      * @brief Maximum values not positive
      */
-    MAX_VALUE_BELOW_TOLERANCE,
+    MAX_VALUE_BELOW_TOLERANCE = 1,
     /**
      * @brief Unable to reach target with current state
      */
-    FAILED_TRAJECTORY_GENERATION
+    FAILED_TRAJECTORY_GENERATION = 2
 };
 
 /**
@@ -148,3 +149,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif

@@ -1,6 +1,9 @@
-#pragma once
+#ifndef FSB_PID_H
+#define FSB_PID_H
 
 #include "fsb_types.h"
+
+#include <cstdint>
 
 namespace fsb
 {
@@ -14,17 +17,17 @@ namespace fsb
 /**
  * @brief Type of discretization
  */
-enum class PidType
+enum class PidType : uint8_t
 {
     /**
      * @brief Trapezoidal discretization
      */
-    TRAPEZOIDAL,
+    TRAPEZOIDAL = 0,
     /**
      * @brief Backwards difference discretization
      *
      */
-    BACKWARDS
+    BACKWARDS = 1
 };
 
 /**
@@ -94,3 +97,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif

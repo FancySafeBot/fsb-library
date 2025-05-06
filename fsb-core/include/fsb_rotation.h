@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_ROTATION_H
+#define FSB_ROTATION_H
 
 #include "fsb_quaternion.h"
 #include "fsb_types.h"
@@ -128,3 +129,5 @@ Vec3 rotate_mat3_transpose(const Mat3& rot, const Vec3& vec);
  */
 
 } // namespace fsb
+
+#endif

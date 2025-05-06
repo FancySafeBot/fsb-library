@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FSB_TIMESCALE_H
+#define FSB_TIMESCALE_H
 
 #include "fsb_trajectory_types.h"
 #include "fsb_types.h"
@@ -27,20 +28,20 @@ TrajState timescale_trajectory(const TrajState& timescale, const TrajState& traj
 /**
 * @brief Result of timescale transition
 */
-enum class TimescaleResult
+enum class TimescaleResult : uint8_t
 {
     /**
      * @brief Timescale transition successful
      */
-    SUCCESS,
+    SUCCESS = 0,
     /**
      * @brief Timescale transition failed due to maximum timescale below tolerance
      */
-    MAX_TIMESCALE_BELOW_TOLERANCE,
+    MAX_TIMESCALE_BELOW_TOLERANCE = 1,
     /**
      * @brief Timescale transition failed
      */
-    FAILED_TO_TRANSITION
+    FAILED_TO_TRANSITION = 2
 };
 
 /**
@@ -99,3 +100,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif

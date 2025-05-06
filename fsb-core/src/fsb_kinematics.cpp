@@ -1,10 +1,12 @@
+#include <cstddef>
+
+#include "fsb_types.h"
 #include "fsb_kinematics.h"
 #include "fsb_body.h"
 #include "fsb_body_tree.h"
 #include "fsb_quaternion.h"
 #include "fsb_motion.h"
 #include "fsb_joint.h"
-#include <cstddef>
 
 namespace fsb
 {
@@ -75,97 +77,5 @@ void body_com_kinematics(
         com_cartesian.body[body_index].acceleration = motion_transform_acceleration_position(body_pva.pose, body_pva.velocity, body_pva.acceleration, com);
     }
 }
-
-//
-// void forward_kinematics(
-//     const Model& model, const JointPva& joint_pva, const CartesianPva& base_pva, BodyCartesianPva& body_cartesian,
-//     const ForwardKinematicsOption opt)
-// {
-//     // set base pva
-//     const size_t base_index = model.base_body_index;
-//     body_cartesian.body[base_index] = base_pva;
-//
-//     // recursive stack
-//     size_t stack[MaxSize::body_tree_stack] = {};
-//     size_t stack_size = 0U;
-//
-//     // First body add to stack
-//     stack[stack_size] = model.base_body_index;
-//     stack_size += 1U;
-//     while (stack_size > 0U)
-//     {
-//         // grab body index from stack
-//         stack_size -= 1U;
-//         const size_t current_body_index = stack[stack_size];
-//         // body and pva for current body
-//         const Body&         body = model.bodies[current_body_index];
-//         const CartesianPva& body_pva = body_cartesian.body[current_body_index];
-//         // iterate through all joints in rigid body
-//         for (size_t body_joint_index = 0U; body_joint_index < body.num_child_joints; ++body_joint_index)
-//         {
-//             // get joint
-//             const size_t joint_index = body.child_joint_indices[body_joint_index];
-//             const Joint& joint = model.joints[joint_index];
-//             if (!joint.is_loop_joint)
-//             {
-//                 CartesianPva& child_body_pva = body_cartesian.body[joint.child_body_index];
-//                 compute_child_kinematics(body_pva, joint, joint_pva, opt, child_body_pva);
-//
-//                 // add child body to stack
-//                 stack[stack_size] = joint.child_body_index;
-//                 stack_size += 1U;
-//             }
-//         }
-//     }
-// }
-
-// BodyTreeError forward_kinematics(
-//     const BodyTree& body_tree, const JointPva& joint_pva, const CartesianPva& base_pva,
-//     const ForwardKinematicsOption opt, BodyCartesianPva& body_cartesian)
-// {
-//     // error return value
-//     auto err = BodyTreeError::SUCCESS;
-//     // recursive stack
-//     size_t stack[MaxSize::body_tree_stack] = {};
-//     size_t stack_size = 0U;
-//     // set base pva
-//     body_cartesian.body[BodyTree::base_index] = base_pva;
-//     // First body add to stack
-//     stack[stack_size] = BodyTree::base_index;
-//     stack_size += 1U;
-//     // propagate through tree
-//     while ((stack_size > 0U) && (err == BodyTreeError::SUCCESS))
-//     {
-//         // grab body index from stack
-//         stack_size -= 1U;
-//         const size_t current_body_index = stack[stack_size];
-//         // get current body from tree
-//         const Body& body = body_tree.get_body(current_body_index, err);
-//         if (err == BodyTreeError::SUCCESS)
-//         {
-//             const CartesianPva& body_pva = body_cartesian.body[current_body_index];
-//             // iterate through all joints in rigid body
-//             for (size_t body_joint_index = 0U;
-//                 (body_joint_index < body.num_child_joints) && (err == BodyTreeError::SUCCESS);
-//                 ++body_joint_index)
-//             {
-//                 // get joint
-//                 const size_t joint_index = body.child_joint_indices[body_joint_index];
-//                 err = BodyTreeError::SUCCESS;
-//                 const Joint& joint = body_tree.get_joint(joint_index, err);
-//                 if ((err == BodyTreeError::SUCCESS) && (!joint.is_loop_joint))
-//                 {
-//                     // compute child pva
-//                     CartesianPva& child_body_pva = body_cartesian.body[joint.child_body_index];
-//                     compute_child_kinematics(body_pva, joint, joint_pva, opt, child_body_pva);
-//                     // add child body to stack
-//                     stack[stack_size] = joint.child_body_index;
-//                     stack_size += 1U;
-//                 }
-//             }
-//         }
-//     }
-//     return err;
-// }
 
 } // namespace fsb

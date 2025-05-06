@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef FSB_QUINTIC_H
+#define FSB_QUINTIC_H
 
 #include "fsb_types.h"
 #include "fsb_trajectory_types.h"
@@ -110,3 +112,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif

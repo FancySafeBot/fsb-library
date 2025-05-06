@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FSB_TRAJECTORY_SEGMENT_H
+#define FSB_TRAJECTORY_SEGMENT_H
 
 #include "fsb_motion.h"
 #include "fsb_trajectory_types.h"
@@ -321,3 +322,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif

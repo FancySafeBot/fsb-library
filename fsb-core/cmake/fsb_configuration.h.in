@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_CONFIGURATION_H
+#define FSB_CONFIGURATION_H
 
 #include <cstddef>
 
@@ -64,3 +65,5 @@ struct MaxSize
  */
 
 } // namespace fsb
+
+#endif // FSB_CONFIGURATION_H

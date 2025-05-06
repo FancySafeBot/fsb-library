@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_MOTION_H
+#define FSB_MOTION_H
 
 #include "fsb_quaternion.h"
 #include "fsb_types.h"
@@ -291,39 +292,10 @@ MotionVector motion_transform_acceleration_position(
     const Transform& parent_transf, const MotionVector& parent_velocity,
     const MotionVector& parent_acceleration, const Vec3& child_position);
 
-// /**
-//  * @brief Get velocity of child frame with respect to a common frame given relative velocity
-//  between parent and child frames
-//  *
-//  * @param parent_transf Transform of parent frame with respect to common frame
-//  * @param parent_velocity Velocity of parent frame with respect to common frame
-//  * @param motion_transf Transform of child frame with respect to parent frame
-//  * @param motion_velocity Velocity of child frame with respect to parent frame
-//  * @return Velocity of child frame with respect to common frame
-//  */
-// MotionVector motion_transform_body_velocity(
-//     const Transform& parent_transf, const MotionVector& parent_velocity,
-//     const Transform& motion_transf, const MotionVector& motion_velocity);
-//
-// /**
-//  * @brief Get acceleration of child frame with respect to a common frame given relative motion
-//  between parent and child frames
-//  *
-//  * @param parent_transf Transform of parent frame with respect to common frame
-//  * @param parent_velocity Velocity of parent frame with respect to common frame
-//  * @param parent_acceleration Acceleration of parent frame with respect to common frame
-//  * @param motion_transf Transform of child frame with respect to parent frame
-//  * @param motion_velocity Velocity of child frame with respect to parent frame
-//  * @param motion_acceleration Acceleration of child frame with respect to parent frame
-//  * @return Acceleration of child frame with respect to common frame
-//  */
-// MotionVector motion_transform_body_acceleration(
-//     const Transform& parent_transf, const MotionVector& parent_velocity, const MotionVector&
-//     parent_acceleration, const Transform& motion_transf, const MotionVector& motion_velocity,
-//     const MotionVector& motion_acceleration);
-
 /**
  * @}
  */
 
 } // namespace fsb
+
+#endif

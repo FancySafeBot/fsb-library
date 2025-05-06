@@ -1,5 +1,6 @@
 
 #include <cstddef>
+#include "fsb_configuration.h"
 #include "fsb_types.h"
 #include "fsb_quaternion.h"
 #include "fsb_motion.h"

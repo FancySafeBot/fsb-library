@@ -1,7 +1,10 @@
-#pragma once
+#ifndef FSB_TIMING_H
+#define FSB_TIMING_H
+
+#include <cstdint>
+#include <ctime>
 
 #include "fsb_types.h"
-#include <ctime>
 
 namespace fsb
 {
@@ -20,28 +23,28 @@ constexpr long MINIMUM_STEP_SIZE_NS = 10000;
 /**
  * @brief Timing error codes
  */
-enum class TimingError
+enum class TimingError : uint8_t
 {
     /**
      * @brief No error
      */
-    SUCCESS,
+    SUCCESS = 0,
     /**
      * @brief Failed to get monotonic clock time
      */
-    MONOTONIC_CLOCK_FAILED,
+    MONOTONIC_CLOCK_FAILED = 1,
     /**
      * Failed nanosleep
      */
-    SLEEP_FAILED,
+    SLEEP_FAILED = 2,
     /**
      * @brief Step size must be specified above clock resolution
      */
-    STEP_SIZE_BELOW_CLOCK_RESOLUTION,
+    STEP_SIZE_BELOW_CLOCK_RESOLUTION = 3,
     /**
      * @brief Step size must be specified greater than minimum
      */
-    STEP_SIZE_LESS_THAN_MINIMUM
+    STEP_SIZE_LESS_THAN_MINIMUM = 4
 };
 
 /**
@@ -98,3 +101,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif

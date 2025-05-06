@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_JACOBIAN_H
+#define FSB_JACOBIAN_H
 
 #include <array>
 #include <cstddef>
@@ -138,20 +139,10 @@ JacobianError calculate_jacobian(
 
 MotionVector jacobian_multiply_joint_motion_vector(const Jacobian& jac, const JointSpace& joint_motion, size_t dofs = MaxSize::dofs);
 
-// JacobianError calculate_hessian(
-//     size_t body_index, const BodyTree& body_tree, const BodyCartesianPva& cartesian_pva, const
-//     Jacobian& jacobian, Hessian& hessian);
-
-// JacobianError singular_metrics(
-//     size_t body_index, const BodyTree& body_tree, const BodyCartesianPva& cartesian_pva, const
-//     Jacobian& jacobian);
-
-// JacobianError observability_metrics(
-//     size_t body_index, const BodyTree& body_tree, const BodyCartesianPva& cartesian_pva, const
-//     Jacobian& jacobian);
-
 /**
  * @}
  */
 
 } // namespace fsb
+
+#endif // FSB_JACOBIAN_H

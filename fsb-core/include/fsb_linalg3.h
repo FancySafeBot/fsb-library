@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_LINALG3_H
+#define FSB_LINALG3_H
 
 #include "fsb_types.h"
 
@@ -44,3 +45,5 @@ bool mat3_posdef_symmetric_eigenvectors(
  */
 
 } // namespace fsb
+
+#endif

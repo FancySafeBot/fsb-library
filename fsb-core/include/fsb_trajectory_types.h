@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FSB_TRAJECTORY_TYPES_H
+#define FSB_TRAJECTORY_TYPES_H
 
 #include "fsb_types.h"
 #include "fsb_motion.h"
@@ -60,3 +61,5 @@ struct TrajState3 {
  */
 
 }
+
+#endif

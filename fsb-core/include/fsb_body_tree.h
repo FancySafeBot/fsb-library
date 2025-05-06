@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_BODY_TREE_H
+#define FSB_BODY_TREE_H
 
 #include <array>
 #include <cstddef>
@@ -21,57 +22,57 @@ namespace fsb
 /**
  * @brief Error list for body tree operations.
  */
-enum class BodyTreeError
+enum class BodyTreeError : uint8_t
 {
-    SUCCESS,
+    SUCCESS = 0,
     /**
      * @brief Index does not point to an existing body in tree.
      */
-    BODY_NOT_IN_TREE,
+    BODY_NOT_IN_TREE = 1,
     /**
      * @brief Index does not point to an existing joint in tree.
      */
-    JOINT_NOT_IN_TREE,
+    JOINT_NOT_IN_TREE = 2,
     /**
      * @brief No more bodies can be added to the body tree. Maximum is specified by @c
      * MaxSize::bodies
      */
-    MAX_BODIES_REACHED,
+    MAX_BODIES_REACHED = 3,
     /**
      * @brief Parent body index does not point to an existing body in tree.
      */
-    PARENT_BODY_NONEXISTENT,
+    PARENT_BODY_NONEXISTENT = 4,
     /**
      * @brief No more joints can be added to the body tree. Maximum is specified by @c
      * MaxSize::joints
      */
-    MAX_JOINTS_REACHED,
+    MAX_JOINTS_REACHED = 5,
     /**
      * @brief Joint requires more coordinates than is available. Maximum is specified by @c
      * MaxSize::coordinates
      */
-    MAX_JOINT_COORDINATES_REACHED,
+    MAX_JOINT_COORDINATES_REACHED = 6,
     /**
      * @brief Joint requires more DoFs than is available. Maximum is specified by @c MaxSize::dofs
      */
-    MAX_JOINT_DOFS_REACHED,
+    MAX_JOINT_DOFS_REACHED = 7,
     /**
      * @brief Body mass is zero with a non-fixed parent joint
      */
-    MASS_ZERO,
+    MASS_ZERO = 8,
     /**
      * @brief At least one of the inertia principal components are zero with a non-fixed parent
      * joint
      */
-    INERTIA_ZERO,
+    INERTIA_ZERO = 9,
     /**
      * @brief  Body mass is set to zero but with non-zero inertia for a fixed parent joint.
      */
-    MASS_ZERO_WITH_INERTIA,
+    MASS_ZERO_WITH_INERTIA = 10,
     /**
      * @brief Inertia is not positive definite.
      */
-    INERTIA_NOT_POS_DEF
+    INERTIA_NOT_POS_DEF = 11
 };
 
 /**
@@ -283,3 +284,5 @@ inline BodyTreeError BodyTree::set_parent_joint_transform(
  */
 
 } // namespace fsb
+
+#endif

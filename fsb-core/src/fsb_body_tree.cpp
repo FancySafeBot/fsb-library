@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstddef>
 #include "fsb_body.h"
 #include "fsb_body_tree.h"
 #include "fsb_configuration.h"
@@ -226,72 +227,5 @@ size_t BodyTree::add_body(
     }
     return added_body_index;
 }
-
-// BodyTreeError BodyTree::validate_add_loop_joint(const size_t parent_body_index, const size_t child_body_index) const
-// {
-//     auto err = BodyTreeError::SUCCESS;
-//     if (m_num_joints >= MaxSize::joints)
-//     {
-//         err = BodyTreeError::MAX_JOINTS_REACHED;
-//     }
-//     else if (parent_body_index >= m_num_bodies)
-//     {
-//         err = BodyTreeError::PARENT_BODY_NONEXISTENT;
-//     }
-//     else if (child_body_index >= m_num_bodies)
-//     {
-//         err = BodyTreeError::PARENT_BODY_NONEXISTENT;
-//     }
-//     else if (child_body_index == parent_body_index)
-//     {
-//         err = BodyTreeError::PARENT_SAME_AS_CHILD_BODY;
-//     }
-//     else if (parent_body_index == m_bodies[child_body_index].joint_index)
-//     {
-//         err = BodyTreeError::PARENT_CHILD_ALREADY_TREE_JOINT;
-//     }
-//     else
-//     {
-//         // no error
-//     }
-//     return err;
-// }
-//
-// size_t BodyTree::add_loop_joint(size_t parent_body_index, size_t child_body_index, JointType joint_type,
-//                                 const Transform& parent_joint_transform, const Transform& child_joint_transform,
-//                                 BodyTreeError& err)
-// {
-//     size_t added_joint_index = 0U;
-//     err = validate_add_loop_joint(parent_body_index, child_body_index);
-//     if (err == BodyTreeError::SUCCESS)
-//     {
-//         // get joint coordinates from joint type
-//         size_t joint_coord_index = 0U;
-//         size_t joint_dof_index = 0U;
-//         err = set_joint_coordinates(joint_type, m_num_coordinates, m_num_dofs, joint_coord_index, joint_dof_index);
-//         if (err == BodyTreeError::SUCCESS)
-//         {
-//             // body and joint index to add
-//             const size_t joint_index = m_num_joints;
-//             // assign joint
-//             m_joints[joint_index].is_loop_joint = true;
-//             m_joints[joint_index].type = joint_type;
-//             m_joints[joint_index].parent_joint_transform = parent_joint_transform;
-//             quat_normalize(m_joints[joint_index].parent_joint_transform.rot);
-//             m_joints[joint_index].loop_child_joint_transform = child_joint_transform;
-//             quat_normalize(m_joints[joint_index].loop_child_joint_transform.rot);
-//             m_joints[joint_index].coord_index = joint_coord_index;
-//             m_joints[joint_index].dof_index = joint_dof_index;
-//             // set parent and child body indexes
-//             m_joints[joint_index].parent_body_index = parent_body_index;
-//             m_joints[joint_index].child_body_index = child_body_index;
-//             // increment joint and body
-//             ++m_num_joints;
-//             // return value
-//             added_joint_index = joint_index;
-//         }
-//     }
-//     return added_joint_index;
-// }
 
 } // namespace fsb

@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_QUATERNION_H
+#define FSB_QUATERNION_H
 
 #include "fsb_types.h"
 
@@ -162,3 +163,5 @@ Quaternion quat_rz(real_t rz);
  */
 
 } // namespace fsb
+
+#endif

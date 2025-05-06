@@ -1,4 +1,6 @@
+#include <cstddef>
 
+#include "fsb_configuration.h"
 #include "fsb_spatial.h"
 #include "fsb_jacobian.h"
 #include "fsb_motion.h"

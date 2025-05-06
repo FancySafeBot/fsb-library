@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef FSB_COMPUTE_KINEMATICS_H
+#define FSB_COMPUTE_KINEMATICS_H
 
 #include "fsb_body.h"
 #include "fsb_body_tree.h"
@@ -22,16 +24,16 @@ namespace fsb
  * @brief Interface error codes
  *
  */
-enum class ComputeKinematicsError
+enum class ComputeKinematicsError : uint8_t
 {
     /**
      * @brief No error
      */
-    SUCCESS,
+    SUCCESS = 0,
     /**
      * @brief Body tree is invalid
      */
-    INVALID_BODY_TREE
+    INVALID_BODY_TREE = 1
 };
 
 /**
@@ -153,3 +155,5 @@ inline JacobianError ComputeKinematics::compute_jacobian(
  */
 
 } // namespace fsb
+
+#endif

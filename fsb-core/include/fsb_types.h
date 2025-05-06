@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_TYPES_H
+#define FSB_TYPES_H
 
 /**
  * @brief Floating point tolerance
@@ -72,3 +73,5 @@ struct Mat3
 };
 
 } // namespace fsb
+
+#endif

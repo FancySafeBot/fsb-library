@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef FSB_ENCODER_H
+#define FSB_ENCODER_H
 
 #include <cstdint>
 #include "fsb_types.h"
@@ -18,29 +19,29 @@ namespace fsb
  * @brief Status from setting encoder parameters
  *
  */
-enum class EncoderStatus
+enum class EncoderStatus: uint8_t
 {
     /**
      * @brief Parameters applied successfully
      */
-    SUCCESS,
+    SUCCESS = 0,
     /**
      * @brief Resolution of encoder (in number of bits) must be non-zero
      */
-    RESOLUTION_IS_ZERO,
+    RESOLUTION_IS_ZERO = 1,
     /**
      * @brief Encoder resolution exceeds maximum of 32 bits
      */
-    RESOLUTION_EXCEEDS_MAX,
+    RESOLUTION_EXCEEDS_MAX = 2,
     /**
      * @brief Counts per revolution must be non-zero
      */
-    COUNTS_PER_REV_ZERO,
+    COUNTS_PER_REV_ZERO = 3,
     /**
      * @brief Value per revolution is below tolerance
      *
      */
-    VALUE_PER_REV_ZERO
+    VALUE_PER_REV_ZERO = 4
 };
 
 /**
@@ -112,3 +113,5 @@ private:
  */
 
 } // namespace fsb
+
+#endif
