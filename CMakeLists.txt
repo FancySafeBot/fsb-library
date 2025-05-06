@@ -250,6 +250,7 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Coverage")
             -ftest-coverage
             --coverage)
         list(APPEND LINK_FLAGS
+            -lgcov
             -fprofile-arcs
             -ftest-coverage
             --coverage)
