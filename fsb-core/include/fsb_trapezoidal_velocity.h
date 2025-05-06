@@ -1,6 +1,7 @@
 #ifndef FSB_TRAPEZOIDAL_VELOCITY_H
 #define FSB_TRAPEZOIDAL_VELOCITY_H
 
+#include <cstdint>
 #include "fsb_types.h"
 #include "fsb_trajectory_types.h"
 #include "fsb_trajectory_segment.h"

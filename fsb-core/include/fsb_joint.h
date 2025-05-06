@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include "fsb_configuration.h"
 #include "fsb_types.h"
 #include "fsb_motion.h"

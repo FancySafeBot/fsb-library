@@ -1,9 +1,8 @@
 #ifndef FSB_PID_H
 #define FSB_PID_H
 
-#include "fsb_types.h"
-
 #include <cstdint>
+#include "fsb_types.h"
 
 namespace fsb
 {

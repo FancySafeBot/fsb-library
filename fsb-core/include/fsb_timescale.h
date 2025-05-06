@@ -1,6 +1,7 @@
 #ifndef FSB_TIMESCALE_H
 #define FSB_TIMESCALE_H
 
+#include <cstdint>
 #include "fsb_trajectory_types.h"
 #include "fsb_types.h"
 #include "fsb_trapezoidal_velocity.h"
