@@ -46,6 +46,23 @@ Transform coord_transform(const Transform& transf_a, const Transform& transf_b)
     return result;
 }
 
+Transform coord_transform_inverse(const Transform& transf_a, const Transform& transf_b)
+{
+    const Quaternion quat_conj = quat_conjugate(transf_a.rotation);
+    Transform  result = {
+        quat_multiply(quat_conj, transf_b.rotation),
+        quat_rotate_vector(quat_conj, vector_subtract(transf_b.translation, transf_a.translation))
+    };
+    if (result.rotation.qw < 0.0)
+    {
+        result.rotation.qw = -result.rotation.qw;
+        result.rotation.qx = -result.rotation.qx;
+        result.rotation.qy = -result.rotation.qy;
+        result.rotation.qz = -result.rotation.qz;
+    }
+    return result;
+}
+
 Vec3 coord_transform_position(const Transform& transf, const Vec3& pos)
 {
     const Vec3 work = quat_rotate_vector(transf.rotation, pos);
@@ -151,19 +168,19 @@ MotionVector motion_transform_acceleration_position(
 }
 
 MotionVector
-motion_transform_space_to_body_velocity(const Transform& pose, const MotionVector& space_velocity)
+motion_transform_space_to_body(const Transform& pose, const MotionVector& space_motion)
 {
     const Mat3 rot = quat_to_rot(pose.rotation);
     return {
-        rotate_mat3_transpose(rot, space_velocity.angular),
-        rotate_mat3_transpose(rot, space_velocity.linear)};
+        rotate_mat3_transpose(rot, space_motion.angular),
+        rotate_mat3_transpose(rot, space_motion.linear)};
 }
 
 MotionVector
-motion_transform_body_to_space_velocity(const Transform& pose, const MotionVector& body_velocity)
+motion_transform_body_to_space(const Transform& pose, const MotionVector& body_motion)
 {
     const Mat3 rot = quat_to_rot(pose.rotation);
-    return {rotate_mat3(rot, body_velocity.angular), rotate_mat3(rot, body_velocity.linear)};
+    return {rotate_mat3(rot, body_motion.angular), rotate_mat3(rot, body_motion.linear)};
 }
 
 Vec3 vector_add(const Vec3& v_a, const Vec3& v_b)

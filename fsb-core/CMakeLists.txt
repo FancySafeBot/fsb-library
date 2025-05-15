@@ -25,7 +25,8 @@ set(FSBCORE_HEADERS
     include/fsb_quintic.h
     include/fsb_timescale.h
     include/fsb_encoder.h
-    include/fsb_spatial.h)
+    include/fsb_spatial.h
+    include/fsb_dynamics.h)
 set(FSBCORE_SOURCES
     src/fsb_linalg3.cpp
     src/fsb_quaternion.cpp
@@ -43,7 +44,8 @@ set(FSBCORE_SOURCES
     src/fsb_timescale.cpp
     src/fsb_encoder.cpp
     src/fsb_encoder.cpp
-    src/fsb_spatial.cpp)
+    src/fsb_spatial.cpp
+    src/fsb_dynamics.cpp)
 
 if (FSB_USE_OPENBLAS)
     list(APPEND FSBCORE_HEADERS include/fsb_linalg.h)

@@ -104,6 +104,10 @@ struct Body
      * @brief Index of parent joint
      */
     size_t joint_index;
+    /**
+     * @brief true if body is leaf (no children)
+     */
+    bool is_leaf;
 };
 
 /**
@@ -180,6 +184,28 @@ bool body_inertia_principal_axis(const Inertia& inertia, PrincipalInertia& princ
  * @return false
  */
 bool body_validate_inertia_is_pd(const Inertia& inertia);
+
+/**
+ * @brief Inertia tensor multiplication with vector
+ *
+ * \f$ \mathbf{v} = \mathcal{I} \mathbf{w} \f$
+ *
+ * @param inertia Inertia tensor
+ * @param vec Vector to multiply by inertia tensor
+ * @return Result of multiplication
+ */
+Vec3 inertia_multiply_vector(const Inertia& inertia, const Vec3& vec);
+
+/**
+ * @brief Cross product with inertia tensor and angular velocity
+ *
+ * \f$ \mathbf{v} = \left[ \omega \right]^{\times} \mathcal{I} \omega \f$
+ *
+ * @param inertia Inertia tensor
+ * @param vel Angular velocity vector
+ * @return Result of cross product and multiplication
+ */
+Vec3 inertia_cross_multiply_vector(const Inertia& inertia, const Vec3& vel);
 
 /**
  * @}

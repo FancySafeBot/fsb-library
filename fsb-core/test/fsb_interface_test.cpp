@@ -66,7 +66,11 @@ TEST_CASE("Interface forward kinematics" * doctest::description("[fsb_compute_ki
 
     // Create body tree
     size_t body3_index = 3U;
-    fsb::BodyTree body_tree = body_tree_sample_rpr(joint1_tr, joint2_tr, joint3_tr, body3_index);
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
     fsb::ComputeKinematics compute = {};
     const fsb::ComputeKinematicsError err = compute.initialize(body_tree);
     REQUIRE(err == fsb::ComputeKinematicsError::SUCCESS);

@@ -40,7 +40,6 @@ TEST_CASE("Jacobian RPR" * doctest::description("[fsb_jacobian][fsb::calculate_j
          0.5006856733269477, 0.0,
          0.0, 0.0}
     };
-
     // Process
     fsb::CartesianPva    base_pva = {fsb::transform_identity(), {}, {}};
     const fsb::Transform joint1_tr = {joint1_rotation, joint1_position};
@@ -53,7 +52,11 @@ TEST_CASE("Jacobian RPR" * doctest::description("[fsb_jacobian][fsb::calculate_j
     };
 
     size_t        body3_index = 0U;
-    fsb::BodyTree body_tree = body_tree_sample_rpr(joint1_tr, joint2_tr, joint3_tr, body3_index);
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
     fsb::BodyCartesianPva actual_body_pva = {};
     fsb::Jacobian         actual_jacobian = {};
     const auto            opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;

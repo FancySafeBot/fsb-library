@@ -161,4 +161,27 @@ bool body_validate_inertia_is_pd(const Inertia& inertia)
     return mat3_posdef_symmetric_eigenvalues(inertia_matrix, eig_vals);
 }
 
+Vec3 inertia_multiply_vector(const Inertia& inertia, const Vec3& vec)
+{
+    return {
+        inertia.ixx * vec.x + inertia.ixy * vec.y + inertia.ixz * vec.z,
+        inertia.ixy * vec.x + inertia.iyy * vec.y + inertia.iyz * vec.z,
+        inertia.ixz * vec.x + inertia.iyz * vec.y + inertia.izz * vec.z
+    };
+}
+
+Vec3 inertia_cross_multiply_vector(const Inertia& inertia, const Vec3& vel)
+{
+    const real_t x0 = inertia.ixy * vel.z;
+    const real_t x1 = inertia.ixz * vel.y;
+    const real_t x2 = -inertia.iyz * vel.x;
+    return {
+        -vel.x * (x0 - x1) - vel.y * (inertia.iyy * vel.z - inertia.iyz * vel.y)
+            - vel.z * (inertia.iyz * vel.z - inertia.izz * vel.y),
+        vel.x * (inertia.ixx * vel.z - inertia.ixz * vel.x) + vel.y * (x0 + x2)
+            + vel.z * (inertia.ixz * vel.z - inertia.izz * vel.x),
+        -vel.x * (inertia.ixx * vel.y - inertia.ixy * vel.x)
+            - vel.y * (inertia.ixy * vel.y - inertia.iyy * vel.x) - vel.z * (x1 + x2)};
+}
+
 } // namespace fsb

@@ -65,10 +65,14 @@ TEST_CASE("Forward Kinematics RPR fixed base" * doctest::description("[fsb_kinem
         {expected_acc_ang, expected_acc_lin}};
     // Process
     size_t body3_index = 3U;
-    fsb::BodyTree body_tree = body_tree_sample_rpr(joint1_tr, joint2_tr, joint3_tr, body3_index);
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
     fsb::BodyCartesianPva actual_body_pva = {};
     const auto opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;
-    forward_kinematics(body_tree, joint_pva, base_pva, opt, actual_body_pva);
+    fsb::forward_kinematics(body_tree, joint_pva, base_pva, opt, actual_body_pva);
 
     // check body 3 PVA
     const auto& [pose, velocity, acceleration] = actual_body_pva.body[body3_index];
@@ -159,7 +163,11 @@ TEST_CASE("Forward Kinematics RPR moving base" * doctest::description("[fsb_kine
         {expected_acc_ang, expected_acc_lin}};
     // Process
     size_t body3_index = 3U;
-    fsb::BodyTree body_tree = body_tree_sample_rpr(joint1_tr, joint2_tr, joint3_tr, body3_index);
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
     fsb::BodyCartesianPva actual_body_pva = {};
     const auto opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;
     forward_kinematics(body_tree, joint_pva, base_pva, opt, actual_body_pva);
@@ -251,7 +259,11 @@ TEST_CASE("Forward Kinematics RPR static" * doctest::description("[fsb_kinematic
         {expected_acc_ang, expected_acc_lin}};
     // Process
     size_t body3_index = 3U;
-    fsb::BodyTree body_tree = body_tree_sample_rpr(joint1_tr, joint2_tr, joint3_tr, body3_index);
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
     fsb::BodyCartesianPva actual_body_pva = {};
     const auto opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;
     forward_kinematics(body_tree, joint_pva, base_pva, opt, actual_body_pva);

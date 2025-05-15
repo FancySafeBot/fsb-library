@@ -164,7 +164,25 @@ Transform transform_inverse(const Transform& transf);
  * @param transf_b Transform B
  * @return Transform A applied to B
  */
-extern Transform coord_transform(const Transform& transf_a, const Transform& transf_b);
+Transform coord_transform(const Transform& transf_a, const Transform& transf_b);
+
+/**
+ * @brief Apply coordinate transform inverse
+ *
+ *  The resulting orientation quaternion is
+ *  \f[
+ *  q = q^{-1}_A q_B
+ *  \f]
+ *  and the position is
+ *  \f[
+ *  p = C(q^{-1}_A) (p_B - p_A)
+ *  \f]
+ *
+ * @param transf_a Transform A
+ * @param transf_b Transform B
+ * @return Transform inverse of A applied to B
+ */
+Transform coord_transform_inverse(const Transform& transf_a, const Transform& transf_b);
 
 /**
  * @brief Apply coordinate transform to position vector
@@ -246,24 +264,24 @@ MotionVector motion_transform_acceleration(
     const MotionVector& motion_velocity, const MotionVector& motion_acceleration);
 
 /**
- * @brief Space to body-fixed velocity
+ * @brief Space to body-fixed motion
  *
  * @param pose Pose of coordinate frame
- * @param space_velocity Velocity in space frame
- * @return Velocity in body-fixed frame
+ * @param space_motion Motion in space frame
+ * @return Motion in body-fixed frame
  */
 MotionVector
-motion_transform_space_to_body_velocity(const Transform& pose, const MotionVector& space_velocity);
+motion_transform_space_to_body(const Transform& pose, const MotionVector& space_motion);
 
 /**
- * @brief Body-fixed to space frame velocity
+ * @brief Body-fixed to space frame motion
  *
  * @param pose Pose of coordinate frame
- * @param body_velocity Velocity in body-fixed frame
- * @return Velocity in space frame
+ * @param body_motion Motion in body-fixed frame
+ * @return Motion in space frame
  */
 MotionVector
-motion_transform_body_to_space_velocity(const Transform& pose, const MotionVector& body_velocity);
+motion_transform_body_to_space(const Transform& pose, const MotionVector& body_motion);
 
 /**
  * @brief Get velocity of child frame with respect to a common frame given transform between parent

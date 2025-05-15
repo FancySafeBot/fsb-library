@@ -173,6 +173,9 @@ size_t BodyTree::add_massless_body(
             Body &new_body = m_bodies[body_index];
             new_body.origin_offset = origin_offset;
             new_body.joint_index = joint_index;
+            // parent body unset leaf status
+            m_bodies[parent_body_index].is_leaf = false;
+            new_body.is_leaf= true;
             // increment joint and body
             ++m_num_joints;
             ++m_num_bodies;
@@ -218,6 +221,9 @@ size_t BodyTree::add_body(
             new_body.mass_props = body.mass_props;
             new_body.principal_inertia = body.principal_inertia;
             new_body.joint_index = joint_index;
+            // parent body leaf status
+            m_bodies[parent_body_index].is_leaf = false;
+            new_body.is_leaf= true;
             // increment joint and body
             ++m_num_joints;
             ++m_num_bodies;

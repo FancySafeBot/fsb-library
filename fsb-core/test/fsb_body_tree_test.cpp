@@ -19,7 +19,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const size_t body_index_expected = 0U;
@@ -45,7 +45,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {0.5 * FSB_TOL, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const size_t body_index_expected = 0U;
@@ -71,7 +71,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {1.0, {}, {0.5 * FSB_TOL, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const size_t body_index_expected = 0U;
@@ -97,7 +97,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {0.0, {}, {0.0, 0.0, 0.0, 0.0, 0.0, 0.5 * FSB_TOL}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const size_t body_index_expected = 0U;
@@ -123,7 +123,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {1.0, {}, {1.0, -1.0, -1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const size_t body_index_expected = 0U;
@@ -149,7 +149,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const size_t body_index_expected = 0U;
@@ -182,7 +182,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
     //     const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
     //     const fsb::PrincipalInertia principal_inertia = {};
     //     const fsb::Body body = {
-    //         offset, mass_props, principal_inertia, 0U
+    //         offset, mass_props, principal_inertia, 0U, false
     //     };
     //     // expected error value
     //     const size_t body_index_expected = 0U;
@@ -215,7 +215,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const auto err_expected = fsb::BodyTreeError::MAX_JOINT_COORDINATES_REACHED;
@@ -243,7 +243,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected error value
         const auto err_expected = fsb::BodyTreeError::MAX_JOINT_DOFS_REACHED;
@@ -279,7 +279,7 @@ TEST_CASE("Add body to tree" * doctest::description("[fsb_kinematics][fsb::BodyT
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected values
         const size_t body1_index_expected = 1U;
@@ -317,7 +317,7 @@ TEST_CASE("Add body to tree" * doctest::description("[fsb_kinematics][fsb::BodyT
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected values
         const size_t body1_index_expected = 1U;
@@ -355,7 +355,7 @@ TEST_CASE("Add body to tree" * doctest::description("[fsb_kinematics][fsb::BodyT
         const fsb::MassProps mass_props = {1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
         const fsb::PrincipalInertia principal_inertia = {};
         const fsb::Body body = {
-            offset, mass_props, principal_inertia, 0U
+            offset, mass_props, principal_inertia, 0U, false
         };
         // expected values
         const size_t body1_index_expected = 1U;

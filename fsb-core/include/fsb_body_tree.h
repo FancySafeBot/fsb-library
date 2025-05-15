@@ -105,9 +105,29 @@ public:
         size_t parent_body_index, JointType joint_type, const Transform& parent_joint_transform,
         const Body& body, BodyTreeError& err);
 
+    /**
+     * @brief Add a massless body to the body tree
+     *
+     * @param parent_body_index Index of parent body
+     * @param joint_type Joint type
+     * @param parent_joint_transform Transform of joint with respect to parent body
+     * @param origin_offset Origin offset transform
+     * @param err Error code
+     * @return Index of added body
+     */
     size_t add_massless_body(
         size_t parent_body_index, JointType joint_type, const Transform& parent_joint_transform,
         const MotionVector& origin_offset, BodyTreeError& err);
+
+    /**
+     * @brief Set the gravity vector
+     *
+     * @param gravity Gravity vector
+     */
+    void set_gravity(const Vec3& gravity)
+    {
+        m_gravity = gravity;
+    }
 
     /**
      * @brief Get a joint object in the body tree
@@ -185,6 +205,37 @@ public:
         return m_num_coordinates;
     }
 
+    /**
+     * @brief Get the gravity vector
+     *
+     * @return Gravity acceleration vector
+     */
+    [[nodiscard]] Vec3 get_gravity() const
+    {
+        return m_gravity;
+    }
+
+    /**
+     * @brief Get a list of body indexes that are leaves (bodies without children)
+     *
+     * @param num_leaves Number of leaves in body tree
+     * @return Array of body indexes which are leaves.
+     */
+    [[ nodiscard ]] std::array<size_t, MaxSize::bodies> get_leaves(size_t& num_leaves) const
+    {
+        std::array<size_t, MaxSize::bodies> result = {};
+        num_leaves = 0U;
+        for (size_t index = 0; index < m_num_bodies; ++index)
+        {
+            if (m_bodies[index].is_leaf)
+            {
+                result[num_leaves] = index;
+                num_leaves++;
+            }
+        }
+        return result;
+    }
+
 private:
     [[nodiscard]] BodyTreeError validate_massless_body_input(size_t parent_body_index) const;
     [[nodiscard]] BodyTreeError
@@ -192,6 +243,7 @@ private:
 
     std::array<Body, MaxSize::bodies>  m_bodies = {};
     std::array<Joint, MaxSize::joints> m_joints = {};
+    Vec3 m_gravity = {};
 
     size_t m_num_coordinates = 0U;
     size_t m_num_dofs = 0U;

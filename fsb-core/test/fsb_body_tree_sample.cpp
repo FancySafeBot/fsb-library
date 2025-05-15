@@ -7,18 +7,16 @@ using namespace fsb;
 
 BodyTree body_tree_sample_rpr(
     const Transform& joint1_tr, const Transform& joint2_tr, const Transform& joint3_tr,
+    const MassProps& body1_massprops, const MassProps& body2_massprops, const MassProps& body3_massprops,
     size_t& last_body_index)
 {
     auto     err = BodyTreeError::SUCCESS;
     BodyTree body_tree = {};
 
-    constexpr MassProps unit_mass_props = {
-        1.0, {},
-         {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}
-    };
-    Body body1 = {{}, unit_mass_props, {}, 0U};
-    Body body2 = {{}, unit_mass_props, {}, 0U};
-    Body body3 = {{}, unit_mass_props, {}, 0U};
+    MotionVector origin_offset = {};
+    Body body1 = {origin_offset, body1_massprops, {}, 0U, false};
+    Body body2 = {origin_offset, body2_massprops, {}, 0U, false};
+    Body body3 = {origin_offset, body3_massprops, {}, 0U, true};
 
     const size_t body1_index
         = body_tree.add_body(BodyTree::base_index, JointType::REVOLUTE_Z, joint1_tr, body1, err);
