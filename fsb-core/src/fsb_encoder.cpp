@@ -6,7 +6,7 @@
 namespace fsb
 {
 
-inline EncoderStatus IncrementalEncoder::set_parameters(const uint8_t counter_resolution_bits, const uint32_t counts_per_rev,
+EncoderStatus IncrementalEncoder::set_parameters(const uint8_t counter_resolution_bits, const uint32_t counts_per_rev,
                                                         const real_t value_per_rev)
 {
     auto result = EncoderStatus::SUCCESS;
@@ -59,19 +59,19 @@ inline EncoderStatus IncrementalEncoder::set_parameters(const uint8_t counter_re
     return result;
 }
 
-inline void IncrementalEncoder::reset(const int32_t count, const real_t value)
+void IncrementalEncoder::reset(const int32_t count, const real_t value)
 {
     m_count = count;
     reset_value(value);
 }
 
-inline void IncrementalEncoder::reset_value(const real_t value)
+void IncrementalEncoder::reset_value(const real_t value)
 {
     const real_t value_from_count = static_cast<real_t>(m_count) * m_value_per_rev / static_cast<real_t>(m_counts_per_rev);
     m_value_offset = value - value_from_count;
 }
 
-inline real_t IncrementalEncoder::decode(const int32_t count)
+real_t IncrementalEncoder::decode(const int32_t count)
 {
     // change in count
     int32_t delta = count - m_count;
@@ -96,7 +96,7 @@ inline real_t IncrementalEncoder::decode(const int32_t count)
     return m_value_offset + static_cast<real_t>(m_count) * m_value_per_rev / static_cast<real_t>(m_counts_per_rev);
 }
 
-inline int32_t IncrementalEncoder::encode(const real_t value)
+int32_t IncrementalEncoder::encode(const real_t value)
 {
     // update absolute counts
     const auto count = static_cast<int32_t>(value * static_cast<real_t>(m_counts_per_rev) / m_value_per_rev);

@@ -72,16 +72,18 @@ Vec3 coord_transform_position(const Transform& transf, const Vec3& pos)
         work.z + transf.translation.z};
 }
 
-Transform coord_transform_apply_space_offset(const MotionVector& offset, const Transform& transf)
+Transform coord_transform_apply_error(const Transform& transf_initial, const MotionVector& offset)
 {
-    const Transform offset_transform = {rotvec_to_quat(offset.angular), offset.linear};
-    return coord_transform(offset_transform, transf);
+    return {
+        quat_circplus(transf_initial.rotation, offset.angular),
+        vector_add(transf_initial.translation, offset.linear)};
 }
 
-MotionVector coord_transform_get_space_offset(const Transform& transf_post, const Transform& transf)
+MotionVector coord_transform_get_error(const Transform& transf_initial, const Transform& transf_final)
 {
-    const Transform offset_transform = coord_transform(transf, transform_inverse(transf_post));
-    return {quat_to_rotvec(offset_transform.rotation), offset_transform.translation};
+    return {
+        quat_circminus(transf_final.rotation, transf_initial.rotation),
+        vector_subtract(transf_final.translation, transf_initial.translation)};
 }
 
 Transform
@@ -96,7 +98,7 @@ MotionVector
 coord_transform_get_body_offset(const Transform& transf_initial, const Transform& transf_final)
 {
     return {
-        quat_boxminus(transf_initial.rotation, transf_final.rotation),
+        quat_boxminus(transf_final.rotation, transf_initial.rotation),
         vector_subtract(transf_final.translation, transf_initial.translation)};
 }
 
@@ -198,6 +200,11 @@ Vec3 vector_scale(const real_t scalar, const Vec3& vec)
     return {vec.x * scalar, vec.y * scalar, vec.z * scalar};
 }
 
+Vec3 vector_multiply_elem(const Vec3& v_a, const Vec3& v_b)
+{
+    return {v_a.x * v_b.x, v_a.y * v_b.y, v_a.z * v_b.z};
+}
+
 Vec3 vector_cross(const Vec3& v_a, const Vec3& v_b)
 {
     return {
@@ -215,53 +222,5 @@ real_t vector_norm(const Vec3& vec)
 {
     return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
-
-//
-// MotionVector motion_transform_body_velocity(
-//     const Transform& parent_transf, const MotionVector& parent_velocity, const Transform&
-//     motion_transf, const MotionVector& motion_velocity)
-// {
-//     const Vec3 ang = quat_rotate_vector(quat_conjugate(motion_transf.rotation),
-//     parent_velocity.angular);
-//
-//     const Vec3 lin1a = vector_cross(parent_velocity.angular, motion_transf.translation);
-//     const Vec3 lin1b = {lin1a.x + motion_velocity.linear.x, lin1a.y + motion_velocity.linear.y,
-//     lin1a.z + motion_velocity.linear.z}; const Vec3 lin1 =
-//     quat_rotate_vector(parent_transf.rotation, lin1b);
-//
-//     return {
-//         vector_add(motion_velocity.angular, ang),
-//         vector_add(parent_velocity.linear, lin1)
-//     };
-// }
-//
-// MotionVector motion_transform_body_acceleration(
-//     const Transform& parent_transf, const MotionVector& parent_velocity, const MotionVector&
-//     parent_acceleration, const Transform& motion_transf, const MotionVector& motion_velocity,
-//     const MotionVector& motion_acceleration)
-// {
-//     const Vec3 ang1 = quat_rotate_vector(quat_conjugate(motion_transf.rotation),
-//     parent_acceleration.angular); const Vec3 ang2 =
-//     vector_cross(quat_rotate_vector(quat_conjugate(motion_transf.rotation),
-//     parent_velocity.angular), motion_velocity.angular);
-//
-//     const Vec3 lin1a = vector_cross(parent_acceleration.angular, motion_transf.translation);
-//     const Vec3 lin1b = vector_cross(parent_velocity.angular,
-//     vector_cross(parent_velocity.angular, motion_transf.translation)); const Vec3 lin1c =
-//     vector_cross(parent_velocity.angular, motion_velocity.linear); const Vec3 lin1d
-//         = {lin1a.x + lin1b.x + 2.0 * lin1c.x + motion_acceleration.linear.x, lin1a.y + lin1b.y
-//         + 2.0 * lin1c.y + motion_acceleration.linear.y,
-//            lin1a.z + lin1b.z + 2.0 * lin1c.z + motion_acceleration.linear.z};
-//     const Vec3 lin1 = quat_rotate_vector(parent_transf.rotation, lin1d);
-//
-//     return {
-//         {motion_acceleration.angular.x + ang1.x + ang2.x, motion_acceleration.angular.y + ang1.y
-//         + ang2.y,
-//          motion_acceleration.angular.z + ang1.z + ang2.z },
-//         {parent_acceleration.linear.x + lin1.x,          parent_acceleration.linear.y + lin1.y,
-//         parent_acceleration.linear.z + lin1.z}
-//     };
-// }
-//
 
 } // namespace fsb

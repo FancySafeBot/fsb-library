@@ -50,7 +50,11 @@ typedef enum FsbLapackErrorType
     /**
      * @brief Matrix not positive definite
      */
-    EFSB_LAPACK_NOT_POSITIVE_DEFINITE
+    EFSB_LAPACK_NOT_POSITIVE_DEFINITE,
+    /**
+     * @brief Input matrix is singular
+     */
+    EFSB_LAPACK_SINGULAR
 } FsbLinalgErrorType;
 
 /**
@@ -156,6 +160,24 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
  * @return false
  */
 bool fsb_linalg_is_posdef(const double_t mat[], size_t dim, size_t work_len, double_t work[]);
+
+/**
+ * @biref Solve linear system of equations with a square matrix
+ *
+ * @param mat Matrix to solve (dim x dim)
+ * @param y_vec Right-hand side vector (dim x nrhs)
+ * @param nrhs Number of right-hand side vectors
+ * @param dim Matrix A dimension (s)
+ * @param work_len Work vector length
+ * @param iwork_len Integer work vector length
+ * @param work Work vector
+ * @param iwork Integer work vector
+ * @param x_vec Output Solution vector (dim x nrhs)
+ * @return Error code
+ */
+FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
+    const double_t mat[], const double_t y_vec[], size_t nrhs, size_t dim, size_t work_len,
+    size_t iwork_len, double_t work[], int iwork[], double_t x_vec[]);
 
 /**
  * @}

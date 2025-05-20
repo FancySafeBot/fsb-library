@@ -123,7 +123,7 @@ TEST_CASE("Jacobian Panda" * doctest::description("[fsb_jacobian][fsb::calculate
     const fsb::JacobianError jac_err
         = fsb::calculate_jacobian(ee_index, panda_tree, cartesian_pva, jac);
     // Velocity from Jacobian
-    fsb::MotionVector jac_vel = fsb::jacobian_multiply_joint_motion_vector(jac, joint_pva.velocity, panda_tree.get_num_dofs());
+    fsb::MotionVector jac_vel = fsb::jacobian_multiply(jac, joint_pva.velocity, panda_tree.get_num_dofs());
 
     // Check
     REQUIRE(jac_err == fsb::JacobianError::SUCCESS);

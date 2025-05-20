@@ -108,22 +108,48 @@ Vec3 quat_log(const Quaternion& q_in);
 Quaternion quat_exp(const Vec3& v_in);
 
 /**
- * @brief Rotate quaternion with body-fixed rotation vector
+ * @brief Add body-fixed rotation vector to quaternion
  *
- * @param q_start Quaternion to rotate
+ * \f$ q \boxplus \phi = q \exp\left(\tfrac{1}{2}\phi \right) \f$
+ *
+ * @param quat Quaternion to rotate
  * @param phi_delta Rotation vector in radians
  * @return Rotated quaternion
  */
-Quaternion quat_boxplus(const Quaternion& q_start, const Vec3& phi_delta);
+Quaternion quat_boxplus(const Quaternion& quat, const Vec3& phi_delta);
 
 /**
  * @brief Get body-fixed rotation vector from quaternion difference
  *
- * @param q_start Start orientation
- * @param q_end End orientation
- * @return Body-fixed rotation vector from start to end in radians
+ * \f$ q_a \boxminus q_b = 2 \log(q_b^{-1} q_a) \f$
+ *
+ * @param q_a Orientation a
+ * @param q_b Orietnation b
+ * @return Body-fixed rotation vector from b to a in radians
  */
-Vec3 quat_boxminus(const Quaternion& q_start, const Quaternion& q_end);
+Vec3 quat_boxminus(const Quaternion& q_a, const Quaternion& q_b);
+
+/**
+ * @brief Add space frame rotation vector to quaternion
+ *
+ * \f$ q \oplus \phi = \exp\left(\tfrac{1}{2}\phi \right) q \f$
+ *
+ * @param quat Initial orientation
+ * @param phi_delta Axis-angle rotation vector
+ * @return Final orientation
+ */
+Quaternion quat_circplus(const Quaternion& quat, const Vec3& phi_delta);
+
+/**
+ * @brief Get space frame rotation vector from quaternion difference
+ *
+ * \f$ q_a \ominus q_b = 2 \log(q_a q_b^{-1}) \f$
+ *
+ * @param q_a Orientation a
+ * @param q_b Orietnation b
+ * @return Space frame rotation vector from b to a in radians
+ */
+Vec3 quat_circminus(const Quaternion& q_a, const Quaternion& q_b);
 
 /**
  * @brief Identity quaternion

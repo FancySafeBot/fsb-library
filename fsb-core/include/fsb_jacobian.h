@@ -33,6 +33,17 @@ struct Jacobian
 };
 
 /**
+ * @brief Square matrix of size nxn for n joints
+ */
+struct JointMatrix
+{
+    /**
+     * @brief Square matrix data array
+     */
+    std::array<real_t, MaxSize::dofs * MaxSize::dofs> j;
+};
+
+/**
  * @brief Hessian tensor
  */
 struct Hessian
@@ -73,6 +84,21 @@ inline size_t jacobian_index(const size_t row, const size_t col)
 }
 
 /**
+ * @brief Helper function for indexing joint matrix
+ *
+ * Matrix is ordered column-major with n rows for n joints
+ *
+ * @param row Row index
+ * @param col Column index
+ * @param dofs Number of degrees of freedom (elements in joint velocity vector)
+ * @return Array index for joint matrix
+ */
+inline size_t joint_matrix_index(const size_t row, const size_t col, const size_t dofs)
+{
+    return dofs * col + row;
+}
+
+/**
  * @brief Jacobian multiply joint velocity
  *
  * @param jacobian Jacobian matrix
@@ -80,21 +106,31 @@ inline size_t jacobian_index(const size_t row, const size_t col)
  * @param dofs Number of degrees of freedom (elements in joint velocity vector)
  * @return Cartesian velocity
  */
-inline MotionVector jacobian_joint_multiply(
-    const Jacobian& jacobian, const JointSpace& joint_motion, const size_t dofs = MaxSize::dofs)
-{
-    MotionVector result = {};
-    for (size_t ind = 0U; ind < dofs; ++ind)
-    {
-        result.angular.x += jacobian.j[jacobian_index(0U, ind)] * joint_motion.qv[ind];
-        result.angular.y += jacobian.j[jacobian_index(1U, ind)] * joint_motion.qv[ind];
-        result.angular.z += jacobian.j[jacobian_index(2U, ind)] * joint_motion.qv[ind];
-        result.linear.x += jacobian.j[jacobian_index(3U, ind)] * joint_motion.qv[ind];
-        result.linear.y += jacobian.j[jacobian_index(4U, ind)] * joint_motion.qv[ind];
-        result.linear.z += jacobian.j[jacobian_index(5U, ind)] * joint_motion.qv[ind];
-    }
-    return result;
-}
+MotionVector jacobian_multiply(
+    const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs = MaxSize::dofs);
+
+/**
+ * @brief Jacobian transpose multiply cartesian motion
+ *
+ * @param jacobian Jacobian matrix
+ * @param cartesian_motion Cartesian motion
+ * @param dofs Number of degrees of freedom (elements in joint motion vector)
+ * @return Joint motion
+ */
+JointSpace jacobian_transpose_multiply(
+    const Jacobian& jacobian, const MotionVector& cartesian_motion, size_t dofs = MaxSize::dofs);
+
+/**
+ * @brief Jacobian transpose multiply jacobian
+ *
+ * \f$ J^T \cdot \text{diag}(w) J \f$
+ *
+ * @param jacobian Jacobian matrix
+ * @param cartesian_weights Weighted cartesian motion
+ * @param dofs
+ * @return
+ */
+JointMatrix jacobian_transpose_multiply_jacobian(const Jacobian& jacobian, const MotionVector& cartesian_weights, size_t dofs = MaxSize::dofs);
 
 /**
  * @brief Compute derivative of Jacobian matrix
@@ -104,22 +140,8 @@ inline MotionVector jacobian_joint_multiply(
  * @param dofs Number of dofs (elements in joint velocity vector)
  * @return Jacobian derivative
  */
-inline Jacobian jacobian_derivative(
-    const Hessian& hessian, const JointSpace& joint_velocity, const size_t dofs = MaxSize::dofs)
-{
-    Jacobian result = {};
-    for (size_t ind = 0U; ind < dofs; ++ind)
-    {
-        const MotionVector result_col = jacobian_joint_multiply(hessian.h[ind], joint_velocity);
-        result.j[jacobian_index(0U, ind)] = result_col.angular.x;
-        result.j[jacobian_index(1U, ind)] = result_col.angular.y;
-        result.j[jacobian_index(2U, ind)] = result_col.angular.z;
-        result.j[jacobian_index(3U, ind)] = result_col.linear.x;
-        result.j[jacobian_index(4U, ind)] = result_col.linear.y;
-        result.j[jacobian_index(5U, ind)] = result_col.linear.z;
-    }
-    return result;
-}
+Jacobian jacobian_derivative(
+    const Hessian& hessian, const JointSpace& joint_velocity, size_t dofs = MaxSize::dofs);
 
 /**
  * @brief Determine Jacobian matrix for a single body in tree
@@ -136,8 +158,6 @@ inline Jacobian jacobian_derivative(
 JacobianError calculate_jacobian(
     size_t body_index, const BodyTree& body_tree, const BodyCartesianPva& cartesian_pva,
     Jacobian& jacobian);
-
-MotionVector jacobian_multiply_joint_motion_vector(const Jacobian& jac, const JointSpace& joint_motion, size_t dofs = MaxSize::dofs);
 
 /**
  * @}

@@ -176,6 +176,15 @@ public:
     set_parent_joint_transform(size_t body_index, const Transform& parent_joint_transform);
 
     /**
+     * @brief Get the number of degrees of freedom for a body
+     *
+     * @param body_index Body index
+     * @param err Error code
+     * @return Number of degrees of freedom
+     */
+    size_t get_body_dofs(size_t body_index, BodyTreeError& err) const;
+
+    /**
      * @brief Get the number of bodies in tree
      *
      * @return Number of bodies

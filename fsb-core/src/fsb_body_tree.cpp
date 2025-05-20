@@ -234,4 +234,60 @@ size_t BodyTree::add_body(
     return added_body_index;
 }
 
+size_t BodyTree::get_body_dofs(const size_t body_index, BodyTreeError& err) const
+{
+    size_t dofs = 0U;
+    if (body_index < m_num_bodies)
+    {
+        const Joint& joint = m_joints[m_bodies[body_index].joint_index];
+        JointType joint_type = joint.type;
+        size_t parent_index = joint.parent_body_index;
+        size_t dof_index = joint.dof_index;
+        while ((joint_type == JointType::FIXED) && (parent_index != base_index))
+        {
+            const Joint& parent_joint = m_joints[m_bodies[parent_index].joint_index];
+            joint_type = parent_joint.type;
+            parent_index = parent_joint.parent_body_index;
+            dof_index = parent_joint.dof_index;
+        }
+        switch (joint_type)
+        {
+            case JointType::REVOLUTE_X:
+            case JointType::REVOLUTE_Y:
+            case JointType::REVOLUTE_Z:
+            case JointType::PRISMATIC_X:
+            case JointType::PRISMATIC_Y:
+            case JointType::PRISMATIC_Z:
+            {
+                dofs = dof_index + 1U;
+                break;
+            }
+            case JointType::SPHERICAL:
+            case JointType::PLANAR:
+            {
+                dofs = dof_index + 3U;
+                break;
+            }
+            case JointType::CARTESIAN:
+            {
+                dofs = dof_index + 6U;
+                break;
+            }
+            case JointType::FIXED:
+            default:
+            {
+                // FIXED or unknown: do nothing
+                break;
+            }
+        }
+        err = BodyTreeError::SUCCESS;
+    }
+    else
+    {
+        err = BodyTreeError::BODY_NOT_IN_TREE;
+    }
+
+    return dofs;
+}
+
 } // namespace fsb

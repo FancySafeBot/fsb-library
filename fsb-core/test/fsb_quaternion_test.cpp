@@ -259,7 +259,7 @@ TEST_CASE("Get rotation vector between two quaternions in body frame"
                                  0.424264068711929};
     const fsb::Quaternion q_b = {0.12879363305026925, -0.14346389269453994, -0.8317266006042587, 0.5206353555281533};
     // Expected
-    const fsb::Vec3 phi_expected = {0.075, -0.12, 0.56};
+    const fsb::Vec3 phi_expected = {-0.075, 0.12, -0.56};
     // Process
     fsb::Vec3 phi_actual = fsb::quat_boxminus(q_a, q_b);
 

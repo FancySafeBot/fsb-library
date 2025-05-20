@@ -98,16 +98,32 @@ Quaternion quat_exp(const Vec3& v_in)
     return q_out;
 }
 
-Quaternion quat_boxplus(const Quaternion& q_start, const Vec3& phi_delta)
+Quaternion quat_boxplus(const Quaternion& quat, const Vec3& phi_delta)
 {
     // work
     const Vec3 phi_half = {phi_delta.x / 2.0, phi_delta.y / 2.0, phi_delta.z / 2.0};
-    return quat_multiply(q_start, quat_exp(phi_half));
+    return quat_multiply(quat, quat_exp(phi_half));
 }
 
-Vec3 quat_boxminus(const Quaternion& q_start, const Quaternion& q_end)
+Vec3 quat_boxminus(const Quaternion& q_a, const Quaternion& q_b)
 {
-    Vec3 phi_delta = quat_log(quat_multiply(quat_conjugate(q_start), q_end));
+    Vec3 phi_delta = quat_log(quat_multiply(quat_conjugate(q_b), q_a));
+    phi_delta.x = 2.0 * phi_delta.x;
+    phi_delta.y = 2.0 * phi_delta.y;
+    phi_delta.z = 2.0 * phi_delta.z;
+    return phi_delta;
+}
+
+Quaternion quat_circplus(const Quaternion& quat, const Vec3& phi_delta)
+{
+    // work
+    const Vec3 phi_half = {phi_delta.x / 2.0, phi_delta.y / 2.0, phi_delta.z / 2.0};
+    return quat_multiply(quat_exp(phi_half), quat);
+}
+
+Vec3 quat_circminus(const Quaternion& q_a, const Quaternion& q_b)
+{
+    Vec3 phi_delta = quat_log(quat_multiply(q_a, quat_conjugate(q_b)));
     phi_delta.x = 2.0 * phi_delta.x;
     phi_delta.y = 2.0 * phi_delta.y;
     phi_delta.z = 2.0 * phi_delta.z;

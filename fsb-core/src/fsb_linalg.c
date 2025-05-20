@@ -410,3 +410,79 @@ bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, const size_t w
     }
     return retval;
 }
+
+/* general LU solve m = n
+ *
+ *  DGETRF computes an LU factorization of a general M-by-N matrix A
+ *  using partial pivoting with row interchanges.
+ *
+ *  The factorization has the form
+ *     A = P * L * U
+ */
+FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
+    const double_t mat[], const double_t y_vec[], const size_t nrhs, const size_t dim, const size_t work_len,
+    const size_t iwork_len, double_t work[], lapack_int iwork[], double_t x_vec[])
+{
+    FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
+    /* alias data */
+    if (dim >= (INT32_MAX / dim))
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (work_len < (dim * dim) || (iwork_len < dim))
+    {
+        // not enough buffer for copy of A or y
+        retval = EFSB_LAPACK_ERROR_MEMORY;
+    }
+    else
+    {
+        double* mat_lu = work;
+        lapack_int* ipiv = iwork;
+        const size_t a_len = dim * dim;
+        const lapack_int l_s = (lapack_int)dim;
+        // copy mat to buffer
+        for (size_t k = 0U; k < a_len; ++k)
+        {
+            mat_lu[k] = mat[k];
+        }
+
+        /* DGETRF( M, N, A, LDA, IPIV, INFO ) */
+        lapack_int info = 0;
+        lapack_int dgetrf_ret = dgetrf_(&l_s, &l_s, mat_lu, &l_s, ipiv, &info);
+        (void)dgetrf_ret;
+
+        if (info == 0)
+        {
+            const char*      transpose_opt = "N";
+            const size_t     transpose_opt_size = 1U;
+            const lapack_int l_nrhs = (lapack_int)nrhs;
+            // copy y to x vector
+            for (size_t k = 0U; k < dim; ++k)
+            {
+                x_vec[k] = y_vec[k];
+            }
+            //      SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+            lapack_int dgetrs_ret = dgetrs_(transpose_opt, &l_s, &l_nrhs, mat_lu, &l_s, ipiv, x_vec, &l_s, &info, transpose_opt_size);
+            (void)dgetrs_ret;
+        }
+
+        if (info > 0)
+        {
+            retval = EFSB_LAPACK_SINGULAR;
+            // if INFO = i, U(i,i) is exactly zero. The factorization
+            //     has been completed, but the factor U is exactly
+            //     singular, and division by zero will occur if it is used
+            //     to solve a system of equations.
+        }
+        else if (info < 0)
+        {
+            retval = EFSB_LAPACK_ERROR_INPUT;
+        }
+        else
+        {
+            /* no error */
+        }
+    }
+
+    return retval;
+}

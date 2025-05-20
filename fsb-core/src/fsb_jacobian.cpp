@@ -254,23 +254,98 @@ JacobianError calculate_jacobian(
     return result;
 }
 
-MotionVector jacobian_multiply_joint_motion_vector(const Jacobian& jac, const JointSpace& joint_motion, size_t dofs)
+MotionVector jacobian_multiply(
+    const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs)
+{
+    MotionVector result = {};
+    if (dofs > MaxSize::dofs)
+    {
+        dofs = MaxSize::dofs;
+    }
+    for (size_t ind = 0U; ind < dofs; ++ind)
+    {
+        result.angular.x += jacobian.j[jacobian_index(0U, ind)] * joint_motion.qv[ind];
+        result.angular.y += jacobian.j[jacobian_index(1U, ind)] * joint_motion.qv[ind];
+        result.angular.z += jacobian.j[jacobian_index(2U, ind)] * joint_motion.qv[ind];
+        result.linear.x += jacobian.j[jacobian_index(3U, ind)] * joint_motion.qv[ind];
+        result.linear.y += jacobian.j[jacobian_index(4U, ind)] * joint_motion.qv[ind];
+        result.linear.z += jacobian.j[jacobian_index(5U, ind)] * joint_motion.qv[ind];
+    }
+    return result;
+}
+
+JointSpace jacobian_transpose_multiply(
+    const Jacobian& jacobian, const MotionVector& cartesian_motion, size_t dofs)
+{
+    JointSpace result = {};
+    if (dofs > MaxSize::dofs)
+    {
+        dofs = MaxSize::dofs;
+    }
+    for (size_t ind = 0U; ind < dofs; ++ind)
+    {
+        result.qv[ind] =
+            jacobian.j[jacobian_index(0U, ind)] * cartesian_motion.angular.x +
+            jacobian.j[jacobian_index(1U, ind)] * cartesian_motion.angular.y +
+            jacobian.j[jacobian_index(2U, ind)] * cartesian_motion.angular.z +
+            jacobian.j[jacobian_index(3U, ind)] * cartesian_motion.linear.x +
+            jacobian.j[jacobian_index(4U, ind)] * cartesian_motion.linear.y +
+            jacobian.j[jacobian_index(5U, ind)] * cartesian_motion.linear.z;
+    }
+    return result;
+}
+
+JointMatrix jacobian_transpose_multiply_jacobian(const Jacobian& jacobian, const MotionVector& cartesian_weights, size_t dofs)
 {
     if (dofs > MaxSize::dofs)
     {
         dofs = MaxSize::dofs;
     }
-    MotionVector result = {};
+    Jacobian scaled_jacobian = {};
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
-        result.angular.x += jac.j[jacobian_index(0U, ind)] * joint_motion.qv[ind];
-        result.angular.y += jac.j[jacobian_index(1U, ind)] * joint_motion.qv[ind];
-        result.angular.z += jac.j[jacobian_index(2U, ind)] * joint_motion.qv[ind];
-        result.linear.x += jac.j[jacobian_index(3U, ind)] * joint_motion.qv[ind];
-        result.linear.y += jac.j[jacobian_index(4U, ind)] * joint_motion.qv[ind];
-        result.linear.z += jac.j[jacobian_index(5U, ind)] * joint_motion.qv[ind];
+        scaled_jacobian.j[jacobian_index(0U, ind)] = jacobian.j[jacobian_index(0U, ind)] * cartesian_weights.angular.x;
+        scaled_jacobian.j[jacobian_index(1U, ind)] = jacobian.j[jacobian_index(1U, ind)] * cartesian_weights.angular.y;
+        scaled_jacobian.j[jacobian_index(2U, ind)] = jacobian.j[jacobian_index(2U, ind)] * cartesian_weights.angular.z;
+        scaled_jacobian.j[jacobian_index(3U, ind)] = jacobian.j[jacobian_index(3U, ind)] * cartesian_weights.linear.x;
+        scaled_jacobian.j[jacobian_index(4U, ind)] = jacobian.j[jacobian_index(4U, ind)] * cartesian_weights.linear.y;
+        scaled_jacobian.j[jacobian_index(5U, ind)] = jacobian.j[jacobian_index(5U, ind)] * cartesian_weights.linear.z;
     }
+    JointMatrix result = {};
+    for (size_t col = 0U; col < dofs; ++col)
+    {
+        for (size_t row = 0U; row < dofs; ++row)
+        {
+            result.j[joint_matrix_index(row, col, dofs)] =
+                jacobian.j[jacobian_index(0U, row)] * scaled_jacobian.j[jacobian_index(0U, col)] +
+                jacobian.j[jacobian_index(1U, row)] * scaled_jacobian.j[jacobian_index(1U, col)] +
+                jacobian.j[jacobian_index(2U, row)] * scaled_jacobian.j[jacobian_index(2U, col)] +
+                jacobian.j[jacobian_index(3U, row)] * scaled_jacobian.j[jacobian_index(3U, col)] +
+                jacobian.j[jacobian_index(4U, row)] * scaled_jacobian.j[jacobian_index(4U, col)] +
+                jacobian.j[jacobian_index(5U, row)] * scaled_jacobian.j[jacobian_index(5U, col)];
+        }
+    }
+    return result;
+}
 
+Jacobian jacobian_derivative(
+    const Hessian& hessian, const JointSpace& joint_velocity, size_t dofs)
+{
+    Jacobian result = {};
+    if (dofs > MaxSize::dofs)
+    {
+        dofs = MaxSize::dofs;
+    }
+    for (size_t ind = 0U; ind < dofs; ++ind)
+    {
+        const MotionVector result_col = jacobian_multiply(hessian.h[ind], joint_velocity);
+        result.j[jacobian_index(0U, ind)] = result_col.angular.x;
+        result.j[jacobian_index(1U, ind)] = result_col.angular.y;
+        result.j[jacobian_index(2U, ind)] = result_col.angular.z;
+        result.j[jacobian_index(3U, ind)] = result_col.linear.x;
+        result.j[jacobian_index(4U, ind)] = result_col.linear.y;
+        result.j[jacobian_index(5U, ind)] = result_col.linear.z;
+    }
     return result;
 }
 

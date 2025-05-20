@@ -52,6 +52,28 @@ void forward_kinematics(
     ForwardKinematicsOption opt, BodyCartesianPva& body_cartesian);
 
 /**
+ * @brief Add offset to joint position
+ *
+ * @param[in] body_tree Body tree with body and joint definitions
+ * @param[in] joint_position Joint position
+ * @param[in] joint_offset Joint offset
+ * @return Joint position with offset added
+ */
+JointSpacePosition joint_add_offset(
+    const BodyTree& body_tree, const JointSpacePosition& joint_position, const JointSpace& joint_offset);
+
+/**
+ * @brief Get difference between joint positions
+ *
+ * @param[in] body_tree Body tree with body and joint definitions
+ * @param[in] joint_position_a Joint position a
+ * @param[in] joint_position_b Joint position b
+ * @return Joint position difference
+ */
+JointSpace joint_difference(
+    const BodyTree& body_tree, const JointSpacePosition& joint_position_a, const JointSpacePosition& joint_position_b);
+
+/**
  * @brief Compute motion of center of mass for all bodies in tree.
  *
  * @param body_tree Body tree with link definitions including center of mass

@@ -7,6 +7,11 @@
  */
 #define FSB_TOL (4.5e-15)
 
+/**
+ * @brief Cartesian vector size
+ */
+#define FSB_CART_SIZE (6U)
+
 namespace fsb
 {
 

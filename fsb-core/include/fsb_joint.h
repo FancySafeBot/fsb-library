@@ -165,15 +165,6 @@ MotionVector joint_parent_child_acceleration(const Joint& joint, const JointPva&
 CartesianPva joint_parent_child_pva(const Joint& joint, const JointPva& joint_pva);
 
 /**
- * @brief Validate joint definition
- *
- * @param[in] joint Joint definition
- * @return true if valid
- * @return false if invalid
- */
-bool joint_validate(const Joint& joint);
-
-/**
  * @}
  */
 
