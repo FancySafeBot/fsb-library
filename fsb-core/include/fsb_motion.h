@@ -99,6 +99,17 @@ Vec3 vector_subtract(const Vec3& v_a, const Vec3& v_b);
 Vec3 vector_scale(real_t scalar, const Vec3& vec);
 
 /**
+ * @brief Element-wise vector multiplication
+ *
+ * \f$ \mathbf{v}_a \cdot \mathbf{v}_b \f$
+ *
+ * @param v_a Vector a
+ * @param v_b Vector b
+ * @return Element-wise multiplication of a and b
+ */
+Vec3 vector_multiply_elem(const Vec3& v_a, const Vec3& v_b);
+
+/**
  * @brief Vector cross product
  *
  * \f$ \mathbf{v}_a \times \mathbf{v}_b \f$
@@ -196,21 +207,21 @@ Vec3 coord_transform_position(const Transform& transf, const Vec3& pos);
 /**
  * @brief Apply motion vector offset to transform in space frame
  *
+ * @param transf_initial Initial transform
  * @param offset Offset motion vector in space frame
- * @param transf Coordinate transform applied after motion offset
  * @return Final transform including offset applied in space frame
  */
-Transform coord_transform_apply_space_offset(const MotionVector& offset, const Transform& transf);
+Transform coord_transform_apply_error(const Transform& transf_initial, const MotionVector& offset);
 
 /**
  * @brief Get motion vector offset between two coordinate transforms in space frame
  *
- * @param transf_post Coordinate transform applied after motion offset
- * @param transf Final transform including offset applied in space frame
+ * @param transf_initial Coordinate transform applied after motion offset
+ * @param transf_final Final transform including offset applied in space frame
  * @return Offset motion vector in space frame
  */
 MotionVector
-coord_transform_get_space_offset(const Transform& transf_post, const Transform& transf);
+coord_transform_get_error(const Transform& transf_initial, const Transform& transf_final);
 
 /**
  * @brief Apply motion vector offset to transform in mobile frame

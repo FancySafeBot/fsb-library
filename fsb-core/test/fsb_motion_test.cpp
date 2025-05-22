@@ -475,6 +475,82 @@ TEST_CASE("Get body offset" * doctest::description("[fsb_motion][fsb::coord_tran
     REQUIRE(tr_b_actual.translation.y == FsbApprox(tr_b.translation.y));
     REQUIRE(tr_b_actual.translation.z == FsbApprox(tr_b.translation.z));
 }
+//
+// TEST_CASE("Apply space offset" * doctest::description("[fsb_motion][fsb::coord_transform_apply_space_offset]"))
+// {
+//     // Inputs
+//     const fsb::MotionVector offset = {
+//         {0.075, -0.12, 0.56},
+//         {-0.982, 1.234, -0.9987}
+//     };
+//     const fsb::Transform tr_a = {
+//         {0.311126983722081, 0.0565685424949238, -0.848528137423857, 0.424264068711929},
+//         {0.1, -0.22, 3.12}
+//     };
+//     // Expected
+//     const fsb::Transform tr_expected = {
+//         {0.12879363305026925, 0.27492701003833253, -0.831866064238503, 0.46457097456194846},
+//         {-1.070731152097746, 0.7774957237582711, 2.0958970058184354}
+//     };
+//     // Process
+//     const fsb::Transform tr_actual = fsb::coord_transform_apply_space_offset(tr_a, offset);
+//     const fsb::MotionVector offset_actual = fsb::coord_transform_get_space_offset(tr_a, tr_actual);
+//
+//     REQUIRE(fsb::quat_norm(tr_actual.rotation) == FsbApprox(1.0));
+//     REQUIRE(tr_actual.rotation.qw == FsbApprox(tr_expected.rotation.qw));
+//     REQUIRE(tr_actual.rotation.qx == FsbApprox(tr_expected.rotation.qx));
+//     REQUIRE(tr_actual.rotation.qy == FsbApprox(tr_expected.rotation.qy));
+//     REQUIRE(tr_actual.rotation.qz == FsbApprox(tr_expected.rotation.qz));
+//
+//     REQUIRE(tr_actual.translation.x == FsbApprox(tr_expected.translation.x));
+//     REQUIRE(tr_actual.translation.y == FsbApprox(tr_expected.translation.y));
+//     REQUIRE(tr_actual.translation.z == FsbApprox(tr_expected.translation.z));
+//
+//     REQUIRE(offset_actual.angular.x == FsbApprox(offset.angular.x));
+//     REQUIRE(offset_actual.angular.y == FsbApprox(offset.angular.y));
+//     REQUIRE(offset_actual.angular.z == FsbApprox(offset.angular.z));
+//     REQUIRE(offset_actual.linear.x == FsbApprox(offset.linear.x));
+//     REQUIRE(offset_actual.linear.y == FsbApprox(offset.linear.y));
+//     REQUIRE(offset_actual.linear.z == FsbApprox(offset.linear.z));
+// }
+//
+// TEST_CASE("Get space offset" * doctest::description("[fsb_motion][fsb::coord_transform_apply_space_offset]"))
+// {
+//     // Inputs
+//     const fsb::Transform tr_a = {
+//         {0.311126983722081, 0.0565685424949238, -0.848528137423857, 0.424264068711929},
+//         {0.1, -0.22, 3.12}
+//     };
+//     const fsb::Transform tr_b = {
+//         {0.12879363305026925, 0.27492701003833253, -0.831866064238503, 0.46457097456194846},
+//         {-1.070731152097746, 0.7774957237582711, 2.0958970058184354}
+//     };
+//     // Expected
+//     const fsb::MotionVector offset_expected = {
+//         {0.075, -0.12, 0.56},
+//         {-0.982, 1.234, -0.9987}
+//     };
+//     // Process
+//     const fsb::MotionVector offset_actual = fsb::coord_transform_get_space_offset(tr_a, tr_b);
+//     const fsb::Transform tr_b_actual = fsb::coord_transform_apply_space_offset(tr_a, offset_actual);
+//
+//     REQUIRE(offset_actual.angular.x == FsbApprox(offset_expected.angular.x));
+//     REQUIRE(offset_actual.angular.y == FsbApprox(offset_expected.angular.y));
+//     REQUIRE(offset_actual.angular.z == FsbApprox(offset_expected.angular.z));
+//     REQUIRE(offset_actual.linear.x == FsbApprox(offset_expected.linear.x));
+//     REQUIRE(offset_actual.linear.y == FsbApprox(offset_expected.linear.y));
+//     REQUIRE(offset_actual.linear.z == FsbApprox(offset_expected.linear.z));
+//
+//     REQUIRE(fsb::quat_norm(tr_b_actual.rotation) == FsbApprox(1.0));
+//     REQUIRE(tr_b_actual.rotation.qw == FsbApprox(tr_b.rotation.qw));
+//     REQUIRE(tr_b_actual.rotation.qx == FsbApprox(tr_b.rotation.qx));
+//     REQUIRE(tr_b_actual.rotation.qy == FsbApprox(tr_b.rotation.qy));
+//     REQUIRE(tr_b_actual.rotation.qz == FsbApprox(tr_b.rotation.qz));
+//
+//     REQUIRE(tr_b_actual.translation.x == FsbApprox(tr_b.translation.x));
+//     REQUIRE(tr_b_actual.translation.y == FsbApprox(tr_b.translation.y));
+//     REQUIRE(tr_b_actual.translation.z == FsbApprox(tr_b.translation.z));
+// }
 
 // TEST_CASE("Motion body-fixed transform velocity" * doctest::description("[fsb_motion][fsb::motion_transform_body_velocity]"))
 // {
