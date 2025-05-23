@@ -83,13 +83,13 @@ target_compile_features(
 # C/CXX flags
 target_compile_options(
     ${FSBCORE_TARGET_NAME} PUBLIC
-    $<$<COMPILE_LANGUAGE:CXX>:${SUPPORTED_CXX_COMPILE_FLAGS}>
-    $<$<COMPILE_LANGUAGE:C>:${SUPPORTED_C_COMPILE_FLAGS}>)
+    $<$<COMPILE_LANGUAGE:CXX>:${FSB_COMPILE_FLAGS_CXX}>
+    $<$<COMPILE_LANGUAGE:C>:${FSB_COMPILE_FLAGS_C}>)
 
 # link flags
 target_link_options(
     ${FSBCORE_TARGET_NAME} PUBLIC
-    ${SUPPORTED_LINK_FLAGS})
+    ${FSB_LINK_FLAGS})
 
 # include directories
 target_include_directories(

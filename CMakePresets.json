@@ -20,7 +20,9 @@
       "displayName": "Debug",
       "inherits": "common",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FSB_ENABLE_DOCS": "ON",
+        "FSB_ENABLE_EXAMPLES": "ON"
       }
     },
     {
@@ -28,9 +30,7 @@
       "displayName": "Release",
       "inherits": "common",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "FSB_ENABLE_DOCS": "OFF",
-        "FSB_ENABLE_EXAMPLES": "OFF"
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
@@ -40,9 +40,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "FSB_BUILD_TESTING": "OFF",
-        "FSB_USE_OPENBLAS": "OFF",
-        "FSB_ENABLE_DOCS": "OFF",
-        "FSB_ENABLE_EXAMPLES": "OFF"
+        "FSB_USE_OPENBLAS": "OFF"
       }
     },
     {

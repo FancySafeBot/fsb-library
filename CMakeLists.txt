@@ -33,8 +33,9 @@ set(FSB_CONFIG "default" CACHE STRING "FSB Library configuration")
 option(FSB_USE_OPENBLAS "Use OpenBLAS for linear algebra operations" ON)
 option(FSB_USE_CMINPACK "Use CMinpack for Inverse Kinematics" OFF)
 option(FSB_BUILD_TESTING "Enable Tests" ON)
-option(FSB_ENABLE_DOCS "Enable doxygen documentation" ON)
-option(FSB_ENABLE_EXAMPLES "Enable building example applications" ON)
+option(FSB_ENABLE_DOCS "Enable doxygen documentation" OFF)
+option(FSB_ENABLE_EXAMPLES "Enable building example applications" OFF)
+option(FSB_EXTRA_WARNING_FLAGS "Enable extra warning options" OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     option(FSB_ENABLE_LINK_TIME_OPTIMIZATION "Enables link time optimization, if available" ON)
@@ -98,209 +99,124 @@ include(cmake/CPM.cmake)
 # Flags #
 # ##### #
 
-#set(FSB_COMPILE_FLAGS_CXX
-#    -pedantic
-#    -fstrict-aliasing
-#    -Wall
-#    -Wextra
-#    -Werror
-#    -Wformat=2
-#    -Wconversion
-#    -Wimplicit-fallthrough
-#    -Wformat-security
-#    -Wwrite-strings
-#    -Winit-self
-#    -Wcast-qual
-#    -Wcast-align
-#    -Wsign-compare
-#    -Wmissing-declarations
-#    -Wparentheses
-#    -Wnon-virtual-dtor
-#    -Wold-style-cast
-#    -Woverloaded-virtual
-#    -Wnull-dereference
-#    -Wmisleading-indentation
-#    -Wsuggest-override
-#    -Wdouble-promotion
-#    -Wswitch-enum
-#    -Wundef
-#    -Wno-sign-conversion)
-#
-#set(FSB_COMPILE_FLAGS_C
-#    -pedantic
-#    -fstrict-aliasing
-#    -Wall
-#    -Wextra
-#    -Werror
-#    -Wformat=2
-#    -Wconversion
-#    -Wimplicit
-#    -Wimplicit-fallthrough
-#    -Wformat-security
-#    -Wincompatible-pointer-types
-#    -Wint-conversion
-#    -Wwrite-strings
-#    -Wstrict-prototypes
-#    -Winit-self
-#    -Wcast-qual
-#    -Wcast-align
-#    -Wsign-compare
-#    -Wmissing-declarations
-#    -Wparentheses
-#    -Wnon-virtual-dtor
-#    -Wnull-dereference
-#    -Wmisleading-indentation
-#    -Wdouble-promotion
-#    -Wswitch-enum
-#    -Wundef)
-#
-#if (FSB_EXTRA_WARNING_FLAGS)
-#    list(APPEND FSB_COMPILE_FLAGS_CXX
-#        -Wshadow
-#        -Wno-error=shadow
-#        -Wsign-conversion
-#        -Wno-error=sign-conversion
-#        -Wswitch-default
-#        -Wno-error=switch-default)
-#    list(APPEND FSB_COMPILE_FLAGS_C
-#        -Wshadow
-#        -Wno-error=shadow
-#        -Wsign-conversion
-#        -Wno-error=sign-conversion
-#        -Wswitch-default
-#        -Wno-error=switch-default)
-#endif()
-
-# common flags
-set(COMPILE_FLAGS_COMMON
+set(FSB_COMPILE_FLAGS_COMMON
     -pedantic
     -fstrict-aliasing
-    -Wpedantic
-    -Wstrict-aliasing
-    -Wshadow
     -Wall
     -Wextra
     -Werror
-    -Wformat
     -Wformat=2
     -Wconversion
-    -Wsign-conversion
     -Wimplicit-fallthrough
     -Wformat-security
-    -Wimplicit
-    -Wincompatible-pointer-types
-    -Wint-conversion
     -Wwrite-strings
-    -Wstrict-prototypes
     -Winit-self
     -Wcast-qual
     -Wcast-align
     -Wsign-compare
-    -Wformat-overflow
     -Wmissing-declarations
     -Wparentheses
-    -Wnon-virtual-dtor
-    -Wold-style-cast
-    -Woverloaded-virtual
     -Wnull-dereference
     -Wmisleading-indentation
-    -Wsuggest-override
     -Wdouble-promotion
     -Wswitch-enum
     -Wundef)
 
 # set flags specific to build
-set(COMPILE_FLAGS ${COMPILE_FLAGS_COMMON})
-set(LINK_FLAGS)
+set(FSB_LINK_FLAGS)
 set(SANITIZER_FLAGS)
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    list(APPEND COMPILE_FLAGS
+    list(APPEND FSB_COMPILE_FLAGS_COMMON
         -O3
         -fno-math-errno
         -fPIE
         -pie
         -fstack-protector)
-    list(APPEND LINK_FLAGS
+    list(APPEND FSB_LINK_FLAGS
         -fPIE
         -pie)
     list(APPEND SANITIZER_FLAGS
         safe-stack)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    list(APPEND COMPILE_FLAGS
+    list(APPEND FSB_COMPILE_FLAGS_COMMON
         -g
         -fno-omit-frame-pointer
         -mno-omit-leaf-frame-pointer
         -funwind-tables
         -fno-optimize-sibling-calls)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    if (FSB_ENABLE_LLVM_COVERAGE)
-        list(APPEND COMPILE_FLAGS
-            -fprofile-instr-generate
-            -fcoverage-mapping)
-        list(APPEND LINK_FLAGS
-            -fprofile-instr-generate)
-    else()
-        list(APPEND COMPILE_FLAGS
-            -g
-            -O0
-            -fno-omit-frame-pointer
-            -mno-omit-leaf-frame-pointer
-            -funwind-tables
-            -fprofile-arcs
-            -ftest-coverage
-            --coverage)
-        list(APPEND LINK_FLAGS
-            -lgcov
-            -fprofile-arcs
-            -ftest-coverage
-            --coverage)
-    endif()
+    list(APPEND FSB_COMPILE_FLAGS_COMMON
+        -g
+        -O0
+        -fno-omit-frame-pointer
+        -funwind-tables
+        -fprofile-arcs
+        -ftest-coverage
+        --coverage)
+    list(APPEND FSB_LINK_FLAGS
+        -fprofile-arcs
+        -ftest-coverage
+        --coverage)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Instrument")
     if (FSB_ENABLE_ASAN)
-        list(APPEND COMPILE_FLAGS
+        list(APPEND FSB_COMPILE_FLAGS_COMMON
             -g
             -O1
             -fno-omit-frame-pointer
-            -fno-optimize-sibling-calls)
-        list(APPEND SANITIZER_FLAGS
-            address
-            undefined
-            memory)
+            -fno-optimize-sibling-calls
+            -fsanitize=address
+            -fsanitize=undefined
+            -fsanitize=memory)
+        list(APPEND FSB_LINK_FLAGS
+            -fsanitize=address
+            -fsanitize=undefined
+            -fsanitize=memory)
     elseif (FSB_ENABLE_TSAN)
-        list(APPEND COMPILE_FLAGS
+        list(APPEND FSB_COMPILE_FLAGS_COMMON
             -g
             -O1
             -fno-omit-frame-pointer
-            -fno-optimize-sibling-calls)
-        list(APPEND SANITIZER_FLAGS
-            thread)
+            -fno-optimize-sibling-calls
+            -fsanitize=thread)
+        list(APPEND FSB_LINK_FLAGS
+            -fsanitize=thread)
     endif ()
 elseif (CMAKE_BUILD_TYPE STREQUAL "Profile")
     list(APPEND COMPILE_FLAGS
         -O2
         -pg)
-    list(APPEND LINK_FLAGS
+    list(APPEND FSB_LINK_FLAGS
         -pg)
 endif ()
 
-# check every flag for support
-# See cmake/CheckFlags.cmake for more info
-include(cmake/CheckFlags.cmake)
-get_supported_flags(
-    "${COMPILE_FLAGS}"
-    "${LINK_FLAGS}"
-    "${SANITIZER_FLAGS}"
-    SUPPORTED_C_COMPILE_FLAGS
-    SUPPORTED_CXX_COMPILE_FLAGS
-    SUPPORTED_LINK_FLAGS)
+set(FSB_COMPILE_FLAGS_CXX
+    ${FSB_COMPILE_FLAGS_COMMON}
+    -Wnon-virtual-dtor
+    -Wold-style-cast
+    -Woverloaded-virtual
+    -Wsuggest-override)
+
+set(FSB_COMPILE_FLAGS_C
+    ${FSB_COMPILE_FLAGS_COMMON}
+    -Wimplicit
+    -Wincompatible-pointer-types
+    -Wint-conversion
+    -Wstrict-prototypes)
+
+if (FSB_EXTRA_WARNING_FLAGS)
+    list(APPEND FSB_COMPILE_FLAGS_COMMON
+        -Wshadow
+        -Wsign-conversion
+        -Wswitch-default)
+endif()
 
 # print
-string(REPLACE ";" "\n    " COMPILE_FLAGS_DISPLAY "${SUPPORTED_C_COMPILE_FLAGS}")
-message(STATUS "Supported C Compiler Flags:\n    ${COMPILE_FLAGS_DISPLAY}")
-string(REPLACE ";" "\n    " COMPILE_FLAGS_DISPLAY "${SUPPORTED_CXX_COMPILE_FLAGS}")
-message(STATUS "Supported C++ Compiler Flags:\n    ${COMPILE_FLAGS_DISPLAY}")
-string(REPLACE ";" "\n    " LINK_FLAGS_DISPLAY "${SUPPORTED_LINK_FLAGS}")
-message(STATUS "Supported Link Flags:\n    ${LINK_FLAGS_DISPLAY}")
+string(REPLACE ";" "\n    " COMPILE_FLAGS_DISPLAY "${FSB_COMPILE_FLAGS_C}")
+message(STATUS "C Compiler Flags:\n    ${COMPILE_FLAGS_DISPLAY}")
+string(REPLACE ";" "\n    " COMPILE_FLAGS_DISPLAY "${FSB_COMPILE_FLAGS_CXX}")
+message(STATUS "C++ Compiler Flags:\n    ${COMPILE_FLAGS_DISPLAY}")
+string(REPLACE ";" "\n    " LINK_FLAGS_DISPLAY "${FSB_LINK_FLAGS}")
+message(STATUS "Link Flags:\n    ${LINK_FLAGS_DISPLAY}")
 
 # Subdirectories #
 # ############## #
