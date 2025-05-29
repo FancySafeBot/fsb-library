@@ -166,6 +166,8 @@ if (FSB_USE_CMINPACK)
     target_link_libraries(
         ${FSBCORE_TARGET_NAME} PUBLIC
         cminpack)
+    target_compile_definitions(
+        ${FSBCORE_TARGET_NAME} PUBLIC "__cminpack_double__")
 endif()
 
 # Set sources for documentation (parent scope)

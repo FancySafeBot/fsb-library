@@ -60,24 +60,6 @@ void forward_kinematics(
     }
 }
 
-void body_com_kinematics(
-    const BodyTree& body_tree, const BodyCartesianPva& body_cartesian, BodyCartesianPva& com_cartesian)
-{
-    // propagate through tree
-    const size_t num_bodies = body_tree.get_num_bodies();
-    for (size_t body_index = 0U; body_index < num_bodies; ++body_index)
-    {
-        // get current child body and its parent joint from tree (error safely ignored)
-        auto err = BodyTreeError::SUCCESS;
-        const Vec3& com = body_tree.get_body(body_index, err).mass_props.com;
-        const CartesianPva& body_pva = body_cartesian.body[body_index];
-        com_cartesian.body[body_index].pose.rotation = body_pva.pose.rotation;
-        com_cartesian.body[body_index].pose.translation = coord_transform_position(body_pva.pose, com);
-        com_cartesian.body[body_index].velocity = motion_transform_velocity_position(body_pva.pose, body_pva.velocity, com);
-        com_cartesian.body[body_index].acceleration = motion_transform_acceleration_position(body_pva.pose, body_pva.velocity, body_pva.acceleration, com);
-    }
-}
-
 JointSpacePosition joint_add_offset(
     const BodyTree& body_tree, const JointSpacePosition& joint_position,
     const JointSpace& joint_offset)

@@ -74,17 +74,6 @@ JointSpace joint_difference(
     const BodyTree& body_tree, const JointSpacePosition& joint_position_a, const JointSpacePosition& joint_position_b);
 
 /**
- * @brief Compute motion of center of mass for all bodies in tree.
- *
- * @param body_tree Body tree with link definitions including center of mass
- * @param body_cartesian Computed kinematics of bodies in tree
- * @param com_cartesian Output motion of center of mass for all bodies in tree
- */
-void body_com_kinematics(
-    const BodyTree& body_tree, const BodyCartesianPva& body_cartesian,
-    BodyCartesianPva& com_cartesian);
-
-/**
  * @}
  */
 
