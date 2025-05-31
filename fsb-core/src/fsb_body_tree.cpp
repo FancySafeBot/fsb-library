@@ -290,4 +290,117 @@ size_t BodyTree::get_body_dofs(const size_t body_index, BodyTreeError& err) cons
     return dofs;
 }
 
+BodyTreeError BodyTree::set_joint_position_limit(const size_t joint_index, const real_t lower_position, const real_t upper_position)
+{
+    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints) {
+        const Joint& joint = m_joints[joint_index];
+        if (joint.type == JointType::FIXED ||
+            joint.type == JointType::SPHERICAL ||
+            joint.type == JointType::CARTESIAN ||
+            joint.type == JointType::PLANAR)
+        {
+            result = BodyTreeError::UNSUPPORTED_JOINT_TYPE;
+        }
+        else
+        {
+            m_limits.lower_position[joint.dof_index] = lower_position;
+            m_limits.upper_position[joint.dof_index] = upper_position;
+            m_limits.set[joint.dof_index] = true;
+            result = BodyTreeError::SUCCESS;
+        }
+    }
+    return result;
+}
+
+BodyTreeError BodyTree::unset_joint_position_limit(const size_t joint_index)
+{
+    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints) {
+        const Joint& joint = m_joints[joint_index];
+        if (joint.type == JointType::FIXED ||
+            joint.type == JointType::SPHERICAL ||
+            joint.type == JointType::CARTESIAN ||
+            joint.type == JointType::PLANAR)
+        {
+            result = BodyTreeError::UNSUPPORTED_JOINT_TYPE;
+        }
+        else
+        {
+            m_limits.set[joint.dof_index] = false;
+            result = BodyTreeError::SUCCESS;
+        }
+    }
+    return result;
+}
+
+BodyTreeError BodyTree::get_joint_position_limit(const size_t joint_index, bool& is_set, real_t& lower_position, real_t& upper_position) const
+{
+    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints) {
+        result = BodyTreeError::SUCCESS;
+        const Joint& joint = m_joints[joint_index];
+        if (joint.type == JointType::FIXED ||
+            joint.type == JointType::SPHERICAL ||
+            joint.type == JointType::CARTESIAN ||
+            joint.type == JointType::PLANAR)
+        {
+            result = BodyTreeError::UNSUPPORTED_JOINT_TYPE;
+            is_set = false;
+        }
+        else
+        {
+            is_set = m_limits.set[joint.dof_index];
+            if (is_set)
+            {
+                lower_position = m_limits.lower_position[joint.dof_index];
+                upper_position = m_limits.upper_position[joint.dof_index];
+            }
+        }
+    }
+    return result;
+}
+
+BodyTreeError BodyTree::set_joint_velocity_limit(const size_t joint_index, const real_t max_velocity)
+{
+    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints) {
+        const Joint& joint = m_joints[joint_index];
+        if (joint.type == JointType::FIXED ||
+            joint.type == JointType::SPHERICAL ||
+            joint.type == JointType::CARTESIAN ||
+            joint.type == JointType::PLANAR)
+        {
+            result = BodyTreeError::UNSUPPORTED_JOINT_TYPE;
+        }
+        else
+        {
+            m_limits.max_velocity[joint.dof_index] = max_velocity;
+            result = BodyTreeError::SUCCESS;
+        }
+    }
+    return result;
+}
+
+BodyTreeError BodyTree::get_joint_velocity_limit(const size_t joint_index, real_t& max_velocity) const
+{
+    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints) {
+        result = BodyTreeError::SUCCESS;
+        const Joint& joint = m_joints[joint_index];
+        if (joint.type == JointType::FIXED ||
+            joint.type == JointType::SPHERICAL ||
+            joint.type == JointType::CARTESIAN ||
+            joint.type == JointType::PLANAR)
+        {
+            result = BodyTreeError::UNSUPPORTED_JOINT_TYPE;
+        }
+        else
+        {
+            max_velocity = m_limits.max_velocity[joint.dof_index];
+        }
+    }
+    return result;
+}
+
 } // namespace fsb

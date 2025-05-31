@@ -18,6 +18,21 @@ namespace fsb::urdf
  */
 
 
+struct UrdfJointLimits
+{
+    /** Lower position limit */
+    real_t lower_position = 0.0;
+
+    /** Upper position limit */
+    real_t upper_position = 0.0;
+
+    /** Maximum velocity allowed */
+    real_t max_velocity = 0.0;
+
+    /** Whether position limits are set */
+    bool set = false;
+};
+
 /**
  * @brief Structure representing a URDF joint.
  */
@@ -37,6 +52,9 @@ struct UrdfJoint
 
     /** Transform from parent to child link */
     Transform parent_child_transform = {};
+
+    /** Joint limits */
+    UrdfJointLimits limits = {};
 };
 
 /**

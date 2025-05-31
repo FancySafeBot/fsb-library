@@ -9,6 +9,7 @@
 #include "fsb_body.h"
 #include "fsb_joint.h"
 #include "fsb_motion.h"
+#include "fsb_types.h"
 
 namespace fsb
 {
@@ -73,7 +74,22 @@ enum class BodyTreeError : uint8_t
     /**
      * @brief Inertia is not positive definite.
      */
-    INERTIA_NOT_POS_DEF = 11
+    INERTIA_NOT_POS_DEF = 11,
+    /**
+     * @brief Joint type is not supported for the operation.
+     */
+    UNSUPPORTED_JOINT_TYPE = 12
+};
+
+/**
+ * @brief Limits for joint vectors
+ */
+struct JointLimits
+{
+    std::array<bool, MaxSize::dofs> set; ///< Enable limits for each joint DoF
+    std::array<real_t, MaxSize::dofs> lower_position; ///< Minimum joint position limit
+    std::array<real_t, MaxSize::dofs> upper_position; ///< Maximum joint position limit
+    std::array<real_t, MaxSize::dofs> max_velocity; ///< Maximum joint velocity limit
 };
 
 /**
@@ -118,6 +134,70 @@ public:
     size_t add_massless_body(
         size_t parent_body_index, JointType joint_type, const Transform& parent_joint_transform,
         const MotionVector& origin_offset, BodyTreeError& err);
+
+    /**
+     * @brief Set joint position limits for a joint in the body tree
+     *
+     * Only single dof joints are supported.
+     *
+     * @param joint_index joint index
+     * @param lower_position Minimum joint position limit
+     * @param upper_position Maximum joint position limit
+     *
+     * @return Error code SUCCESS if limits were set successfully
+     */
+    BodyTreeError
+    set_joint_position_limit(size_t joint_index, real_t lower_position, real_t upper_position);
+
+    /**
+     * @brief Unset joint position limits for a joint in the body tree
+     *
+     * Only single dof joints are supported.
+     *
+     * @param joint_index Joint index
+     * @return Error code SUCCESS if limits were unset successfully
+     */
+    BodyTreeError unset_joint_position_limit(size_t joint_index);
+
+    /**
+     * @brief Get joint position limits for a joint in the body tree
+     *
+     * Only single dof joints are supported.
+     *
+     * @param joint_index Joint index
+     * @param[out] is_set True if joint position limits are set
+     * @param[out] lower_position Minimum joint position limit
+     * @param[out] upper_position Maximum joint position limit
+     *
+     * @return Error code SUCCESS if limits were retrieved successfully
+     */
+    BodyTreeError
+    get_joint_position_limit(size_t joint_index, bool& is_set, real_t& lower_position, real_t& upper_position) const;
+
+    /**
+     * @brief Set joint velocity limit for a joint in the body tree
+     *
+     * Only single dof joints are supported.
+     *
+     * @param joint_index Joint index
+     * @param max_velocity Maximum joint velocity limit
+     *
+     * @return Error code SUCCESS if limits were set successfully
+     */
+    BodyTreeError
+    set_joint_velocity_limit(size_t joint_index, real_t max_velocity);
+
+    /**
+     * @brief Get joint velocity limit for a joint in the body tree
+     *
+     * Only single dof joints are supported.
+     *
+     * @param joint_index Joint index
+     * @param[out] max_velocity Maximum joint velocity limit
+     *
+     * @return Error code SUCCESS if limits were retrieved successfully
+     */
+    BodyTreeError get_joint_velocity_limit(size_t joint_index, real_t& max_velocity) const;
 
     /**
      * @brief Set the gravity vector
@@ -252,6 +332,7 @@ private:
 
     std::array<Body, MaxSize::bodies>  m_bodies = {};
     std::array<Joint, MaxSize::joints> m_joints = {};
+    JointLimits m_limits = {};
     Vec3 m_gravity = {};
 
     size_t m_num_coordinates = 0U;

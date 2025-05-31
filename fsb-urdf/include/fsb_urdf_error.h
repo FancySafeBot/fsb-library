@@ -65,7 +65,8 @@ enum class UrdfErrorType
     MAX_DOFS_EXCEEDED, ///< Maximum number of degrees of freedom exceeded
     BODY_TREE_ERROR, ///< Failed to add body to tree
     JOINT_PARENT_BODY_NOT_FOUND, ///< Joint parent body not found
-    JOINT_CHILD_BODY_NOT_FOUND ///< Joint child body not found
+    JOINT_CHILD_BODY_NOT_FOUND, ///< Joint child body not found
+    JOINT_LIMITS_PARSE_ERROR ///< Failed to parse joint limits
 };
 
 /**

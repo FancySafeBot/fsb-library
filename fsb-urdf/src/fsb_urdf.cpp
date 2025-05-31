@@ -170,6 +170,12 @@ static BodyTree urdf_generate_tree(
                 }
                 else
                 {
+                    const size_t body_joint_index = body_tree.get_body(body_tree_child_index, tree_err).joint_index;
+                    if (joint.limits.set)
+                    {
+                        body_tree.set_joint_position_limit(body_joint_index, joint.limits.lower_position, joint.limits.upper_position);
+                    }
+                    body_tree.set_joint_velocity_limit(body_joint_index, joint.limits.max_velocity);
                     body_tree_map.add_joint(joint_count, joint.joint_name);
                     body_tree_map.add_body(body_tree_child_index, joint.child_name);
                     joint_count++;
