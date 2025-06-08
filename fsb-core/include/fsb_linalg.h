@@ -1,4 +1,3 @@
-
 #pragma once
 
 #ifdef __cplusplus
@@ -17,6 +16,8 @@ extern "C"
  * @{
  */
 
+#define FSB_MAX(a, b) (((a) > (b)) ? (a) : (b))
+
 /**
  * @brief Floating point type
  */
@@ -34,27 +35,27 @@ typedef enum FsbLapackErrorType
     /**
      * @brief Input value error
      */
-    EFSB_LAPACK_ERROR_INPUT,
+    EFSB_LAPACK_ERROR_INPUT = 1,
     /**
      * @brief Not enough memory
      */
-    EFSB_LAPACK_ERROR_MEMORY,
+    EFSB_LAPACK_ERROR_MEMORY = 2,
     /**
      * @brief Solution did not converge
      */
-    EFSB_LAPACK_ERROR_CONVERGE,
+    EFSB_LAPACK_ERROR_CONVERGE = 3,
     /**
      * @brief Work query failed
      */
-    EFSB_LAPACK_ERROR_QUERY,
+    EFSB_LAPACK_ERROR_QUERY = 4,
     /**
      * @brief Matrix not positive definite
      */
-    EFSB_LAPACK_NOT_POSITIVE_DEFINITE,
+    EFSB_LAPACK_NOT_POSITIVE_DEFINITE = 5,
     /**
      * @brief Input matrix is singular
      */
-    EFSB_LAPACK_SINGULAR
+    EFSB_LAPACK_SINGULAR = 6
 } FsbLinalgErrorType;
 
 /**
@@ -178,6 +179,43 @@ bool fsb_linalg_is_posdef(const double_t mat[], size_t dim, size_t work_len, dou
 FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     const double_t mat[], const double_t y_vec[], size_t nrhs, size_t dim, size_t work_len,
     size_t iwork_len, double_t work[], int iwork[], double_t x_vec[]);
+
+/**
+ * @brief Inverse of a matrix where number of columns are great er than or equal to number of rows
+ *
+ * Work length must be at least rows * MIN(rows, columns) + MIN(rows, columns) + MIN(rows, columns) * columns
+ * and additional length required by the fsb_linalg_svd function.
+ *
+ *  @param mat Input matrix (rows x columns)
+ *  @param rows Number of rows in matrix
+ *  @param columns Number of columns in matrix
+ *  @param work_len Length of work vector
+ *  @param work Work vector
+ *  @param inv_mat Output inverse matrix (columns x rows)
+ *
+ *  @return Error code
+ */
+FsbLinalgErrorType fsb_linalg_pseudoinverse(const double_t mat[], size_t rows, size_t columns, size_t work_len, double_t work[], double_t inv_mat[]);
+
+/**
+ * @brief Solve overdetermined or underdetermined system using least squares
+ *
+ * Solves min ||A*X - B|| for X where A is an M-by-N matrix
+ * using the QR or LQ factorization of A.
+ *
+ * @param mat Input matrix A (rows x columns)
+ * @param rows Number of rows in A
+ * @param columns Number of columns in A
+ * @param b_vec Right-hand side matrix B (rows x nrhs)
+ * @param nrhs Number of right-hand side vectors
+ * @param work_len Length of work vector
+ * @param work Work vector
+ * @param x_vec Output solution matrix X (columns x nrhs).
+ * @return Error code
+ */
+FsbLinalgErrorType fsb_linalg_leastsquares_solve(
+    const double_t mat[], size_t rows, size_t columns, const double_t b_vec[], size_t nrhs,
+    size_t work_len, double_t work[], double_t x_vec[]);
 
 /**
  * @}

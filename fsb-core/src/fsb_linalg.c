@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <string.h>
 
@@ -34,9 +33,9 @@ FsbLinalgErrorType fsb_linalg_svd(
         const size_t v_opt_size = 1U;
 
         // copy A to buffer
-        for (size_t k = 0U; k < a_len; ++k)
+        for (size_t idx = 0U; idx < a_len; ++idx)
         {
-            a_mat_tmp[k] = mat[k];
+            a_mat_tmp[idx] = mat[idx];
         }
 
         const lapack_int l_m = (lapack_int)rows;
@@ -108,9 +107,9 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
         const size_t work_partial_len = a_len;
 
         // copy A to buffer
-        for (size_t k = 0U; k < a_len; ++k)
+        for (size_t idx = 0U; idx < a_len; ++idx)
         {
-            a_mat_tmp[k] = mat[k];
+            a_mat_tmp[idx] = mat[idx];
         }
 
         // work query inputs
@@ -173,34 +172,34 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
             {
                 /* populate val_imag */
                 /* initialize */
-                size_t k = 0U;
-                while (k < dim)
+                size_t idx = 0U;
+                while (idx < dim)
                 {
-                    if (val_imag[k] > 0.0)
+                    if (val_imag[idx] > 0.0)
                     {
                         /* increment */
-                        k++;
-                        if (k < dim)
+                        idx++;
+                        if (idx < dim)
                         {
                             /* complex conjugate pairs */
-                            for (size_t j = 0U; j < dim; ++j)
+                            for (size_t jdx = 0U; jdx < dim; ++jdx)
                             {
-                                vec_imag[(k - 1U) * dim + j] = vec_real[k * dim + j];
-                                vec_imag[k * dim + j] = -vec_real[k * dim + j];
-                                vec_real[k * dim + j] = vec_real[(k - 1U) * dim + j];
+                                vec_imag[(idx - 1U) * dim + jdx] = vec_real[idx * dim + jdx];
+                                vec_imag[idx * dim + jdx] = -vec_real[idx * dim + jdx];
+                                vec_real[idx * dim + jdx] = vec_real[(idx - 1U) * dim + jdx];
                             }
                         }
                     }
                     else
                     {
                         /* no imaginary vector */
-                        for (size_t j = 0U; j < dim; ++j)
+                        for (size_t jdx = 0U; jdx < dim; ++jdx)
                         {
-                            vec_imag[k * dim + j] = 0.0;
+                            vec_imag[idx * dim + jdx] = 0.0;
                         }
                     }
                     /* increment */
-                    k++;
+                    idx++;
                 }
             }
         }
@@ -225,9 +224,9 @@ FsbLinalgErrorType fsb_linalg_sym_lt_eig(
         const size_t a_len = dim * dim;
 
         // copy A to output vector
-        for (size_t k = 0U; k < a_len; ++k)
+        for (size_t idx = 0U; idx < a_len; ++idx)
         {
-            vec[k] = mat[k];
+            vec[idx] = mat[idx];
         }
 
         // work query inputs
@@ -306,9 +305,9 @@ FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
         lapack_int info = 0;
 
         // copy A to output vector
-        for (size_t k = 0U; k < a_len; ++k)
+        for (size_t idx = 0U; idx < a_len; ++idx)
         {
-            mat_chol[k] = mat[k];
+            mat_chol[idx] = mat[idx];
         }
 
         /* cholesky factorization */
@@ -352,9 +351,9 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
         double* mat_temp = work;
         const size_t a_len = dim * dim;
         // copy mat to buffer
-        for (size_t k = 0U; k < a_len; ++k)
+        for (size_t idx = 0U; idx < a_len; ++idx)
         {
-            mat_temp[k] = mat[k];
+            mat_temp[idx] = mat[idx];
         }
 
         const char* uplo_opt = "L";
@@ -371,9 +370,9 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
         if (info == 0)
         {
             // no error, copy b to x
-            for (size_t k = 0U; k < (nrhs * dim); ++k)
+            for (size_t idx = 0U; idx < (nrhs * dim); ++idx)
             {
-                x_vec[k] = b_vec[k];
+                x_vec[idx] = b_vec[idx];
             }
             dpotrs_(uplo_opt, &l_s, &l_nrhs, mat_temp, &l_s, x_vec, &l_s, &info, uplo_opt_size);
         }
@@ -441,9 +440,9 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
         const size_t a_len = dim * dim;
         const lapack_int l_s = (lapack_int)dim;
         // copy mat to buffer
-        for (size_t k = 0U; k < a_len; ++k)
+        for (size_t idx = 0U; idx < a_len; ++idx)
         {
-            mat_lu[k] = mat[k];
+            mat_lu[idx] = mat[idx];
         }
 
         /* DGETRF( M, N, A, LDA, IPIV, INFO ) */
@@ -457,9 +456,9 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
             const size_t     transpose_opt_size = 1U;
             const lapack_int l_nrhs = (lapack_int)nrhs;
             // copy y to x vector
-            for (size_t k = 0U; k < dim; ++k)
+            for (size_t idx = 0U; idx < dim; ++idx)
             {
-                x_vec[k] = y_vec[k];
+                x_vec[idx] = y_vec[idx];
             }
             //      SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
             lapack_int dgetrs_ret = dgetrs_(transpose_opt, &l_s, &l_nrhs, mat_lu, &l_s, ipiv, x_vec, &l_s, &info, transpose_opt_size);
@@ -484,5 +483,202 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
         }
     }
 
+    return retval;
+}
+
+FsbLinalgErrorType fsb_linalg_pseudoinverse(
+    const double_t mat[], const size_t rows, const size_t columns, const size_t work_len, double_t work[], double inv_mat[])
+{
+    FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
+
+    if (rows >= (INT32_MAX / columns))
+    {
+        return EFSB_LAPACK_ERROR_INPUT;
+    }
+
+    // Calculate the minimum dimension
+    const size_t min_dim = (rows < columns) ? rows : columns;
+
+    // Allocate working memory:
+    // - For U matrix: rows × min_dim
+    // - For S vector: min_dim
+    // - For V^T matrix: min_dim × columns
+    const size_t size_u = rows * min_dim;
+    const size_t size_s = min_dim;
+    const size_t size_vt = min_dim * columns;
+
+    // Determine if we have enough work space
+    const size_t size_usvt_work = size_u + size_s + size_vt;
+    if (work_len < size_usvt_work)
+    {
+        return EFSB_LAPACK_ERROR_MEMORY;
+    }
+
+    // Partition the work buffer
+    double_t* u_mat = work;
+    double_t* s_vec = &work[size_u];
+    double_t* vt_mat = &work[size_u + size_s];
+
+    // Use remaining workspace for SVD computation
+    const size_t svd_work_len = work_len - size_usvt_work;
+    double_t* svd_work = &work[size_usvt_work];
+
+    // Perform SVD
+    retval = fsb_linalg_svd(mat, rows, columns, false, false, svd_work_len, svd_work,
+                           u_mat, s_vec, vt_mat);
+    if (retval != EFSB_LAPACK_ERROR_NONE)
+    {
+        return retval;
+    }
+
+    // Compute pseudoinverse: V * S^+ * U^T
+    // First, create S^+ by inverting non-zero singular values
+    const double_t epsilon = 1.0e-12;  // Small threshold for numerical stability
+
+    // Initialize the output inverse matrix with zeros
+    memset(inv_mat, 0, columns * rows * sizeof(double_t));
+
+    // Compute V * S^+
+    for (size_t jdx = 0; jdx < columns; ++jdx)
+    {
+        for (size_t idx = 0; idx < min_dim; ++idx)
+        {
+            if (s_vec[idx] > epsilon)
+            {
+                // Scale the corresponding row in V^T by 1/s_i
+                for (size_t kdx = 0; kdx < min_dim; ++kdx)
+                {
+                    // v_ji = v_ji / s_i where v_j is column j of V
+                    double_t v_element = vt_mat[kdx * columns + jdx];
+                    inv_mat[jdx * rows + idx] += (v_element / s_vec[kdx]);
+                }
+            }
+            // If singular value is effectively zero, contribution remains zero
+        }
+    }
+
+    // Multiply by U^T to get final result: (V * S^+) * U^T
+    for (size_t idx = 0; idx < columns; ++idx)
+    {
+        for (size_t jdx = 0; jdx < rows; ++jdx)
+        {
+            double_t sum = 0.0;
+            for (size_t kdx = 0; kdx < min_dim; ++kdx)
+            {
+                sum += inv_mat[idx * rows + kdx] * u_mat[jdx * min_dim + kdx];
+            }
+            inv_mat[idx * rows + jdx] = sum;
+        }
+    }
+
+    return retval;
+}
+
+FsbLinalgErrorType fsb_linalg_leastsquares_solve(
+    const double_t mat[], const size_t rows, const size_t columns, const double_t b_vec[], const size_t nrhs,
+    size_t work_len, double_t work[], double_t x_vec[])
+{
+    FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
+
+    if (rows == 0 || columns == 0 || nrhs == 0 || work_len == 0 ||
+        (rows >= (INT32_MAX / columns) || (nrhs >= INT32_MAX / columns) || (nrhs >= INT32_MAX / rows)))
+    {
+        // Input dimensions are too large
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (work_len < ((rows * columns) + (FSB_MAX(rows, columns) * nrhs)))
+    {
+        retval = EFSB_LAPACK_ERROR_MEMORY;
+    }
+    else
+    {
+        // Calculate required work space:
+        // - For A matrix: rows * columns
+        const size_t size_a = rows * columns;
+        const size_t size_ldb = FSB_MAX(rows, columns);
+        const size_t size_b_work = size_ldb * nrhs;
+        const size_t work_len_ab = size_a + size_b_work;
+        // Partition the work buffer for mat A
+        double_t* a_copy = work;
+        double_t* b_work = &work[size_a];
+        // Copy matrix A to work buffer
+        for (size_t idx = 0; idx < size_a; ++idx)
+        {
+            a_copy[idx] = mat[idx];
+        }
+        // Copy b_vec to b_work
+        for (size_t col = 0; col < nrhs; ++col)
+        {
+            for (size_t row = 0; row < rows; ++row)
+            {
+                b_work[col * size_ldb + row] = b_vec[col * rows + row];
+            }
+        }
+
+        // Set up parameters for dgels
+        const char* trans_opt = "N";  // No transpose
+        const size_t trans_opt_size = 1U;
+        const lapack_int l_rows = (lapack_int)rows;
+        const lapack_int l_cols = (lapack_int)columns;
+        const lapack_int l_nrhs = (lapack_int)nrhs;
+        const lapack_int lda = l_rows;
+        const lapack_int ldb = (lapack_int)size_ldb;  // leading dimension of b
+        lapack_int info = 0;
+
+        // Query workspace size
+        double_t work_query = 0.0;
+        lapack_int lwork = -1;
+        dgels_(trans_opt, &l_rows, &l_cols, &l_nrhs,
+               a_copy, &lda, b_work, &ldb,
+               &work_query, &lwork, &info,
+               trans_opt_size);
+        if (info != 0)
+        {
+            retval = EFSB_LAPACK_ERROR_QUERY;
+        }
+        else
+        {
+            lwork = (lapack_int)(work_query);
+            const size_t s_lwork = (size_t)lwork;
+            // Check if we have enough workspace
+            if (work_len < (work_len_ab + s_lwork))
+            {
+                retval = EFSB_LAPACK_ERROR_MEMORY;
+            }
+        }
+
+        // Solve with dgels
+        if (retval == EFSB_LAPACK_ERROR_NONE)
+        {
+            // Allocate workspace for dgels
+            double_t* dgels_work = &work[work_len_ab];
+            // Solve least squares problem using dgels
+            dgels_(trans_opt, &l_rows, &l_cols, &l_nrhs,
+                   a_copy, &lda, b_work, &ldb,
+                   dgels_work, &lwork, &info,
+                   trans_opt_size);
+            if (info < 0)
+            {
+                retval = EFSB_LAPACK_ERROR_INPUT;
+            }
+            else if (info > 0)
+            {
+                retval = EFSB_LAPACK_ERROR_CONVERGE;
+            }
+        }
+
+        if (retval == EFSB_LAPACK_ERROR_NONE)
+        {
+            // b_work to x_vec conversion
+            const size_t output_rows = columns;
+            for (size_t col = 0; col < nrhs; ++col)
+            {
+                for (size_t row = 0; row < output_rows; ++row)
+                {
+                    x_vec[col * output_rows + row] = b_work[col * size_ldb + row];
+                }
+            }
+        }
+    }
     return retval;
 }
