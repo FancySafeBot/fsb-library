@@ -103,7 +103,7 @@ static void parse_joint_axis(
             {
                 if (const real_t vec_norm = vector_norm(axis); vec_norm > FSB_TOL)
                 {
-                    const Vec3 axis_pos = vector_scale(1.0 / vec_norm, axis);
+                    const Vec3 axis_pos = vector_abs(vector_scale(1.0 / vec_norm, axis));
                     if ((axis_pos.x > (1.0 - FSB_TOL)) && (axis_pos.y < FSB_TOL) && (axis_pos.z < FSB_TOL))
                     {
                         joint_type

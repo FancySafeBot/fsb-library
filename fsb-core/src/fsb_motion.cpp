@@ -200,6 +200,11 @@ Vec3 vector_scale(const real_t scalar, const Vec3& vec)
     return {vec.x * scalar, vec.y * scalar, vec.z * scalar};
 }
 
+Vec3 vector_abs(const Vec3& vec)
+{
+    return {std::abs(vec.x), std::abs(vec.y), std::abs(vec.z)};
+}
+
 Vec3 vector_multiply_elem(const Vec3& v_a, const Vec3& v_b)
 {
     return {v_a.x * v_b.x, v_a.y * v_b.y, v_a.z * v_b.z};

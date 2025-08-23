@@ -142,6 +142,16 @@ real_t vector_dot(const Vec3& v_a, const Vec3& v_b);
 real_t vector_norm(const Vec3& vec);
 
 /**
+ * @brief Element-wise vector absolute value
+ *
+ * \f$ [|v_x|, |v_y|, |v_z|]^T \f$
+ *
+ * @param vec Vector input
+ * @return Element-wise absolute value of vector
+ */
+Vec3 vector_abs(const Vec3& vec);
+
+/**
  * @brief Identity transform
  *
  * Rotation is unit quaternion with zero x, y, and z components
