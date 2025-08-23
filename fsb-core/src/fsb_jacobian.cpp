@@ -9,9 +9,48 @@
 #include "fsb_joint.h"
 #include "fsb_jacobian.h"
 #include "fsb_rotation.h"
+#include "fsb_linalg3.h"
 
 namespace fsb
 {
+
+static Mat3Sym jacobian_multiply_jacobian_transpose_angular(const Jacobian& jacobian, size_t dofs)
+{
+    if (dofs > MaxSize::dofs)
+    {
+        dofs = MaxSize::dofs;
+    }
+    Mat3Sym result = {};
+    for (size_t col = 0U; col < dofs; ++col)
+    {
+        result.m00 += jacobian.j[jacobian_index(0U, col)] * jacobian.j[jacobian_index(0U, col)];
+        result.m01 += jacobian.j[jacobian_index(0U, col)] * jacobian.j[jacobian_index(1U, col)];
+        result.m02 += jacobian.j[jacobian_index(0U, col)] * jacobian.j[jacobian_index(2U, col)];
+        result.m11 += jacobian.j[jacobian_index(1U, col)] * jacobian.j[jacobian_index(1U, col)];
+        result.m22 += jacobian.j[jacobian_index(1U, col)] * jacobian.j[jacobian_index(2U, col)];
+        result.m22 += jacobian.j[jacobian_index(2U, col)] * jacobian.j[jacobian_index(2U, col)];
+    }
+    return result;
+}
+
+static Mat3Sym jacobian_multiply_jacobian_transpose_linear(const Jacobian& jacobian, size_t dofs)
+{
+    if (dofs > MaxSize::dofs)
+    {
+        dofs = MaxSize::dofs;
+    }
+    Mat3Sym result = {};
+    for (size_t col = 0U; col < dofs; ++col)
+    {
+        result.m00 += jacobian.j[jacobian_index(3U, col)] * jacobian.j[jacobian_index(3U, col)];
+        result.m01 += jacobian.j[jacobian_index(3U, col)] * jacobian.j[jacobian_index(4U, col)];
+        result.m02 += jacobian.j[jacobian_index(3U, col)] * jacobian.j[jacobian_index(5U, col)];
+        result.m11 += jacobian.j[jacobian_index(4U, col)] * jacobian.j[jacobian_index(4U, col)];
+        result.m22 += jacobian.j[jacobian_index(4U, col)] * jacobian.j[jacobian_index(5U, col)];
+        result.m22 += jacobian.j[jacobian_index(5U, col)] * jacobian.j[jacobian_index(5U, col)];
+    }
+    return result;
+}
 
 static Mat3 pos_skew_rot(const Vec3& pos, const Mat3 & rot)
 {
@@ -346,6 +385,61 @@ Jacobian jacobian_derivative(
         result.j[jacobian_index(4U, ind)] = result_col.linear.y;
         result.j[jacobian_index(5U, ind)] = result_col.linear.z;
     }
+    return result;
+}
+
+JacobianMetrics calculate_jacobian_metrics(const Jacobian& jacobian, const size_t dofs)
+{
+    JacobianMetrics result = {};
+
+    // A = J * J.transpose()
+    // [U, S, VT] = svd(A)
+    const Mat3Sym lin_mat = jacobian_multiply_jacobian_transpose_linear(jacobian, dofs);
+    Vec3 lin_eig_vals = {};
+    Vec3 lin_eig_vec0 = {};
+    Vec3 lin_eig_vec1 = {};
+    Vec3 lin_eig_vec2 = {};
+    bool lin_eig_ok = mat3_posdef_symmetric_eigenvalues(lin_mat, lin_eig_vals);
+    if (lin_eig_ok)
+    {
+        lin_eig_ok = mat3_posdef_symmetric_eigenvectors(lin_mat, lin_eig_vals, lin_eig_vec0, lin_eig_vec1, lin_eig_vec2);
+    }
+
+    // A = J * J.transpose()
+    // [U, S, VT] = svd(A)
+    const Mat3Sym ang_mat = jacobian_multiply_jacobian_transpose_angular(jacobian, dofs);
+    Vec3 ang_eig_vals = {};
+    Vec3 ang_eig_vec0 = {};
+    Vec3 ang_eig_vec1 = {};
+    Vec3 ang_eig_vec2 = {};
+    bool ang_eig_ok = mat3_posdef_symmetric_eigenvalues(ang_mat, ang_eig_vals);
+    if (ang_eig_ok)
+    {
+        ang_eig_ok = mat3_posdef_symmetric_eigenvectors(ang_mat, ang_eig_vals, ang_eig_vec0, ang_eig_vec1, ang_eig_vec2);
+    }
+
+    result.angular.is_singular = !ang_eig_ok;
+    if (ang_eig_ok)
+    {
+        result.angular.condition_number = ang_eig_vals.z / ang_eig_vals.x;
+        result.angular.ellipsoid.eig_values = ang_eig_vals;
+        result.angular.ellipsoid.eig_vectors = {
+            ang_eig_vec0.x, ang_eig_vec0.y, ang_eig_vec0.z,
+            ang_eig_vec1.x, ang_eig_vec1.y, ang_eig_vec1.z,
+            ang_eig_vec2.x, ang_eig_vec2.y, ang_eig_vec2.z};
+    }
+
+    result.linear.is_singular = !lin_eig_ok;
+    if (lin_eig_ok)
+    {
+        result.linear.condition_number = lin_eig_vals.z / lin_eig_vals.x;
+        result.linear.ellipsoid.eig_values = lin_eig_vals;
+        result.linear.ellipsoid.eig_vectors = {
+            lin_eig_vec0.x, lin_eig_vec0.y, lin_eig_vec0.z,
+            lin_eig_vec1.x, lin_eig_vec1.y, lin_eig_vec1.z,
+            lin_eig_vec2.x, lin_eig_vec2.y, lin_eig_vec2.z};
+    }
+
     return result;
 }
 

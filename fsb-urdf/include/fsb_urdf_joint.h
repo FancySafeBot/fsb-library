@@ -55,6 +55,9 @@ struct UrdfJoint
 
     /** Joint limits */
     UrdfJointLimits limits = {};
+
+    /** @brief reversed direction of the joint axis */
+    bool reversed = false;
 };
 
 /**

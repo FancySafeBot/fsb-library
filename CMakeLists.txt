@@ -27,6 +27,7 @@ set(CMINPACK_VERSION 1.3.11 CACHE STRING "CMinpack version")
 set(OPENBLAS_VERSION 0.3.29 CACHE STRING "OpenBLAS version")
 set(TINYXML2_VERSION 10.0.0 CACHE STRING "TinyXML2 version")
 set(DOCTEST_VERSION 2.4.11 CACHE STRING "doctest version")
+set(YAMLCPP_VERSION 0.8.0 CACHE STRING "yaml-cpp version")
 
 set(FSB_CONFIG "default" CACHE STRING "FSB Library configuration")
 
@@ -104,7 +105,6 @@ set(FSB_COMPILE_FLAGS_COMMON
     -fstrict-aliasing
     -Wall
     -Wextra
-    -Werror
     -Wformat=2
     -Wconversion
     -Wimplicit-fallthrough

@@ -22,6 +22,21 @@ namespace fsb
  */
 
 /**
+ * @brief Error values for Jacobian calculations
+ */
+enum class JacobianError : uint8_t
+{
+    /**
+     * @brief No error
+     */
+    SUCCESS,
+    /**
+     * @brief Body index not found in tree
+     */
+    BODY_NOT_IN_TREE
+};
+
+/**
  * @brief Jacobian matrix
  */
 struct Jacobian
@@ -54,19 +69,23 @@ struct Hessian
     std::array<Jacobian, MaxSize::dofs> h;
 };
 
-/**
- * @brief Error values for Jacobian calculations
- */
-enum class JacobianError : uint8_t
+struct SingularityEllipsoid
 {
-    /**
-     * @brief No error
-     */
-    SUCCESS,
-    /**
-     * @brief Body index not found in tree
-     */
-    BODY_NOT_IN_TREE
+    Vec3 eig_values;
+    Mat3 eig_vectors;
+};
+
+struct Mat3Singularity
+{
+    bool is_singular = false;
+    real_t condition_number = 0.0;
+    SingularityEllipsoid ellipsoid = {};
+};
+
+struct JacobianMetrics
+{
+    Mat3Singularity angular;
+    Mat3Singularity linear;
 };
 
 /**
@@ -158,6 +177,15 @@ Jacobian jacobian_derivative(
 JacobianError calculate_jacobian(
     size_t body_index, const BodyTree& body_tree, const BodyCartesianPva& cartesian_pva,
     Jacobian& jacobian);
+
+/**
+ * @brief Calculate Jacobian metrics for a given Jacobian matrix
+ *
+ * @param jacobian Jacobian matrix
+ * @param dofs Number of dofs (elements in joint velocity vector)
+ * @return Jacobian metrics including condition number, manipulability, and singularity ellipsoids
+ */
+JacobianMetrics calculate_jacobian_metrics(const Jacobian& jacobian, size_t dofs= MaxSize::dofs);
 
 /**
  * @}

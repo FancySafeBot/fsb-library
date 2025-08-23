@@ -1,4 +1,3 @@
-
 #include <doctest/doctest.h>
 #include "fsb_test_macros.h"
 #include "fsb_linalg.h"
@@ -272,6 +271,90 @@ TEST_CASE("Cholesky solve symmetric positive definite matrix" * doctest::descrip
     for (size_t k = 0U; k < (nrhs * adim); ++k)
     {
         REQUIRE(x_vec_actual[k] == FsbApprox(x_vec_expected[k]));
+    }
+}
+
+TEST_CASE("Least squares solution underdetermined system" * doctest::description("[fsb_linalg][fsb_linalg_leastsquares_solve]"))
+{
+    // Inputs - Underdetermined system (fewer rows than columns)
+    const size_t rows = 2U;
+    const size_t columns = 3U;
+    const size_t nrhs = 1U;
+    // A*x = b where A is 2x3, x is 3x1, b is 2x1
+    const double_t a_mat[rows * columns] = {
+        2.0, 1.0,
+        1.0, 2.0,
+        3.0, 1.0
+    };
+    const double_t b_vec[rows * nrhs] = {
+        5.0,
+        4.0
+    };
+    // Expected: Least-norm solution
+    // For underdetermined systems, dgelsd returns the minimum norm solution
+    const double_t x_expected[columns * nrhs] = {
+        0.7142857142857137,
+        1.257142857142857,
+        0.7714285714285709
+    };
+
+    constexpr size_t work_len = 256U;
+    double_t work[work_len] = {};
+    FsbLinalgErrorType err_expected = EFSB_LAPACK_ERROR_NONE;
+
+    // Process
+    double_t x_actual[columns * nrhs] = {};
+    FsbLinalgErrorType err_actual = fsb_linalg_leastsquares_solve(
+        a_mat, rows, columns, b_vec, nrhs,
+        work_len, work, x_actual);
+
+    // Check result
+    REQUIRE(err_actual == err_expected);
+    for (size_t idx = 0U; idx < columns; ++idx)
+    {
+        REQUIRE(x_actual[idx] == FsbApprox(x_expected[idx]));
+    }
+}
+
+TEST_CASE("Least squares solution overdetermined system" * doctest::description("[fsb_linalg][fsb_linalg_leastsquares_solve]"))
+{
+    // Inputs - Overdetermined system (more rows than columns)
+    const size_t rows = 4U;
+    const size_t columns = 2U;
+    const size_t nrhs = 1U;
+    // A*x = b where A is 4x2, x is 2x1, b is 4x1
+    // This system will likely have no exact solution
+    const double_t a_mat[rows * columns] = {
+        1.0, 1.2, 2.0, 2.5,
+        1.5, 2.0, 3.0, 3.5
+    };
+    const double_t b_vec[rows * nrhs] = {
+        3.0,
+        4.0,
+        5.0,
+        8.0
+    };
+    // Expected: Least squares solution (calculated independently)
+    const double_t x_expected[columns * nrhs] = {
+        3.8394793926247286,
+        -0.5856832971800433
+    };
+
+    constexpr size_t work_len = 256U;
+    double_t work[work_len] = {};
+    FsbLinalgErrorType err_expected = EFSB_LAPACK_ERROR_NONE;
+
+    // Process
+    double_t x_actual[columns * nrhs] = {};
+    FsbLinalgErrorType err_actual = fsb_linalg_leastsquares_solve(
+        a_mat, rows, columns, b_vec, nrhs,
+        work_len, work, x_actual);
+
+    // Check result
+    REQUIRE(err_actual == err_expected);
+    for (size_t idx = 0U; idx < columns; ++idx)
+    {
+        REQUIRE(x_actual[idx] == FsbApprox(x_expected[idx]));
     }
 }
 

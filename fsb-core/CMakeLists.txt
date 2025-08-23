@@ -27,7 +27,8 @@ set(FSBCORE_HEADERS
     include/fsb_encoder.h
     include/fsb_spatial.h
     include/fsb_dynamics.h
-    include/fsb_inverse_kinematics.h)
+    include/fsb_inverse_kinematics.h
+    include/fsb_kinematic_redundancy.h)
 set(FSBCORE_SOURCES
     src/fsb_linalg3.cpp
     src/fsb_quaternion.cpp
@@ -47,7 +48,8 @@ set(FSBCORE_SOURCES
     src/fsb_encoder.cpp
     src/fsb_spatial.cpp
     src/fsb_dynamics.cpp
-    src/fsb_inverse_kinematics.cpp)
+    src/fsb_inverse_kinematics.cpp
+    src/fsb_kinematic_redundancy.cpp)
 
 if (FSB_USE_OPENBLAS)
     list(APPEND FSBCORE_HEADERS include/fsb_linalg.h)
@@ -83,7 +85,7 @@ target_compile_features(
 # C/CXX flags
 target_compile_options(
     ${FSBCORE_TARGET_NAME} PUBLIC
-    $<$<COMPILE_LANGUAGE:CXX>:${FSB_COMPILE_FLAGS_CXX}>
+    $<$<COMPILE_LANGUAGE:CXX>:${FSB_COMPILE_FLAGS_CXX};-Werror>
     $<$<COMPILE_LANGUAGE:C>:${FSB_COMPILE_FLAGS_C}>)
 
 # link flags

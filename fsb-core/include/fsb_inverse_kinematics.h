@@ -15,6 +15,7 @@
 #include "fsb_joint.h"
 #include "fsb_types.h"
 #include "fsb_jacobian.h"
+#include "fsb_linalg.h"
 
 namespace fsb
 {
@@ -28,10 +29,10 @@ namespace fsb
 
 struct OptimParameters
 {
-    size_t max_iterations; ///< Maximum number of iterations
-    real_t objective_tol; ///< Objective function error tolerance for convergence
-    real_t state_tol; ///< State vector error tolerance for convergence
-    real_t damping_factor; ///< Damping factor for Levenberg-Marquardt algorithm
+    size_t       max_iterations; ///< Maximum number of iterations
+    real_t       objective_tol; ///< Objective function error tolerance for convergence
+    real_t       state_tol; ///< State vector error tolerance for convergence
+    real_t       damping_factor; ///< Damping factor for Levenberg-Marquardt algorithm
     MotionVector objective_weights; ///< Cartesian weights for objective function
 };
 
@@ -39,7 +40,8 @@ enum class InverseKinematicsInfo : uint8_t
 {
     INVALID_INPUT = 0,
     SUCCESS = 1, ///< objective function converged
-    WITHIN_FTOL = 2, ///< both actual and predicted relative reductions in the sum of squares are at most ftol
+    WITHIN_FTOL = 2, ///< both actual and predicted relative reductions in the sum of squares are at
+                     ///< most ftol
     WITHIN_XTOL = 3, ///< relative error between two consecutive iterates is at most xtol
     WITHIN_FTOL_XTOL = 4, ///< conditions for WITHIN_FTOL and WITHIN_XTOL both hold
     MAXIMUM_EVALUATIONS_REACHED = 5, ///< number of calls to fcn with iflag = 1 has reached maxfev
@@ -49,12 +51,12 @@ enum class InverseKinematicsInfo : uint8_t
 struct InverseKinematicsResult
 {
     InverseKinematicsInfo info; ///< Convergence information
-    JointSpacePosition joint_position; ///< Joint position
-    BodyCartesianPva body_poses; ///< Body poses
-    Jacobian jacobian; ///< Jacobian matrix
-    Transform computed_pose; ///< Computed end-effector pose
-    MotionVector error_pose; ///< Error between computed and desired pose
-    size_t iterations; ///< Number of iterations
+    JointSpacePosition    joint_position; ///< Joint position
+    BodyCartesianPva      body_poses; ///< Body poses
+    Jacobian              jacobian; ///< Jacobian matrix
+    Transform             computed_pose; ///< Computed end-effector pose
+    MotionVector          error_pose; ///< Error between computed and desired pose
+    size_t                iterations; ///< Number of iterations
 };
 
 inline OptimParameters default_optim_parameters()
@@ -64,10 +66,7 @@ inline OptimParameters default_optim_parameters()
         1.0e-12, // objective tolerance
         1.0e-12, // f tolerance
         0.001,
-        {
-            {1.0, 1.0, 1.0},
-            {1.0, 1.0, 1.0}
-        }
+        {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}}
     };
 }
 
@@ -83,13 +82,44 @@ inline OptimParameters default_optim_parameters()
  * @return Result of inverse kinematics computation
  */
 InverseKinematicsResult compute_inverse_kinematics(
-    const BodyTree& body_tree, const OptimParameters& params, const JointSpacePosition& initial_config, size_t body_index,
-    const Transform& target_pose, const Transform& base_pose = transform_identity());
+    const BodyTree& body_tree, const OptimParameters& params,
+    const JointSpacePosition& initial_config, size_t body_index, const Transform& target_pose,
+    const Transform& base_pose = transform_identity());
+
+/**
+ * @brief Inverse velocity kinematics
+ *
+ * The equation for inverse velocity kinematics is given by:
+ * \[ \dot{q} = J^{\dagger} \dot{x} \]
+ *
+ * @param jacobian Jacobian matrix
+ * @param cart_velocity Cartesian velocity vector
+ * @param dofs Number of degrees of freedom (dofs)
+ * @param[out] joint_velocity Joint velocity vector
+ * @return Linear algebra error code
+ */
+FsbLinalgErrorType inverse_velocity_kinematics(
+    const Jacobian& jacobian, const MotionVector& cart_velocity, size_t dofs,
+    JointSpace& joint_velocity);
+
+/**
+ * @brief Inverse velocity kinematics
+ *
+ * The equation for inverse velocity kinematics is given by:
+ * \[ \ddot{q} = J^{\dagger} \left( \ddot{x} - \dot{J} \dot{q} \]
+ *
+ * @param jacobian Jacobian matrix
+ *
+ */
+FsbLinalgErrorType inverse_acceleration_kinematics(
+    const Jacobian& jacobian, const Jacobian& jacobian_derivative,
+    const MotionVector& cart_acceleration, const JointSpace& joint_velocity, size_t dofs,
+    JointSpace& joint_acceleration);
 
 /**
  * @}
  */
 
-}
+} // namespace fsb
 
-#endif //FSB_INVERSE_KINEMATICS_H
+#endif // FSB_INVERSE_KINEMATICS_H

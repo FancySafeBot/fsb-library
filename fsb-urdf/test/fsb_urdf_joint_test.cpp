@@ -99,7 +99,7 @@ TEST_CASE("Parse joint" * doctest::description("[urdf_joint][fsb::urdf_parse_joi
             "<parent link=\"parent_name\" />"
             "<child link=\"child_name\" />"
             "<origin xyz=\"1.0 2.0 3.0\" rpy=\"0.10 -0.5 0.121\" />"
-            "<axis xyz=\"0 0 1\" />"
+            "<axis xyz=\"0 0 -1\" />"
         "</joint>";
 
     fsb::urdf::UrdfJoint joint_expected = {};
@@ -109,6 +109,8 @@ TEST_CASE("Parse joint" * doctest::description("[urdf_joint][fsb::urdf_parse_joi
     joint_expected.limits.upper_position = 1.3e5;
     joint_expected.limits.max_velocity = 100.0;
     joint_expected.limits.set = true;
+    joint_expected.reversed = true;
+    joint_expected.joint_type = fsb::JointType::REVOLUTE_Z;
     joint_expected.parent_child_transform.rotation = { 0.9651834299409254, 0.06327695587919153, -0.24371474027338194, 0.07085265552970922};
     joint_expected.parent_child_transform.translation = {1.0, 2.0, 3.0};
     const bool expected_err = false;
@@ -133,6 +135,9 @@ TEST_CASE("Parse joint" * doctest::description("[urdf_joint][fsb::urdf_parse_joi
     REQUIRE(joint_expected.limits.upper_position == joint_actual.limits.upper_position);
     REQUIRE(joint_expected.limits.max_velocity == joint_actual.limits.max_velocity);
     REQUIRE(joint_expected.limits.set == joint_actual.limits.set);
+
+    REQUIRE(joint_expected.joint_type == joint_actual.joint_type);
+    REQUIRE(joint_expected.reversed == joint_actual.reversed);
 
     REQUIRE(joint_expected.parent_child_transform.translation.x == joint_actual.parent_child_transform.translation.x);
     REQUIRE(joint_expected.parent_child_transform.translation.y == joint_actual.parent_child_transform.translation.y);

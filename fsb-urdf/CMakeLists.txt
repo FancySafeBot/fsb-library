@@ -49,6 +49,22 @@ target_compile_features(
     c_std_99
     cxx_std_20)
 
+# Dependency: Yaml
+CPMAddPackage(
+    NAME yaml-cpp
+    GITHUB_REPOSITORY jbeder/yaml-cpp
+    GIT_TAG ${YAMLCPP_VERSION}
+    OPTIONS
+    "YAML_CPP_BUILD_TOOLS OFF"
+    "YAML_CPP_BUILD_CONTRIB OFF"
+    "BUILD_SHARED_LIBS OFF"
+    "YAML_CPP_BUILD_TESTS OFF"
+    "CMAKE_POLICY_VERSION_MINIMUM 3.5"
+)
+target_link_libraries(
+    ${FSBURDF_TARGET_NAME} PUBLIC
+    yaml-cpp::yaml-cpp)
+
 # Dependency: TinyXML
 CPMAddPackage(
     NAME tinyxml2
@@ -59,12 +75,13 @@ CPMAddPackage(
     "BUILD_APPS OFF"
     "BUILD_SHARED_LIBS OFF"
 )
-
-# Dependencies
 target_link_libraries(
-    ${FSBURDF_TARGET_NAME}
-    PUBLIC
-    tinyxml2::tinyxml2
+    ${FSBURDF_TARGET_NAME} PUBLIC
+    tinyxml2::tinyxml2)
+
+# Dependency: fsbcore
+target_link_libraries(
+    ${FSBURDF_TARGET_NAME} PUBLIC
     FancySafeBot::fsbcore)
 
 # Set sources for documentation (parent scope)

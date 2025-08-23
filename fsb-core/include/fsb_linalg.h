@@ -17,6 +17,7 @@ extern "C"
  */
 
 #define FSB_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define FSB_MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 /**
  * @brief Floating point type
@@ -55,7 +56,8 @@ typedef enum FsbLapackErrorType
     /**
      * @brief Input matrix is singular
      */
-    EFSB_LAPACK_SINGULAR = 6
+    EFSB_LAPACK_SINGULAR = 6,
+    EFSB_LAPACK_ERROR_NOT_FULL_RANK = 7, ///< Matrix is not full rank
 } FsbLinalgErrorType;
 
 /**
@@ -200,8 +202,9 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(const double_t mat[], size_t rows, s
 /**
  * @brief Solve overdetermined or underdetermined system using least squares
  *
- * Solves min ||A*X - B|| for X where A is an M-by-N matrix
- * using the QR or LQ factorization of A.
+ * Solves min ||A*X - B|| for X where A is an M-by-N matrix using the
+ * singular value decomposition (SVD) approach. This method handles rank-deficient
+ * least squares problems more robustly than the QR approach.
  *
  * @param mat Input matrix A (rows x columns)
  * @param rows Number of rows in A
@@ -216,6 +219,11 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(const double_t mat[], size_t rows, s
 FsbLinalgErrorType fsb_linalg_leastsquares_solve(
     const double_t mat[], size_t rows, size_t columns, const double_t b_vec[], size_t nrhs,
     size_t work_len, double_t work[], double_t x_vec[]);
+
+    /**
+     *
+     */
+void sample_dgels_example(void);
 
 /**
  * @}

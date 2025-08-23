@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <printf.h>
 
 #include "fsb_linalg.h"
 #include "openblas/lapack.h"
@@ -663,7 +664,7 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
             }
             else if (info > 0)
             {
-                retval = EFSB_LAPACK_ERROR_CONVERGE;
+                retval = EFSB_LAPACK_ERROR_NOT_FULL_RANK;
             }
         }
 

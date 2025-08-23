@@ -1,4 +1,3 @@
-
 #include <doctest/doctest.h>
 #include "fsb_test_macros.h"
 #include "fsb_body_tree_sample.h"
@@ -152,6 +151,44 @@ TEST_CASE("Jacobian Panda" * doctest::description("[fsb_jacobian][fsb::calculate
                 == FsbApprox(jac_expected.j[fsb::jacobian_index(row, col)]));
         }
     }
+}
+
+TEST_CASE("Jacobian Panda Metrics" * doctest::description("[fsb_jacobian][fsb::calculate_jacobian]"))
+{
+    // Create the Panda robot's BodyTree
+    size_t        ee_index = 0;
+    fsb::BodyTree panda_tree = create_panda_body_tree(ee_index);
+    // input position
+    fsb::JointPva joint_pva = {};
+    joint_pva.position.q[0] = 0.0;
+    joint_pva.position.q[1] = -0.3;
+    joint_pva.position.q[2] = 0.0;
+    joint_pva.position.q[3] = -2.2;
+    joint_pva.position.q[4] = 0.0;
+    joint_pva.position.q[5] = 2.0;
+    joint_pva.position.q[6] = 0.79;
+
+    // Expected condition numbers
+    const double expected_cond_num_linear = 7.64310978274591;
+    const double expected_cond_num_angular = 4.125133262045351;
+
+    // Compute FK
+    fsb::CartesianPva base_pva = {};
+    base_pva.pose = fsb::transform_identity();
+    const fsb::ForwardKinematicsOption opt = fsb::ForwardKinematicsOption::POSE;
+    fsb::BodyCartesianPva              cartesian_pva = {};
+    fsb::forward_kinematics(panda_tree, joint_pva, base_pva, opt, cartesian_pva);
+    // Compute jacobian
+    fsb::Jacobian            jac = {};
+    const fsb::JacobianError jac_err
+        = fsb::calculate_jacobian(ee_index, panda_tree, cartesian_pva, jac);
+    REQUIRE(jac_err == fsb::JacobianError::SUCCESS);
+    // Compute jacobian metrics
+    const fsb::JacobianMetrics jac_metrics
+        = fsb::calculate_jacobian_metrics(jac, panda_tree.get_num_dofs());
+
+    REQUIRE(jac_metrics.linear.condition_number == FsbApprox(expected_cond_num_linear));
+    REQUIRE(jac_metrics.angular.condition_number == FsbApprox(expected_cond_num_angular));
 }
 
 TEST_SUITE_END();

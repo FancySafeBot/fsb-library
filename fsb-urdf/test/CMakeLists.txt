@@ -26,7 +26,7 @@ CPMAddPackage(
     OPTIONS
     "BUILD_SHARED_LIBS OFF"
     "BUILD_TESTING OFF"
-    "CMAKE_POLICY_VERSION_MINIMUM 3.5"
+    "CMAKE_POLICY_VERSION_MINIMUM 3.10"
 )
 
 target_link_libraries(fsburdf_test PRIVATE

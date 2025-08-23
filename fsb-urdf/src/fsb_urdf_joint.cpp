@@ -89,8 +89,9 @@ static UrdfJointLimits parse_joint_limits(
 
 static void parse_joint_axis(
     const std::string& fname, const std::string& joint_name,
-    const tinyxml2::XMLElement* joint_axis_xml, JointType& joint_type, UrdfError& err)
+    const tinyxml2::XMLElement* joint_axis_xml, JointType& joint_type, bool& reversed, UrdfError& err)
 {
+    reversed = false;
     if (joint_type == JointType::REVOLUTE_Z || joint_type == JointType::PRISMATIC_Z)
     {
         // axis xyz
@@ -102,24 +103,25 @@ static void parse_joint_axis(
             {
                 if (const real_t vec_norm = vector_norm(axis); vec_norm > FSB_TOL)
                 {
-                    axis.x = fabs(axis.x) / vec_norm;
-                    axis.y = fabs(axis.y) / vec_norm;
-                    axis.z = fabs(axis.z) / vec_norm;
-                    if ((axis.x > (1.0 - FSB_TOL)) && (axis.y < FSB_TOL) && (axis.z < FSB_TOL))
+                    const Vec3 axis_pos = vector_scale(1.0 / vec_norm, axis);
+                    if ((axis_pos.x > (1.0 - FSB_TOL)) && (axis_pos.y < FSB_TOL) && (axis_pos.z < FSB_TOL))
                     {
                         joint_type
                             = (joint_type == JointType::REVOLUTE_Z ? JointType::REVOLUTE_X :
                                                                      JointType::PRISMATIC_X);
+                        reversed = (axis.x < 0.0);
                     }
-                    else if ((axis.y > (1.0 - FSB_TOL)) && (axis.x < FSB_TOL) && (axis.z < FSB_TOL))
+                    else if ((axis_pos.y > (1.0 - FSB_TOL)) && (axis_pos.x < FSB_TOL) && (axis_pos.z < FSB_TOL))
                     {
                         joint_type
                             = (joint_type == JointType::REVOLUTE_Z ? JointType::REVOLUTE_Y :
                                                                      JointType::PRISMATIC_Y);
+                        reversed = (axis.y < 0.0);
                     }
-                    else if ((axis.z > (1.0 - FSB_TOL)) && (axis.x < FSB_TOL) && (axis.y < FSB_TOL))
+                    else if ((axis_pos.z > (1.0 - FSB_TOL)) && (axis_pos.x < FSB_TOL) && (axis_pos.y < FSB_TOL))
                     {
                         // +z-axis joint type is valid
+                        reversed = (axis.z < 0.0);
                     }
                     else
                     {
@@ -143,7 +145,7 @@ static void parse_joint_axis(
 
 static std::string urdf_parse_joint_name_type(
     const std::string& fname, const tinyxml2::XMLElement* joint_xml, JointType& joint_type,
-    UrdfError& err)
+    bool& reversed, UrdfError& err)
 {
     std::string joint_name;
 
@@ -202,7 +204,7 @@ static std::string urdf_parse_joint_name_type(
 
     if (!err.is_error() && (joint_axis_xml != nullptr))
     {
-        parse_joint_axis(fname, joint_name, joint_axis_xml, joint_type, err);
+        parse_joint_axis(fname, joint_name, joint_axis_xml, joint_type, reversed, err);
     }
 
     return joint_name;
@@ -276,9 +278,7 @@ UrdfJoint
 urdf_parse_joint(const std::string& fname, const tinyxml2::XMLElement* joint_xml, UrdfError& err)
 {
     UrdfJoint joint = {};
-
-    joint.joint_name = urdf_parse_joint_name_type(fname, joint_xml, joint.joint_type, err);
-
+    joint.joint_name = urdf_parse_joint_name_type(fname, joint_xml, joint.joint_type, joint.reversed, err);
     if (!err.is_error())
     {
         joint.parent_child_transform = urdf_parse_joint_parent_child_transform(
