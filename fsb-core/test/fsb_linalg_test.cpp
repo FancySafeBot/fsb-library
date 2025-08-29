@@ -1,4 +1,5 @@
 #include <doctest/doctest.h>
+#include <array>
 #include "fsb_test_macros.h"
 #include "fsb_linalg.h"
 
