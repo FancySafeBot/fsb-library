@@ -54,13 +54,13 @@ static FsbLinalgErrorType optim_solve_joint_matrix(
     // Create lapack input, work, and output variables
     const size_t nrhs = 1U;
     const size_t dim = dofs;
-    const size_t work_len = MaxSize::dofs * MaxSize::dofs;
-    double_t     work[MaxSize::dofs * MaxSize::dofs];
+    constexpr size_t work_len = MaxSize::dofs * MaxSize::dofs;
+    std::array<double_t, work_len> work = {};
     const size_t iwork_len = MaxSize::dofs;
-    int          iwork[MaxSize::dofs];
+    std::array<int, MaxSize::dofs> iwork = {};
     // solve for x_vec
     return fsb_linalg_matrix_sqr_solve(
-        joint_mat.j.data(), joint_vec.qv.data(), nrhs, dim, work_len, iwork_len, work, iwork, result.qv.data());
+        joint_mat.j.data(), joint_vec.qv.data(), nrhs, dim, work_len, iwork_len, work.data(), iwork.data(), result.qv.data());
 }
 
 static InverseKinematicsResult optim_levenberg_marquardt(

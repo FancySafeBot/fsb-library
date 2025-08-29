@@ -60,6 +60,63 @@ TEST_CASE("Singular Value Decomposition" * doctest::description("[fsb_linalg][fs
     }
 }
 
+TEST_CASE("Singular Value Decomposition CPP Array" * doctest::description("[fsb_linalg][fsb_linalg_svd]"))
+{
+    // Inputs
+    constexpr size_t rows = 3U;
+    constexpr size_t cols = 4U;
+    const std::array<double, rows * cols> a_mat = {
+        0.957166948242946, 0.485375648722841, 0.800280468888800,
+        0.141886338627215, 0.421761282626275, 0.915735525189067,
+        0.792207329559554, 0.959492426392903, 0.655740699156587,
+        0.0357116785741896, 0.849129305868777, 0.933993247757551
+    };
+    constexpr size_t work_len = 256U;
+    std::array<double, work_len> work = {};
+    const bool u_full = false;
+    const bool v_full = false;
+
+    // Expected
+    const std::array<double, rows * rows> u_expected = {
+        -0.436686793704996, -0.585976373201268, -0.682595293166851,
+        0.891072308003706, -0.177432382809533, -0.417741416954892,
+        0.123672091082020, -0.790663923282465, 0.599629697652627
+    };
+    const std::array<double, rows> s_expected = {
+        2.36519644590068, 0.790034423136396, 0.428179268650398
+    };
+    const std::array<double, rows * cols> vt_expected = {
+        -0.527934375763356, 0.547410712881673, 0.500906453486051, -0.394968797595884,
+        -0.418897921755130, 0.544580700083686, -0.573225910244715, 0.331300674476610,
+        -0.624646104104312, -0.486515158692034, -0.644287129828739, -0.249683460765213
+    };
+    FsbLinalgErrorType err_expected = FsbLinalgErrorType::EFSB_LAPACK_ERROR_NONE;
+
+    // Actual
+    std::array<double, rows * rows> u_actual = {};
+    std::array<double, cols> s_actual = {};
+    std::array<double, cols * cols> vt_actual = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+    // Process
+    const FsbLinalgErrorType err_actual = fsb_linalg_svd(
+        a_mat.data(), rows, cols, u_full, v_full, work_len, work.data(),
+        u_actual.data(), s_actual.data(), vt_actual.data());
+
+    // Check result
+    REQUIRE(err_actual == err_expected);
+    for (size_t k = 0U; k < (rows * rows); ++k)
+    {
+        REQUIRE(u_actual[k] == FsbApprox(u_expected[k]));
+    }
+    for (size_t k = 0U; k < rows; ++k)
+    {
+        REQUIRE(s_actual[k] == FsbApprox(s_expected[k]));
+    }
+    for (size_t k = 0U; k < (rows * cols); ++k)
+    {
+        REQUIRE(vt_actual[k] == FsbApprox(vt_expected[k]));
+    }
+}
+
 TEST_CASE("Eigenvalue decomposition" * doctest::description("[fsb_linalg][fsb_linalg_matrix_eig]"))
 {
     // Inputs

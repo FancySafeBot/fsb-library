@@ -63,6 +63,17 @@ FsbLinalgErrorType jacobian_pseudoinverse(const Jacobian& jacobian, Jacobian& in
 JointSpace compute_nullspace_motion(const Jacobian& jacobian, const Jacobian& inverse_jacobian, const JointSpace& joint_motion, size_t dofs);
 
 /**
+ *
+ * @brief Computes nullspace motion by least squares solution without explicit pseudoinverse
+ *
+ * @param[in] jacobian          Input Jacobian matrix \f$ \mathbf{J} \f$
+ * @param[in] joint_motion      Input joint motion vector \f$ \dot{\mathbf{q}} \f$ to project into nullspace
+ * @param[in] dofs              Number of degrees of freedom (elements in joint velocity vector)
+ * @return                      Joint motion vector in the nullspace \f$ \dot{\mathbf{q}}_{null} \f$
+ */
+JointSpace compute_nullspace_motion(const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs);
+
+/**
  * @}
  */
 
