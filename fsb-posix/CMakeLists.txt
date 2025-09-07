@@ -1,9 +1,18 @@
 
 # headers and source files
 set(FSBPOSIX_HEADERS
-    include/fsb_timing.h)
+    include/fsb_timing.h
+    include/fsb_queue.h
+    include/fsb_thread.h)
 set(FSBPOSIX_SOURCES
-    src/fsb_timing.cpp)
+    src/fsb_timing.cpp
+    src/fsb_thread.cpp)
+
+if(APPLE)
+    list(APPEND FSBPOSIX_SOURCES src/fsb_thread_affinity_mach.cpp)
+else()
+    list(APPEND FSBPOSIX_SOURCES src/fsb_thread_affinity.cpp)
+endif()
 
 # target name
 set(FSBPOSIX_TARGET_NAME fsbposix)

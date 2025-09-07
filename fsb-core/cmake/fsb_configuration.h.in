@@ -58,6 +58,10 @@ struct MaxSize
     */
     static constexpr size_t index = 65535U;
 
+    /**
+     * @brief Maximum thread execution priority
+    */
+    static constexpr int priority = 98;
 };
 
 /**

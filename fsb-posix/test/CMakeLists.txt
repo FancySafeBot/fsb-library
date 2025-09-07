@@ -3,6 +3,7 @@ set(FSBPOSIX_TEST_HEADERS
     fsb_test_macros.h)
 set(FSBPOSIX_TEST_SOURCES
     fsb_timing_test.cpp
+    fsb_queue_test.cpp
     fsb_test_main.cpp)
 
 add_executable(fsbposix_test
