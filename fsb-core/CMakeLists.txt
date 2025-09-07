@@ -7,6 +7,7 @@ configure_max_sizes(FSBCORE_CONFIG_NAME)
 # headers and source files
 set(FSBCORE_HEADERS
     include/fsb_configuration.h
+    include/fsb_circular_buffer.h
     include/fsb_types.h
     include/fsb_linalg3.h
     include/fsb_quaternion.h

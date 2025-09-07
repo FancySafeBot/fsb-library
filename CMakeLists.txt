@@ -24,7 +24,7 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 # ################# #
 
 set(CMINPACK_VERSION 1.3.11 CACHE STRING "CMinpack version")
-set(OPENBLAS_VERSION 0.3.29 CACHE STRING "OpenBLAS version")
+set(OPENBLAS_VERSION 0.3.30 CACHE STRING "OpenBLAS version")
 set(TINYXML2_VERSION 10.0.0 CACHE STRING "TinyXML2 version")
 set(DOCTEST_VERSION 2.4.11 CACHE STRING "doctest version")
 set(YAMLCPP_VERSION 0.8.0 CACHE STRING "yaml-cpp version")
@@ -130,11 +130,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
         -O3
         -fno-math-errno
         -fPIE
-        -pie
         -fstack-protector)
     list(APPEND FSB_LINK_FLAGS
-        -fPIE
-        -pie)
+        -fPIE)
     list(APPEND SANITIZER_FLAGS
         safe-stack)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
