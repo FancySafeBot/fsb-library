@@ -29,7 +29,8 @@ set(FSBCORE_HEADERS
     include/fsb_spatial.h
     include/fsb_dynamics.h
     include/fsb_inverse_kinematics.h
-    include/fsb_kinematic_redundancy.h)
+    include/fsb_kinematic_redundancy.h
+    include/fsb_linalg.h)
 set(FSBCORE_SOURCES
     src/fsb_linalg3.cpp
     src/fsb_quaternion.cpp
@@ -50,12 +51,8 @@ set(FSBCORE_SOURCES
     src/fsb_spatial.cpp
     src/fsb_dynamics.cpp
     src/fsb_inverse_kinematics.cpp
-    src/fsb_kinematic_redundancy.cpp)
-
-if (FSB_USE_OPENBLAS)
-    list(APPEND FSBCORE_HEADERS include/fsb_linalg.h)
-    list(APPEND FSBCORE_SOURCES src/fsb_linalg.c)
-endif()
+    src/fsb_kinematic_redundancy.cpp
+    src/fsb_linalg.c)
 
 # target name
 set(FSBCORE_TARGET_NAME fsbcore)
@@ -117,7 +114,7 @@ if (HAVE_MATH_LIB)
         m)
 endif ()
 
-if (FSB_USE_OPENBLAS)
+if (FSB_BUILD_OPENBLAS)
     #cmake_policy(SET CMP0077 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0077.html
     #cmake_policy(SET CMP0054 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0054.html
     #cmake_policy(SET CMP0048 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0048.html
@@ -150,27 +147,9 @@ if (FSB_USE_OPENBLAS)
     target_link_libraries(
         ${FSBCORE_TARGET_NAME} PUBLIC
         openblas_static)
-endif()
-
-if (FSB_USE_CMINPACK)
-    # Dependency: CMinpack
-    CPMAddPackage(
-        NAME CMinpack
-        GITHUB_REPOSITORY devernay/cminpack
-        VERSION ${CMINPACK_VERSION}
-        OPTIONS
-        "CMAKE_POLICY_VERSION_MINIMUM 3.10"
-        "BUILD_SHARED_LIBS OFF"
-        "BUILD_TESTING OFF"
-        "USE_BLAS OFF"
-        "CMINPACK_PRECISION d"
-    )
-
-    target_link_libraries(
-        ${FSBCORE_TARGET_NAME} PUBLIC
-        cminpack)
-    target_compile_definitions(
-        ${FSBCORE_TARGET_NAME} PUBLIC "__cminpack_double__")
+else()
+    set(BLA_VENDOR OpenBLAS)
+    find_package(BLAS REQUIRED)
 endif()
 
 # Set sources for documentation (parent scope)

@@ -19,10 +19,6 @@ The FSB library is not intended to be used in safety-critical applications witho
 
 The FSB library is designed to be compliant with the [MISRA C++ 2023](https://www.perforce.com/resources/qac/misra-c-cpp) coding standard. The following sections outline the notable deviations from the MISRA C++ 2023 standard and the rationale behind them.
 
-### Interfacing With OpenBLAS and CMinpack Libraries
-
-The FSB library interfaces with the OpenBLAS and CMinpack libraries, which are not MISRA compliant. The FSB library is designed to be used in conjunction with these libraries, and it is necessary to allow for some deviations from the MISRA standard in order to facilitate this integration.
-
 ### URDF Parsing
 
 The FSB library includes a URDF parser that is not MISRA compliant. The URDF parser is intended to only be used when initializing the robot model tree and should not be used in the safety-critical portion of the application typically during real-time operation of a robot.

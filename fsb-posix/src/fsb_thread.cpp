@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <unistd.h>
 #include <limits.h>
+#include <errno.h>
 
 #include "fsb_thread.h"
 

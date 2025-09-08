@@ -23,7 +23,6 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 # Configure Options #
 # ################# #
 
-set(CMINPACK_VERSION 1.3.11 CACHE STRING "CMinpack version")
 set(OPENBLAS_VERSION 0.3.30 CACHE STRING "OpenBLAS version")
 set(TINYXML2_VERSION 10.0.0 CACHE STRING "TinyXML2 version")
 set(DOCTEST_VERSION 2.4.11 CACHE STRING "doctest version")
@@ -31,8 +30,7 @@ set(YAMLCPP_VERSION 0.8.0 CACHE STRING "yaml-cpp version")
 
 set(FSB_CONFIG "default" CACHE STRING "FSB Library configuration")
 
-option(FSB_USE_OPENBLAS "Use OpenBLAS for linear algebra operations" ON)
-option(FSB_USE_CMINPACK "Use CMinpack for Inverse Kinematics" OFF)
+option(FSB_BUILD_OPENBLAS "Build OpenBLAS for linear algebra operations" ON)
 option(FSB_BUILD_TESTING "Enable Tests" ON)
 option(FSB_ENABLE_DOCS "Enable doxygen documentation" OFF)
 option(FSB_ENABLE_EXAMPLES "Enable building example applications" OFF)
@@ -55,7 +53,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Instrument")
 endif ()
 
 # Fortran compiler for BLAS/LAPACK
-if (FSB_USE_OPENBLAS)
+if (FSB_BUILD_OPENBLAS)
     enable_language(Fortran)
 endif ()
 

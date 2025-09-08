@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdlib>
 #include <cstdint>
 
@@ -14,7 +15,7 @@ namespace fsb
  *
  */
 
-enum class CircularBufferStatus
+enum class CircularBufferStatus : uint8_t
 {
     /**
      * @brief Successful operation
@@ -42,15 +43,15 @@ template<typename BufferType, size_t BufferSize>
 class CircularBuffer
 {
    public:
-    CircularBuffer() : m_buffer(), m_tail(0), m_head(0), m_size(BufferSize), m_full(false) {}
+    CircularBuffer() = default;
 
     /**
-     * @brief Add value to buffer if there is space available.
+     * @brief Add value to the buffer if there is space available.
      *
      * @param push_value New value to add to buffer.
      * @return Status of operation.
      */
-    CircularBufferStatus Push(BufferType push_value);
+    CircularBufferStatus push(BufferType push_value);
 
     /**
      * @brief Add value to buffer and overwrite oldest value if buffer is full.
@@ -58,7 +59,7 @@ class CircularBuffer
      * @param push_value New value to add to buffer.
      * @return Status of operation.
      */
-    CircularBufferStatus ForcePush(BufferType push_value);
+    CircularBufferStatus force_push(BufferType push_value);
 
     /**
      * @brief Get oldest value from buffer.
@@ -66,7 +67,7 @@ class CircularBuffer
      * @param popped_value Oldest value in buffer.
      * @return Status of operation.
      */
-    CircularBufferStatus Pop(BufferType &popped_value);
+    CircularBufferStatus pop(BufferType &popped_value);
 
     /**
      * @brief Get oldest value from buffer.
@@ -74,7 +75,7 @@ class CircularBuffer
      * @param popped_values All values in buffer.
      * @return Status of operation.
      */
-    CircularBufferStatus PopAll(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped);
+    CircularBufferStatus pop_all(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped);
 
     /**
      * @brief Reset buffer to empty state.
@@ -92,11 +93,11 @@ class CircularBuffer
         size_t filled_size = 0;
         if (m_full)
         {
-            filled_size = m_size;
+            filled_size = BufferSize;
         }
         else
         {
-            filled_size = (m_tail > m_head ? (m_size - m_tail) + m_head : m_head - m_tail);
+            filled_size = (m_tail > m_head ? (BufferSize - m_tail) + m_head : m_head - m_tail);
         }
         return filled_size;
     }
@@ -115,7 +116,7 @@ class CircularBuffer
         }
         else
         {
-            remaining_size = (m_tail > m_head ? m_tail - m_head : m_size - (m_head - m_tail));
+            remaining_size = (m_tail > m_head ? m_tail - m_head : BufferSize - (m_head - m_tail));
         }
         return remaining_size;
     }
@@ -127,34 +128,30 @@ class CircularBuffer
      */
     size_t GetSize() const
     {
-        return m_size;
+        return BufferSize;
     }
 
    private:
     /**
      * @brief Circular buffer of commands for stepper
      */
-    BufferType m_buffer[BufferSize];
+    std::array<BufferType, BufferSize> m_buffer;
     /**
      * @brief Index of oldest filled buffer position
      *
      * Buffer is empty if @c m_tail is equal to @c m_head
      */
-    size_t m_tail;
+    size_t m_tail = 0;
     /**
      * @brief Index of latest open buffer position
      *
      * Buffer is empty if @c m_tail is equal to @c m_head
      */
-    size_t m_head;
-    /**
-     * @brief Total buffer size
-     */
-    size_t m_size;
+    size_t m_head = 0;
     /**
      * @brief `true` if buffer is full, `false` otherwise
      */
-    bool m_full;
+    bool m_full = false;
 };
 
 // ===============================
@@ -162,11 +159,10 @@ class CircularBuffer
 // ===============================
 
 template<typename BufferType, size_t BufferSize>
-inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::Push(BufferType push_value)
+inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::push(BufferType push_value)
 {
     CircularBufferStatus status = CircularBufferStatus::SUCCESS;
-    const size_t remaining_size = GetRemaining();
-    if (remaining_size == 0)
+    if (GetRemaining() == 0)
     {
         status = CircularBufferStatus::FULL;
     }
@@ -174,21 +170,20 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::Push(BufferT
     {
         // push to head of queue
         m_buffer[m_head] = push_value;
-        m_head = (m_head + 1) % m_size;
+        m_head = (m_head + 1) % BufferSize;
         m_full = (m_head == m_tail);
     }
     return status;
 }
 
 template<typename BufferType, size_t BufferSize>
-inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::ForcePush(BufferType push_value)
+inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::force_push(BufferType push_value)
 {
     CircularBufferStatus status = CircularBufferStatus::SUCCESS;
-    const size_t remaining_size = GetRemaining();
-    if (remaining_size == 0)
+    if (GetRemaining() == 0)
     {
         m_buffer[m_head] = push_value;
-        m_head = (m_head + 1) % m_size;
+        m_head = (m_head + 1) % BufferSize;
         m_tail = m_head;
         status = CircularBufferStatus::OVERWRITE;
     }
@@ -196,18 +191,17 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::ForcePush(Bu
     {
         // push to head of queue
         m_buffer[m_head] = push_value;
-        m_head = (m_head + 1) % m_size;
+        m_head = (m_head + 1) % BufferSize;
         m_full = (m_head == m_tail);
     }
     return status;
 }
 
 template<typename BufferType, size_t BufferSize>
-inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::Pop(BufferType &popped_value)
+inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop(BufferType &popped_value)
 {
     CircularBufferStatus status = CircularBufferStatus::SUCCESS;
-    const size_t filled_size = GetFilled();
-    if (filled_size == 0)
+    if (GetFilled() == 0)
     {
         status = CircularBufferStatus::EMPTY;
     }
@@ -216,14 +210,14 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::Pop(BufferTy
         // consume at tail of queue
         popped_value = m_buffer[m_tail];
         // advance
-        m_tail = (m_tail + 1) % m_size;
+        m_tail = (m_tail + 1) % BufferSize;
         m_full = false;
     }
     return status;
 }
 
 template<typename BufferType, size_t BufferSize>
-CircularBufferStatus CircularBuffer<BufferType, BufferSize>::PopAll(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped)
+CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop_all(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped)
 {
     num_popped = 0;
     while (GetFilled() > 0)
@@ -232,7 +226,7 @@ CircularBufferStatus CircularBuffer<BufferType, BufferSize>::PopAll(std::array<B
         popped_values[num_popped] = m_buffer[m_tail];
         num_popped++;
         // advance
-        m_tail = (m_tail + 1) % m_size;
+        m_tail = (m_tail + 1) % BufferSize;
         m_full = false;
     }
     return CircularBufferStatus::SUCCESS;

@@ -145,7 +145,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::Push(const QueueType push_value)
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.Push(push_value);
+    CircularBufferStatus buf_status = m_buffer.push(push_value);
     mutex_unlock(m_mutex);
     condvar_signal(m_cond_var);
     if (buf_status == CircularBufferStatus::FULL)
@@ -170,7 +170,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::ForcePush(QueueType push_value)
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.ForcePush(push_value);
+    CircularBufferStatus buf_status = m_buffer.force_push(push_value);
     mutex_unlock(m_mutex);
     condvar_signal(m_cond_var);
     if (buf_status == CircularBufferStatus::OVERWRITE)
@@ -196,7 +196,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopAll(
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.PopAll(popped_values, num_popped);
+    CircularBufferStatus buf_status = m_buffer.pop_all(popped_values, num_popped);
     mutex_unlock(m_mutex);
     return (
         buf_status == CircularBufferStatus::SUCCESS ? QueueStatus::SUCCESS : QueueStatus::ERROR);
@@ -217,7 +217,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopWait(
         return QueueStatus::ERROR;
     }
     // pop all values
-    m_buffer.PopAll(popped_values, num_popped);
+    m_buffer.pop_all(popped_values, num_popped);
     if (num_popped > 0)
     {
         // if we already have data, return it immediately
@@ -234,7 +234,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopWait(
     else
     {
         // pop all values
-        m_buffer.PopAll(popped_values, num_popped);
+        m_buffer.pop_all(popped_values, num_popped);
     }
     mutex_unlock(m_mutex);
     return result;
@@ -251,7 +251,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::Pop(QueueType& popped_value)
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.Pop(popped_value);
+    CircularBufferStatus buf_status = m_buffer.pop(popped_value);
     mutex_unlock(m_mutex);
     return (
         buf_status == CircularBufferStatus::SUCCESS ? QueueStatus::SUCCESS : QueueStatus::ERROR);

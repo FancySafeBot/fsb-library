@@ -12,7 +12,7 @@
       "generator": "Ninja",
       "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "CPM_SOURCE_CACHE": "build/CPM"
+        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM"
       }
     },
     {
@@ -40,7 +40,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "FSB_BUILD_TESTING": "OFF",
-        "FSB_USE_OPENBLAS": "OFF"
+        "FSB_BUILD_OPENBLAS": "OFF"
       }
     },
     {
