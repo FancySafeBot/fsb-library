@@ -8,16 +8,10 @@
 namespace fsb
 {
 
-static int get_num_cpus()
-{
-    const int num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-    return num_cpus;
-}
-
 ThreadStatus set_thread_cpu_affinity(const pthread_t thread, const size_t cpu_index)
 {
     // Get the number of CPUs available on the system
-    const int num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+    const long num_cpus = sysconf(static_cast<int>(_SC_NPROCESSORS_ONLN));
     if (num_cpus <= 0 || cpu_index >= static_cast<size_t>(num_cpus)) {
         return ThreadStatus::ERROR;
     }

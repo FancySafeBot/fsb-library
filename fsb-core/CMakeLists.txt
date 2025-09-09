@@ -148,8 +148,11 @@ if (FSB_BUILD_OPENBLAS)
         ${FSBCORE_TARGET_NAME} PUBLIC
         openblas_static)
 else()
-    set(BLA_VENDOR OpenBLAS)
-    find_package(BLAS REQUIRED)
+    find_package(OpenBLAS REQUIRED)
+    target_link_libraries(
+        ${FSBCORE_TARGET_NAME} PUBLIC
+        OpenBLAS::OpenBLAS
+        libgfortran.a)
 endif()
 
 # Set sources for documentation (parent scope)
