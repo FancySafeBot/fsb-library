@@ -10,6 +10,7 @@
 #include "fsb_jacobian.h"
 #include "fsb_rotation.h"
 #include "fsb_linalg3.h"
+#include "fsb_kinematics.h"
 
 namespace fsb
 {
@@ -289,6 +290,231 @@ JacobianError calculate_jacobian(
     else
     {
         // no joints: all zero jacobian
+    }
+    return result;
+}
+
+static bool is_revolute(const JointType jt)
+{
+    return (jt == JointType::REVOLUTE_X) || (jt == JointType::REVOLUTE_Y) || (jt == JointType::REVOLUTE_Z);
+}
+
+static bool is_prismatic(const JointType jt)
+{
+    return (jt == JointType::PRISMATIC_X) || (jt == JointType::PRISMATIC_Y) || (jt == JointType::PRISMATIC_Z);
+}
+
+static Jacobian
+jacobian_derivative_all_revolute_prismatic(const std::array<JointType, MaxSize::dofs>& dof_joint_type,
+    const Jacobian& jacobian, const JointSpace& joint_velocity, const size_t dofs)
+{
+    Jacobian result = {};
+    // Exact derivative of jacobian (for revolute/prismatic chains)
+    for (size_t k = 0; k < dofs; ++k)
+    {
+        // jwk: angular part of column k
+        const Vec3 jwk = {
+            jacobian.j[jacobian_index(0U, k)],
+            jacobian.j[jacobian_index(1U, k)],
+            jacobian.j[jacobian_index(2U, k)]
+        };
+        // jvk: linear part of column k
+        const Vec3 jvk = {
+            jacobian.j[jacobian_index(3U, k)],
+            jacobian.j[jacobian_index(4U, k)],
+            jacobian.j[jacobian_index(5U, k)]
+        };
+
+        for (size_t i = 0; i <= k; ++i)
+        {
+            // Hessian slice i, column k
+            if (is_revolute(dof_joint_type[i]))
+            {
+                // jwi: angular part of Jacobian column i
+                const Vec3 jwi = {
+                    jacobian.j[jacobian_index(0U, i)],
+                    jacobian.j[jacobian_index(1U, i)],
+                    jacobian.j[jacobian_index(2U, i)]
+                };
+                 // linear part of of Hessian slice i, column k
+                const Vec3 jvk_dqi = vector_cross(jwi, jvk);
+                result.j[jacobian_index(3U, k)] += jvk_dqi.x * joint_velocity.qv[i];
+                result.j[jacobian_index(4U, k)] += jvk_dqi.y * joint_velocity.qv[i];
+                result.j[jacobian_index(5U, k)] += jvk_dqi.z * joint_velocity.qv[i];
+
+                // angular part of Hessian slice i, column k
+                if (is_revolute(dof_joint_type[k]) && (i != k))
+                {
+                    const Vec3 jwk_dqi = vector_cross(jwi, jwk);
+                    result.j[jacobian_index(0U, k)] += jwk_dqi.x * joint_velocity.qv[i];
+                    result.j[jacobian_index(1U, k)] += jwk_dqi.y * joint_velocity.qv[i];
+                    result.j[jacobian_index(2U, k)] += jwk_dqi.z * joint_velocity.qv[i];
+                }
+
+                // linear part of of Hessian slice k, column i (symmetric with slice i, column k)
+                // jvi_dqk = jvk_dqi, off-diagonal only
+                if (i != k)
+                {
+                    result.j[jacobian_index(3U, i)] += jvk_dqi.x * joint_velocity.qv[k];
+                    result.j[jacobian_index(4U, i)] += jvk_dqi.y * joint_velocity.qv[k];
+                    result.j[jacobian_index(5U, i)] += jvk_dqi.z * joint_velocity.qv[k];
+                }
+            }
+        }
+    }
+    return result;
+}
+
+JacobianError jacobian_derivative(
+    size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian,
+    const JointSpace& joint_velocity, Jacobian& jacobian_deriv)
+{
+    BodyTreeError body_err = BodyTreeError::SUCCESS;
+    const size_t dofs = body_tree.get_body_dofs(body_index, body_err);
+
+    // propagate through parent bodies
+    bool all_revolute_or_prismatic = true;
+    std::array<JointType, MaxSize::dofs> dof_joint_type = {JointType::FIXED};
+    size_t temp_body_index = body_index;
+    while ((temp_body_index > 0U) && all_revolute_or_prismatic)
+    {
+        BodyTreeError err = BodyTreeError::SUCCESS;
+        const Joint& joint = body_tree.get_joint(temp_body_index, err);
+        dof_joint_type[joint.dof_index] = joint.type;
+        if (!is_revolute(joint.type) && !is_prismatic(joint.type) && joint.type != JointType::FIXED)
+        {
+            all_revolute_or_prismatic = false;
+        }
+        // next parent
+        temp_body_index = joint.parent_body_index;
+    }
+
+    auto err = JacobianError::SUCCESS;
+    if (all_revolute_or_prismatic)
+    {
+        jacobian_deriv = jacobian_derivative_all_revolute_prismatic(dof_joint_type, jacobian, joint_velocity, dofs);
+    }
+    else
+    {
+        err = JacobianError::NOT_REVOLUTE_OR_PRISMATIC;
+    }
+    return err;
+}
+
+static Hessian calculate_hessian_all_revolute_prismatic(const std::array<JointType, MaxSize::dofs>& dof_joint_type,
+    const Jacobian& jacobian, const size_t dofs)
+{
+    Hessian result = {};
+    // Exact derivative of jacobian (for revolute/prismatic chains)
+    for (size_t k = 0; k < dofs; ++k)
+    {
+        // jwk: angular part of column k
+        const Vec3 jwk = {
+            jacobian.j[jacobian_index(0U, k)],
+            jacobian.j[jacobian_index(1U, k)],
+            jacobian.j[jacobian_index(2U, k)]
+        };
+        // jvk: linear part of column k
+        const Vec3 jvk = {
+            jacobian.j[jacobian_index(3U, k)],
+            jacobian.j[jacobian_index(4U, k)],
+            jacobian.j[jacobian_index(5U, k)]
+        };
+
+        for (size_t i = 0; i <= k; ++i)
+        {
+            // Hessian slice i, column k
+            if (is_revolute(dof_joint_type[i]))
+            {
+                // jwi: angular part of Jacobian column i
+                const Vec3 jwi = {
+                    jacobian.j[jacobian_index(0U, i)],
+                    jacobian.j[jacobian_index(1U, i)],
+                    jacobian.j[jacobian_index(2U, i)]
+                };
+                 // linear part of of Hessian slice i, column k
+                const Vec3 jvk_dqi = vector_cross(jwi, jvk);
+                result.h[i].j[jacobian_index(3U, k)] = jvk_dqi.x;
+                result.h[i].j[jacobian_index(4U, k)] = jvk_dqi.y;
+                result.h[i].j[jacobian_index(5U, k)] = jvk_dqi.z;
+
+                // angular part of Hessian slice i, column k
+                if (is_revolute(dof_joint_type[k]) && (i != k))
+                {
+                    const Vec3 jwk_dqi = vector_cross(jwi, jwk);
+                    result.h[i].j[jacobian_index(0U, k)] = jwk_dqi.x;
+                    result.h[i].j[jacobian_index(1U, k)] = jwk_dqi.y;
+                    result.h[i].j[jacobian_index(2U, k)] = jwk_dqi.z;
+                }
+
+                // linear part of of Hessian slice k, column i (symmetric with slice i, column k)
+                // jvi_dqk = jvk_dqi, off-diagonal only
+                if (i != k)
+                {
+                    result.h[k].j[jacobian_index(3U, i)] = jvk_dqi.x;
+                    result.h[k].j[jacobian_index(4U, i)] = jvk_dqi.y;
+                    result.h[k].j[jacobian_index(5U, i)] = jvk_dqi.z;
+                }
+            }
+        }
+    }
+    return result;
+}
+
+JacobianError calculate_hessian(
+    const size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian, Hessian& hessian)
+{
+    JacobianError err = JacobianError::SUCCESS;
+    // initialize
+    BodyTreeError body_err = BodyTreeError::SUCCESS;
+    const size_t dofs = body_tree.get_body_dofs(body_index, body_err);
+
+    // propagate through parent bodies
+    bool all_revolute_or_prismatic = true;
+    std::array<JointType, MaxSize::dofs> dof_joint_type = {JointType::FIXED};
+    size_t temp_body_index = body_index;
+    while ((temp_body_index > 0U) && all_revolute_or_prismatic)
+    {
+        BodyTreeError err = BodyTreeError::SUCCESS;
+        const Joint& joint = body_tree.get_joint(temp_body_index, err);
+        dof_joint_type[joint.dof_index] = joint.type;
+        if (!is_revolute(joint.type) && !is_prismatic(joint.type) && joint.type != JointType::FIXED)
+        {
+            all_revolute_or_prismatic = false;
+        }
+        // next parent
+        temp_body_index = joint.parent_body_index;
+    }
+
+    if (all_revolute_or_prismatic)
+    {
+        hessian = calculate_hessian_all_revolute_prismatic(dof_joint_type, jacobian, dofs);
+        err = JacobianError::SUCCESS;
+    }
+    else
+    {
+        err = JacobianError::NOT_REVOLUTE_OR_PRISMATIC;
+    }
+    return err;
+}
+
+Jacobian hessian_multiply(
+    const Hessian& hessian, const JointSpace& joint_motion, size_t dofs)
+{
+    Jacobian result = {};
+    if (dofs > MaxSize::dofs)
+    {
+        dofs = MaxSize::dofs;
+    }
+    for (size_t ind = 0U; ind < dofs; ++ind)
+    {
+        const MotionVector result_col = jacobian_multiply(hessian.h[ind], joint_motion);
+        result.j[jacobian_index(0U, ind)] = result_col.angular.x;
+        result.j[jacobian_index(1U, ind)] = result_col.angular.y;
+        result.j[jacobian_index(2U, ind)] = result_col.angular.z;
+        result.j[jacobian_index(3U, ind)] = result_col.linear.x;
+        result.j[jacobian_index(4U, ind)] = result_col.linear.y;
+        result.j[jacobian_index(5U, ind)] = result_col.linear.z;
     }
     return result;
 }

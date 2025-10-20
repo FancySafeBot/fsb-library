@@ -33,7 +33,11 @@ enum class JacobianError : uint8_t
     /**
      * @brief Body index not found in tree
      */
-    BODY_NOT_IN_TREE
+    BODY_NOT_IN_TREE,
+    /**
+     * @brief Hessian fails since all proximal joints are not revolute or prismatic
+     */
+    NOT_REVOLUTE_OR_PRISMATIC
 };
 
 /**
@@ -151,16 +155,6 @@ JointSpace jacobian_transpose_multiply(
  */
 JointMatrix jacobian_transpose_multiply_jacobian(const Jacobian& jacobian, const MotionVector& cartesian_weights, size_t dofs = MaxSize::dofs);
 
-/**
- * @brief Compute derivative of Jacobian matrix
- *
- * @param hessian Hessian matrix
- * @param joint_velocity Joint velocity vector
- * @param dofs Number of dofs (elements in joint velocity vector)
- * @return Jacobian derivative
- */
-Jacobian jacobian_derivative(
-    const Hessian& hessian, const JointSpace& joint_velocity, size_t dofs = MaxSize::dofs);
 
 /**
  * @brief Determine Jacobian matrix for a single body in tree
@@ -177,6 +171,16 @@ Jacobian jacobian_derivative(
 JacobianError calculate_jacobian(
     size_t body_index, const BodyTree& body_tree, const BodyCartesianPva& cartesian_pva,
     Jacobian& jacobian);
+
+JacobianError jacobian_derivative(
+    size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian,
+    const JointSpace& joint_velocity, Jacobian& jacobian_deriv);
+
+JacobianError calculate_hessian(
+    const size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian, Hessian& hessian);
+
+Jacobian hessian_multiply(
+    const Hessian& hessian, const JointSpace& joint_motion, size_t dofs);
 
 /**
  * @brief Calculate Jacobian metrics for a given Jacobian matrix
