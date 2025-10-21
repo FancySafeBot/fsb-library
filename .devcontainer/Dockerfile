@@ -3,7 +3,8 @@ FROM ubuntu:22.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV CMAKE_VERSION=4.1.1
-ENV CLANGD_VERSION=20.1.8
+ENV LLVM_VERSION=20
+ENV PLANTUML_VERSION=1.2025.8
 
 ENV BUILD_TYPE=Release
 ENV INSTALL_PREFIX=/usr/local
@@ -12,8 +13,8 @@ ENV OPT_PREFIX=/opt
 RUN apt-get update && \
     apt-get -y install \
         ca-certificates \
+        default-jre \
         doxygen \
-        make \
         g++ \
         gcc \
         gdb \
@@ -21,6 +22,7 @@ RUN apt-get update && \
         git \
         gpg \
         graphviz \
+        lsb-release \
         make \
         ninja-build \
         pkg-config \
@@ -29,7 +31,9 @@ RUN apt-get update && \
         python3.10-distutils \
         python3.10-venv \
         rsync \
+        software-properties-common \
         unzip \
+        valgrind \
         wget && \
     rm -rf /var/lib/apt/lists/*
 
@@ -42,7 +46,23 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
     apt-get install -y cmake && \
     rm -rf /var/lib/apt/lists/*
 
-FROM base AS build-libraries
+# LLVM
+RUN wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- ${LLVM_VERSION} all
+
+COPY ./scripts/llvm-update-alternatives.sh ./scripts/llvm-update-alternatives.sh
+RUN ./scripts/llvm-update-alternatives.sh ${LLVM_VERSION}
+
+# PlantUML
+ENV PLANTUML_URL="https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
+
+RUN mkdir -p "/opt/plantuml" && \
+    wget -O "/opt/plantuml/plantuml.jar" "$PLANTUML_URL" && \
+    ln -sf "/opt/plantuml/plantuml.jar" /usr/local/bin/plantuml.jar && \
+    echo "#!/bin/bash" >> /usr/local/bin/plantuml && \
+    echo 'exec java -jar /usr/local/bin/plantuml.jar "$@"' >> /usr/local/bin/plantuml && \
+    chmod +x /usr/local/bin/plantuml
+
+FROM base AS build-dependencies
 
 ENV OPENBLAS_VERSION=0.3.30
 WORKDIR /build
@@ -68,17 +88,17 @@ RUN ldconfig
 WORKDIR /build
 RUN rm -rf OpenBLAS
 
-FROM build-libraries AS devcontainer
+FROM build-dependencies AS build
 
-ENV DEV_USERNAME="dev"
-ENV DEV_INSTALL_PREFIX=/home/${DEV_USERNAME}/.local
+ENV USERNAME="dev"
+ENV INSTALL_PREFIX=/home/${USERNAME}/.local
 
 RUN apt-get update && apt-get install -y sudo && \
-    useradd -ms /bin/bash ${DEV_USERNAME} && \
-    echo "${DEV_USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    mkdir -p ${DEV_INSTALL_PREFIX}/bin
+    useradd -ms /bin/bash ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    mkdir -p ${INSTALL_PREFIX}/bin
 
-ENV PATH=$PATH:${DEV_INSTALL_PREFIX}/bin
+ENV PATH=$PATH:${INSTALL_PREFIX}/bin
 
-USER ${DEV_USERNAME}
-WORKDIR /home/${DEV_USERNAME}/workspace
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}/workspace
