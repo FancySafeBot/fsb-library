@@ -15,6 +15,7 @@ Transform joint_parent_child_transform(const Joint& joint, const JointSpacePosit
     Transform result = transform_identity();
 
     // determine pose from joint position
+    const real_t s = joint.reversed ? static_cast<real_t>(-1.0) : static_cast<real_t>(1.0);
     if (joint.type == JointType::FIXED)
     {
         result = tr_pj;
@@ -22,37 +23,37 @@ Transform joint_parent_child_transform(const Joint& joint, const JointSpacePosit
     else if (joint.type == JointType::REVOLUTE_X)
     {
         result = {
-            quat_multiply(tr_pj.rotation, quat_rx(position.q[joint.coord_index])),
+            quat_multiply(tr_pj.rotation, quat_rx(s * position.q[joint.coord_index])),
             tr_pj.translation
         };
     }
     else if (joint.type == JointType::REVOLUTE_Y)
     {
         result = {
-            quat_multiply(tr_pj.rotation, quat_ry(position.q[joint.coord_index])),
+            quat_multiply(tr_pj.rotation, quat_ry(s * position.q[joint.coord_index])),
             tr_pj.translation
         };
     }
     else if (joint.type == JointType::REVOLUTE_Z)
     {
         result = {
-            quat_multiply(tr_pj.rotation, quat_rz(position.q[joint.coord_index])),
+            quat_multiply(tr_pj.rotation, quat_rz(s * position.q[joint.coord_index])),
             tr_pj.translation
         };
     }
     else if (joint.type == JointType::PRISMATIC_X)
     {
-        const Vec3 pos = quat_rotate_vector(tr_pj.rotation, {position.q[joint.coord_index], 0.0, 0.0});
+        const Vec3 pos = quat_rotate_vector(tr_pj.rotation, {s * position.q[joint.coord_index], 0.0, 0.0});
         result = {tr_pj.rotation, vector_add(tr_pj.translation, pos)};
     }
     else if (joint.type == JointType::PRISMATIC_Y)
     {
-        const Vec3 pos = quat_rotate_vector(tr_pj.rotation, {0.0, position.q[joint.coord_index], 0.0});
+        const Vec3 pos = quat_rotate_vector(tr_pj.rotation, {0.0, s * position.q[joint.coord_index], 0.0});
         result = {tr_pj.rotation, vector_add(tr_pj.translation, pos)};
     }
     else if (joint.type == JointType::PRISMATIC_Z)
     {
-        const Vec3 pos = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, position.q[joint.coord_index]});
+        const Vec3 pos = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, s * position.q[joint.coord_index]});
         result = {tr_pj.rotation, vector_add(tr_pj.translation, pos)};
     }
     else if (joint.type == JointType::SPHERICAL)
@@ -89,29 +90,30 @@ MotionVector joint_parent_child_velocity(const Joint& joint, const JointSpace& v
     MotionVector vel_result = {};
 
     // determine velocity from joint motion
+    const real_t s = joint.reversed ? static_cast<real_t>(-1.0) : static_cast<real_t>(1.0);
     if (joint.type == JointType::REVOLUTE_X)
     {
-        vel_result.angular = quat_rotate_vector(tr_pj.rotation, {velocity.qv[joint.dof_index], 0.0, 0.0});
+        vel_result.angular = quat_rotate_vector(tr_pj.rotation, {s * velocity.qv[joint.dof_index], 0.0, 0.0});
     }
     if (joint.type == JointType::REVOLUTE_Y)
     {
-        vel_result.angular = quat_rotate_vector(tr_pj.rotation, {0.0,velocity.qv[joint.dof_index], 0.0});
+        vel_result.angular = quat_rotate_vector(tr_pj.rotation, {0.0, s * velocity.qv[joint.dof_index], 0.0});
     }
     if (joint.type == JointType::REVOLUTE_Z)
     {
-        vel_result.angular = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, velocity.qv[joint.dof_index]});
+        vel_result.angular = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, s * velocity.qv[joint.dof_index]});
     }
     else if (joint.type == JointType::PRISMATIC_X)
     {
-        vel_result.linear = quat_rotate_vector(tr_pj.rotation, {velocity.qv[joint.dof_index], 0.0, 0.0});
+        vel_result.linear = quat_rotate_vector(tr_pj.rotation, {s * velocity.qv[joint.dof_index], 0.0, 0.0});
     }
     else if (joint.type == JointType::PRISMATIC_Y)
     {
-        vel_result.linear = quat_rotate_vector(tr_pj.rotation, {0.0, velocity.qv[joint.dof_index], 0.0});
+        vel_result.linear = quat_rotate_vector(tr_pj.rotation, {0.0, s * velocity.qv[joint.dof_index], 0.0});
     }
     else if (joint.type == JointType::PRISMATIC_Z)
     {
-        vel_result.linear = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, velocity.qv[joint.dof_index]});
+        vel_result.linear = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, s * velocity.qv[joint.dof_index]});
     }
     else if (joint.type == JointType::SPHERICAL)
     {
@@ -151,29 +153,30 @@ MotionVector joint_parent_child_acceleration(const Joint& joint, const JointPva&
     MotionVector acceleration = {};
 
     // determine acceleration from joint motion
+    const real_t s = joint.reversed ? static_cast<real_t>(-1.0) : static_cast<real_t>(1.0);
     if (joint.type == JointType::REVOLUTE_X)
     {
-        acceleration.angular = quat_rotate_vector(tr_pj.rotation,{joint_pva.acceleration.qv[joint.dof_index], 0.0, 0.0});
+        acceleration.angular = quat_rotate_vector(tr_pj.rotation,{s * joint_pva.acceleration.qv[joint.dof_index], 0.0, 0.0});
     }
     if (joint.type == JointType::REVOLUTE_Y)
     {
-        acceleration.angular = quat_rotate_vector(tr_pj.rotation,{0.0, joint_pva.acceleration.qv[joint.dof_index], 0.0});
+        acceleration.angular = quat_rotate_vector(tr_pj.rotation,{0.0, s * joint_pva.acceleration.qv[joint.dof_index], 0.0});
     }
     if (joint.type == JointType::REVOLUTE_Z)
     {
-        acceleration.angular = quat_rotate_vector(tr_pj.rotation,{0.0, 0.0, joint_pva.acceleration.qv[joint.dof_index]});
+        acceleration.angular = quat_rotate_vector(tr_pj.rotation,{0.0, 0.0, s * joint_pva.acceleration.qv[joint.dof_index]});
     }
     else if (joint.type == JointType::PRISMATIC_X)
     {
-        acceleration.linear = quat_rotate_vector(tr_pj.rotation, {joint_pva.acceleration.qv[joint.dof_index], 0.0, 0.0});
+        acceleration.linear = quat_rotate_vector(tr_pj.rotation, {s * joint_pva.acceleration.qv[joint.dof_index], 0.0, 0.0});
     }
     else if (joint.type == JointType::PRISMATIC_Y)
     {
-        acceleration.linear = quat_rotate_vector(tr_pj.rotation, {0.0, joint_pva.acceleration.qv[joint.dof_index], 0.0});
+        acceleration.linear = quat_rotate_vector(tr_pj.rotation, {0.0, s * joint_pva.acceleration.qv[joint.dof_index], 0.0});
     }
     else if (joint.type == JointType::PRISMATIC_Z)
     {
-        acceleration.linear = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, joint_pva.acceleration.qv[joint.dof_index]});
+        acceleration.linear = quat_rotate_vector(tr_pj.rotation, {0.0, 0.0, s * joint_pva.acceleration.qv[joint.dof_index]});
     }
     else if (joint.type == JointType::SPHERICAL)
     {

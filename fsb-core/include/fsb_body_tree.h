@@ -200,6 +200,16 @@ public:
     BodyTreeError get_joint_velocity_limit(size_t joint_index, real_t& max_velocity) const;
 
     /**
+     * @brief Set the reversed flag for a joint in the body tree
+     *
+     * @param joint_index Joint index
+     * @param reversed Reversed direction of the joint axis
+     *
+     * @return Error code SUCCESS if flag was set successfully
+     */
+    BodyTreeError set_joint_reversed(size_t joint_index, bool reversed);
+
+    /**
      * @brief Set the gravity vector
      *
      * @param gravity Gravity vector

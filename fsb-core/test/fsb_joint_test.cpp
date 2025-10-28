@@ -36,6 +36,7 @@ TEST_CASE(
     // Inputs
     const fsb::Joint joint = {
         fsb::JointType::FIXED,
+        false,
         {{0.311126983722081, 0.0565685424949238, -0.848528137423857, 0.424264068711929}, {0.1, -0.22, 3.12}},
         {},
         0U,
@@ -97,6 +98,7 @@ TEST_CASE(
     // Process
     const fsb::Joint joint = {
         joint_type,
+        false,
         {
             joint_rotation,
             joint_position},
@@ -135,6 +137,7 @@ TEST_CASE(
     // Inputs
     const fsb::Joint joint = {
         fsb::JointType::PRISMATIC_Z,
+        false,
         {{0.8658406131180871, -0.2843509043081139, -0.373283005655497, 0.17356380262961224}, {0.5, 0.1, -0.05}},
         {},
         0U,
@@ -200,6 +203,7 @@ TEST_CASE(
     // Process
     const fsb::Joint joint = {
         joint_type,
+        false,
         {
             joint_rotation,
             joint_position},
@@ -265,6 +269,7 @@ TEST_CASE(
     const fsb::Transform tr_parent = {parent_rotation, parent_position};
     const fsb::Joint joint = {
         fsb::JointType::CARTESIAN,
+        false,
         tr_parent, {},
         0U, 0U, 0U, 0U
     };
@@ -313,6 +318,100 @@ TEST_CASE(
     SUBCASE("Check Cartesian acceleration")
     {
         check_fsb_motion_vector(pva_actual.acceleration, pva_expected.acceleration);
+    }
+}
+
+TEST_SUITE_END();
+
+TEST_SUITE_BEGIN("joint_reversed");
+
+TEST_CASE(
+    "Revolute Z reversed equivalence"
+    * doctest::description("[fsb_joint][reversed]"))
+{
+    // Parent transform
+    const fsb::Quaternion parent_quat = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
+    const fsb::Vec3       parent_pos  = {-0.872, 1.235, -0.02};
+    const fsb::Transform  tr_parent   = {parent_quat, parent_pos};
+
+    // Two joints: reversed=true with +q, and reversed=false with -q
+    fsb::Joint joint_rev = { fsb::JointType::REVOLUTE_Z, true, tr_parent, {}, 0U, 0U, 0U, 0U };
+    fsb::Joint joint_nrm = { fsb::JointType::REVOLUTE_Z, false, tr_parent, {}, 0U, 0U, 0U, 0U };
+
+    // Joint states
+    const fsb::real_t q  = 0.45;
+    const fsb::real_t qd = -0.5;
+    const fsb::real_t qdd= 1.5;
+
+    fsb::JointPva j_rev = {};
+    j_rev.position.q[0] = q;
+    j_rev.velocity.qv[0] = qd;
+    j_rev.acceleration.qv[0] = qdd;
+
+    fsb::JointPva j_nrm = {};
+    j_nrm.position.q[0] = -q;
+    j_nrm.velocity.qv[0] = -qd;
+    j_nrm.acceleration.qv[0] = -qdd;
+
+    const fsb::CartesianPva pva_rev = fsb::joint_parent_child_pva(joint_rev, j_rev);
+    const fsb::CartesianPva pva_nrm = fsb::joint_parent_child_pva(joint_nrm, j_nrm);
+
+    SUBCASE("Pose equal")
+    {
+        check_fsb_transform(pva_rev.pose, pva_nrm.pose);
+    }
+    SUBCASE("Velocity equal")
+    {
+        check_fsb_motion_vector(pva_rev.velocity, pva_nrm.velocity);
+    }
+    SUBCASE("Acceleration equal")
+    {
+        check_fsb_motion_vector(pva_rev.acceleration, pva_nrm.acceleration);
+    }
+}
+
+TEST_CASE(
+    "Prismatic Z reversed equivalence"
+    * doctest::description("[fsb_joint][reversed]"))
+{
+    // Parent transform
+    const fsb::Quaternion parent_quat = {0.8658406131180871, -0.2843509043081139, -0.373283005655497, 0.17356380262961224};
+    const fsb::Vec3       parent_pos  = {0.5, 0.1, -0.05};
+    const fsb::Transform  tr_parent   = {parent_quat, parent_pos};
+
+    // Two joints: reversed=true with +q, and reversed=false with -q
+    fsb::Joint joint_rev = { fsb::JointType::PRISMATIC_Z, true, tr_parent, {}, 0U, 0U, 0U, 0U };
+    fsb::Joint joint_nrm = { fsb::JointType::PRISMATIC_Z, false, tr_parent, {}, 0U, 0U, 0U, 0U };
+
+    // Joint states
+    const fsb::real_t q  = 0.2;
+    const fsb::real_t qd = 0.4;
+    const fsb::real_t qdd= -0.5;
+
+    fsb::JointPva j_rev = {};
+    j_rev.position.q[0] = q;
+    j_rev.velocity.qv[0] = qd;
+    j_rev.acceleration.qv[0] = qdd;
+
+    fsb::JointPva j_nrm = {};
+    j_nrm.position.q[0] = -q;
+    j_nrm.velocity.qv[0] = -qd;
+    j_nrm.acceleration.qv[0] = -qdd;
+
+    const fsb::CartesianPva pva_rev = fsb::joint_parent_child_pva(joint_rev, j_rev);
+    const fsb::CartesianPva pva_nrm = fsb::joint_parent_child_pva(joint_nrm, j_nrm);
+
+    SUBCASE("Pose equal")
+    {
+        check_fsb_transform(pva_rev.pose, pva_nrm.pose);
+    }
+    SUBCASE("Velocity equal")
+    {
+        check_fsb_motion_vector(pva_rev.velocity, pva_nrm.velocity);
+    }
+    SUBCASE("Acceleration equal")
+    {
+        check_fsb_motion_vector(pva_rev.acceleration, pva_nrm.acceleration);
     }
 }
 

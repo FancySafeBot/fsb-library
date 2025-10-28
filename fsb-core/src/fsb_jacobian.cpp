@@ -97,21 +97,22 @@ static void calculate_jacobian_joint_columns(
     const Joint& joint, const Transform& body_base_pose, const Transform& target_pose,
     Jacobian& jacobian)
 {
+    const real_t s = joint.reversed ? static_cast<real_t>(-1.0) : static_cast<real_t>(1.0);
     if (joint.type == JointType::REVOLUTE_X)
     {
         const size_t jac_col = joint.dof_index;
 
         // rotation component
         const Vec3 rot_x = quat_to_rotx(body_base_pose.rotation);
-        jacobian.j[jacobian_index(0U, jac_col)] = rot_x.x;
-        jacobian.j[jacobian_index(1U, jac_col)] = rot_x.y;
-        jacobian.j[jacobian_index(2U, jac_col)] = rot_x.z;
+    jacobian.j[jacobian_index(0U, jac_col)] = s * rot_x.x;
+    jacobian.j[jacobian_index(1U, jac_col)] = s * rot_x.y;
+    jacobian.j[jacobian_index(2U, jac_col)] = s * rot_x.z;
 
         // translation component
         const Vec3 pos_skew_x = vector_cross(vector_subtract(body_base_pose.translation, target_pose.translation), rot_x);
-        jacobian.j[jacobian_index(3U, jac_col)] = pos_skew_x.x;
-        jacobian.j[jacobian_index(4U, jac_col)] = pos_skew_x.y;
-        jacobian.j[jacobian_index(5U, jac_col)] = pos_skew_x.z;
+        jacobian.j[jacobian_index(3U, jac_col)] = s * pos_skew_x.x;
+        jacobian.j[jacobian_index(4U, jac_col)] = s * pos_skew_x.y;
+        jacobian.j[jacobian_index(5U, jac_col)] = s * pos_skew_x.z;
     }
     else if (joint.type == JointType::REVOLUTE_Y)
     {
@@ -119,15 +120,15 @@ static void calculate_jacobian_joint_columns(
 
         // rotation component
         const Vec3 rot_y = quat_to_roty(body_base_pose.rotation);
-        jacobian.j[jacobian_index(0U, jac_col)] = rot_y.x;
-        jacobian.j[jacobian_index(1U, jac_col)] = rot_y.y;
-        jacobian.j[jacobian_index(2U, jac_col)] = rot_y.z;
+    jacobian.j[jacobian_index(0U, jac_col)] = s * rot_y.x;
+    jacobian.j[jacobian_index(1U, jac_col)] = s * rot_y.y;
+    jacobian.j[jacobian_index(2U, jac_col)] = s * rot_y.z;
 
         // translation component
         const Vec3 pos_skew_y = vector_cross(vector_subtract(body_base_pose.translation, target_pose.translation), rot_y);
-        jacobian.j[jacobian_index(3U, jac_col)] = pos_skew_y.x;
-        jacobian.j[jacobian_index(4U, jac_col)] = pos_skew_y.y;
-        jacobian.j[jacobian_index(5U, jac_col)] = pos_skew_y.z;
+        jacobian.j[jacobian_index(3U, jac_col)] = s * pos_skew_y.x;
+        jacobian.j[jacobian_index(4U, jac_col)] = s * pos_skew_y.y;
+        jacobian.j[jacobian_index(5U, jac_col)] = s * pos_skew_y.z;
     }
     else if (joint.type == JointType::REVOLUTE_Z)
     {
@@ -135,15 +136,15 @@ static void calculate_jacobian_joint_columns(
 
         // rotation component
         const Vec3 rot_z = quat_to_rotz(body_base_pose.rotation);
-        jacobian.j[jacobian_index(0U, jac_col)] = rot_z.x;
-        jacobian.j[jacobian_index(1U, jac_col)] = rot_z.y;
-        jacobian.j[jacobian_index(2U, jac_col)] = rot_z.z;
+    jacobian.j[jacobian_index(0U, jac_col)] = s * rot_z.x;
+    jacobian.j[jacobian_index(1U, jac_col)] = s * rot_z.y;
+    jacobian.j[jacobian_index(2U, jac_col)] = s * rot_z.z;
 
         // translation component
         const Vec3 pos_skew_z = vector_cross(vector_subtract(body_base_pose.translation, target_pose.translation), rot_z);
-        jacobian.j[jacobian_index(3U, jac_col)] = pos_skew_z.x;
-        jacobian.j[jacobian_index(4U, jac_col)] = pos_skew_z.y;
-        jacobian.j[jacobian_index(5U, jac_col)] = pos_skew_z.z;
+        jacobian.j[jacobian_index(3U, jac_col)] = s * pos_skew_z.x;
+        jacobian.j[jacobian_index(4U, jac_col)] = s * pos_skew_z.y;
+        jacobian.j[jacobian_index(5U, jac_col)] = s * pos_skew_z.z;
     }
     else if (joint.type == JointType::PRISMATIC_X)
     {
@@ -151,9 +152,9 @@ static void calculate_jacobian_joint_columns(
 
         // translation component
         const Vec3 rot_x = quat_to_rotx(body_base_pose.rotation);
-        jacobian.j[jacobian_index(3U, jac_col)] = rot_x.x;
-        jacobian.j[jacobian_index(4U, jac_col)] = rot_x.y;
-        jacobian.j[jacobian_index(5U, jac_col)] = rot_x.z;
+        jacobian.j[jacobian_index(3U, jac_col)] = s * rot_x.x;
+        jacobian.j[jacobian_index(4U, jac_col)] = s * rot_x.y;
+        jacobian.j[jacobian_index(5U, jac_col)] = s * rot_x.z;
     }
     else if (joint.type == JointType::PRISMATIC_Y)
     {
@@ -161,9 +162,9 @@ static void calculate_jacobian_joint_columns(
 
         // translation component
         const Vec3 rot_y = quat_to_roty(body_base_pose.rotation);
-        jacobian.j[jacobian_index(3U, jac_col)] = rot_y.x;
-        jacobian.j[jacobian_index(4U, jac_col)] = rot_y.y;
-        jacobian.j[jacobian_index(5U, jac_col)] = rot_y.z;
+        jacobian.j[jacobian_index(3U, jac_col)] = s * rot_y.x;
+        jacobian.j[jacobian_index(4U, jac_col)] = s * rot_y.y;
+        jacobian.j[jacobian_index(5U, jac_col)] = s * rot_y.z;
     }
     else if (joint.type == JointType::PRISMATIC_Z)
     {
@@ -171,9 +172,9 @@ static void calculate_jacobian_joint_columns(
 
         // translation component
         const Vec3 rot_z = quat_to_rotz(body_base_pose.rotation);
-        jacobian.j[jacobian_index(3U, jac_col)] = rot_z.x;
-        jacobian.j[jacobian_index(4U, jac_col)] = rot_z.y;
-        jacobian.j[jacobian_index(5U, jac_col)] = rot_z.z;
+        jacobian.j[jacobian_index(3U, jac_col)] = s * rot_z.x;
+        jacobian.j[jacobian_index(4U, jac_col)] = s * rot_z.y;
+        jacobian.j[jacobian_index(5U, jac_col)] = s * rot_z.z;
     }
     else if (joint.type == JointType::SPHERICAL)
     {

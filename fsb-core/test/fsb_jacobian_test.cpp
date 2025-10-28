@@ -191,4 +191,104 @@ TEST_CASE("Jacobian Panda Metrics" * doctest::description("[fsb_jacobian][fsb::c
     REQUIRE(jac_metrics.angular.condition_number == FsbApprox(expected_cond_num_angular));
 }
 
+TEST_CASE("Jacobian single reversed joint flips one column" * doctest::description("[fsb_jacobian][fsb::calculate_jacobian][reversed]"))
+{
+    // Build identical RPR chains (tree_a and tree_b)
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0} };
+    fsb::BodyTreeError err = fsb::BodyTreeError::SUCCESS;
+
+    // Joint nominal transforms (non-degenerate)
+    fsb::Transform joint1_tr = fsb::transform_identity();
+    joint1_tr.translation = {0.2, -0.1, 0.3};
+    fsb::Transform joint2_tr = fsb::transform_identity();
+    joint2_tr.translation = {0.1, 0.05, -0.02};
+    fsb::Transform joint3_tr = fsb::transform_identity();
+    joint3_tr.translation = {-0.05, 0.2, 0.4};
+
+    // Create tree A
+    fsb::BodyTree tree_a = {};
+    fsb::MotionVector origin_offset = {};
+    fsb::Body body1 = {origin_offset, unit_mass_props, {}, 0U, false};
+    fsb::Body body2 = {origin_offset, unit_mass_props, {}, 0U, false};
+    fsb::Body body3 = {origin_offset, unit_mass_props, {}, 0U, true};
+    const size_t body1_index_a = tree_a.add_body(fsb::BodyTree::base_index, fsb::JointType::REVOLUTE_Z, joint1_tr, body1, err);
+    REQUIRE(err == fsb::BodyTreeError::SUCCESS);
+    const size_t body2_index_a = tree_a.add_body(body1_index_a, fsb::JointType::PRISMATIC_Z, joint2_tr, body2, err);
+    REQUIRE(err == fsb::BodyTreeError::SUCCESS);
+    const size_t body3_index_a = tree_a.add_body(body2_index_a, fsb::JointType::REVOLUTE_Z, joint3_tr, body3, err);
+    REQUIRE(err == fsb::BodyTreeError::SUCCESS);
+
+    // Create tree B identically
+    fsb::BodyTree tree_b = {};
+    const size_t body1_index_b = tree_b.add_body(fsb::BodyTree::base_index, fsb::JointType::REVOLUTE_Z, joint1_tr, body1, err);
+    REQUIRE(err == fsb::BodyTreeError::SUCCESS);
+    const size_t body2_index_b = tree_b.add_body(body1_index_b, fsb::JointType::PRISMATIC_Z, joint2_tr, body2, err);
+    REQUIRE(err == fsb::BodyTreeError::SUCCESS);
+    const size_t body3_index_b = tree_b.add_body(body2_index_b, fsb::JointType::REVOLUTE_Z, joint3_tr, body3, err);
+    REQUIRE(err == fsb::BodyTreeError::SUCCESS);
+
+    // Get the prismatic joint index and its DOF column
+    fsb::BodyTreeError err_a = fsb::BodyTreeError::SUCCESS;
+    const fsb::Joint prismatic_joint_a = tree_a.get_joint(tree_a.get_body(body2_index_a, err_a).joint_index, err_a);
+    REQUIRE(err_a == fsb::BodyTreeError::SUCCESS);
+    const size_t reversed_dof_col = prismatic_joint_a.dof_index; // column expected to flip
+
+    // Mark prismatic joint as reversed in tree B
+    fsb::BodyTreeError set_rev_err = tree_b.set_joint_reversed(tree_b.get_body(body2_index_b, err_a).joint_index, true);
+    REQUIRE(set_rev_err == fsb::BodyTreeError::SUCCESS);
+
+    // Joint positions: choose arbitrary non-zero values
+    fsb::JointPva q_a = {};
+    q_a.position.q[0] = 0.4; // rev z
+    q_a.position.q[1] = 0.25; // prism z (meters)
+    q_a.position.q[2] = -0.7; // rev z
+
+    // For tree B, negate only the reversed joint coordinate to keep FK poses identical
+    fsb::JointPva q_b = q_a;
+    q_b.position.q[reversed_dof_col] = -q_a.position.q[reversed_dof_col];
+
+    // Forward kinematics for both trees
+    const fsb::CartesianPva base_pva = {fsb::transform_identity(), {}, {}};
+    const auto fk_opt = fsb::ForwardKinematicsOption::POSE;
+    fsb::BodyCartesianPva pva_a = {};
+    fsb::BodyCartesianPva pva_b = {};
+    fsb::forward_kinematics(tree_a, q_a, base_pva, fk_opt, pva_a);
+    fsb::forward_kinematics(tree_b, q_b, base_pva, fk_opt, pva_b);
+
+    // Sanity: end-effector poses should match
+    const fsb::Transform pose_a = pva_a.body[body3_index_a].pose;
+    const fsb::Transform pose_b = pva_b.body[body3_index_b].pose;
+    REQUIRE(pose_a.translation.x == FsbApprox(pose_b.translation.x));
+    REQUIRE(pose_a.translation.y == FsbApprox(pose_b.translation.y));
+    REQUIRE(pose_a.translation.z == FsbApprox(pose_b.translation.z));
+    REQUIRE(pose_a.rotation.qw == FsbApprox(pose_b.rotation.qw));
+    REQUIRE(pose_a.rotation.qx == FsbApprox(pose_b.rotation.qx));
+    REQUIRE(pose_a.rotation.qy == FsbApprox(pose_b.rotation.qy));
+    REQUIRE(pose_a.rotation.qz == FsbApprox(pose_b.rotation.qz));
+
+    // Compute Jacobians for both trees at their respective end-effectors
+    fsb::Jacobian J_a = {};
+    fsb::Jacobian J_b = {};
+    REQUIRE(fsb::calculate_jacobian(body3_index_a, tree_a, pva_a, J_a) == fsb::JacobianError::SUCCESS);
+    REQUIRE(fsb::calculate_jacobian(body3_index_b, tree_b, pva_b, J_b) == fsb::JacobianError::SUCCESS);
+
+    // Verify: only the reversed joint column flips sign; others remain the same
+    const size_t dofs = tree_a.get_num_dofs();
+    for (size_t col = 0; col < dofs; ++col)
+    {
+        for (size_t row = 0; row < 6U; ++row)
+        {
+            const size_t idx = fsb::jacobian_index(row, col);
+            if (col == reversed_dof_col)
+            {
+                REQUIRE(J_b.j[idx] == FsbApprox(-J_a.j[idx]));
+            }
+            else
+            {
+                REQUIRE(J_b.j[idx] == FsbApprox(J_a.j[idx]));
+            }
+        }
+    }
+}
+
 TEST_SUITE_END();

@@ -403,4 +403,14 @@ BodyTreeError BodyTree::get_joint_velocity_limit(const size_t joint_index, real_
     return result;
 }
 
+BodyTreeError BodyTree::set_joint_reversed(const size_t joint_index, const bool reversed)
+{
+    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints) {
+        m_joints[joint_index].reversed = reversed;
+        result = BodyTreeError::SUCCESS;
+    }
+    return result;
+}
+
 } // namespace fsb

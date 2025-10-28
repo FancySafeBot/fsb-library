@@ -99,6 +99,10 @@ struct Joint
      */
     JointType type;
     /**
+     * @brief Reversed direction of the joint axis
+     */
+    bool reversed = false;
+    /**
      * @brief Joint pose with respect to the parent body with offset from parent body
      */
     Transform parent_joint_transform;
