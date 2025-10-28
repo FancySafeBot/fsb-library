@@ -14,19 +14,24 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "gcc -v",
+	"postCreateCommand": "./scripts/build-dev.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
-		"settings": {
-		},
-		"extensions": [
-			"xaver.clang-format",
-			"ms-python.python",
-			"ms-vscode.cpptools-extension-pack",
-			"matepek.vscode-catch2-test-adapter"
-		]
+			"settings": {
+				"C_Cpp.intelliSenseEngine": "disabled",
+				"clangd.arguments": [
+					"--compile-commands-dir=/workspaces/fsb-library/build/dev-debug/"
+				]
+			},
+			"extensions": [
+				"ms-python.python",
+				"ms-vscode.cpptools-extension-pack",
+				"matepek.vscode-catch2-test-adapter",
+				"njpwerner.autodocstring",
+				"llvm-vs-code-extensions.vscode-clangd"
+			]
 		}
 	}
 

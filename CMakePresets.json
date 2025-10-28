@@ -12,13 +12,36 @@
       "generator": "Ninja",
       "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM"
+        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM",
+        "FSB_BUILD_OPENBLAS": "ON"
+      }
+    },
+    {
+      "name": "dev",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "build/${presetName}",
+      "cacheVariables": {
+        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM",
+        "FSB_BUILD_OPENBLAS": "OFF",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     },
     {
       "name": "debug",
       "displayName": "Debug",
       "inherits": "common",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FSB_ENABLE_DOCS": "ON",
+        "FSB_ENABLE_EXAMPLES": "ON"
+      }
+    },
+    {
+      "name": "dev-debug",
+      "displayName": "Dev Debug",
+      "inherits": "dev",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "FSB_ENABLE_DOCS": "ON",
@@ -92,6 +115,12 @@
       "displayName": "FSB Examples",
       "configurePreset": "debug",
       "targets": ["fsb_examples"]
+    },
+    {
+      "name": "dev-debug",
+      "displayName": "FSB Dev Container",
+      "configurePreset": "dev-debug",
+      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test", "fsb_examples"]
     },
     {
       "name": "fsb-doc",

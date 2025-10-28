@@ -120,22 +120,28 @@ if (FSB_BUILD_OPENBLAS)
     #cmake_policy(SET CMP0048 NEW) # https://cmake.org/cmake/help/latest/policy/CMP0048.html
     set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
     set(CMAKE_POLICY_DEFAULT_CMP0054 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
+
+    # If no fortran compiler, use c lapack
+    if (NOT FSB_OPENBLAS_WITH_FORTRAN)
+        set(OPENBLAS_C_LAPACK_OPTION "C_LAPACK ON")
+    endif()
 
     # Dependency: Linear Algebra OpenBLAS
     CPMAddPackage(
         NAME OpenBLAS
         GITHUB_REPOSITORY OpenMathLib/OpenBLAS
         VERSION ${OPENBLAS_VERSION}
+        EXCLUDE_FROM_ALL
         OPTIONS
         "BUILD_SHARED_LIBS OFF"
         "BUILD_TESTING OFF"
         "BUILD_LAPACK_DEPRECATED OFF"
         "BUILD_STATIC_LIBS ON"
         "BUILD_WITHOUT_CBLAS ON"
+        "${OPENBLAS_C_LAPACK_OPTION}"
         "BUILD_DOUBLE ON"
-        "USE_THREAD 0"
-        "USE_LOCKING 1"
+        "USE_THREAD OFF"
+        "USE_LOCKING ON"
     )
 
     # Copy OpenBLAS headers (hack to put generated headers somewhere accessible without installing)
@@ -151,8 +157,7 @@ else()
     find_package(OpenBLAS REQUIRED)
     target_link_libraries(
         ${FSBCORE_TARGET_NAME} PUBLIC
-        OpenBLAS::OpenBLAS
-        libgfortran.a)
+        OpenBLAS::OpenBLAS)
 endif()
 
 # Set sources for documentation (parent scope)
