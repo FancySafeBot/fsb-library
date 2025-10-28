@@ -20,6 +20,11 @@ namespace fsb
 */
 constexpr long MINIMUM_STEP_SIZE_NS = 10000;
 
+inline real_t timespec_to_seconds(const timespec& ts)
+{
+    return static_cast<real_t>(ts.tv_sec) + static_cast<real_t>(ts.tv_nsec) * 1e-9;
+}
+
 /**
  * @brief Timing error codes
  */
@@ -34,17 +39,29 @@ enum class TimingError : uint8_t
      */
     MONOTONIC_CLOCK_FAILED = 1,
     /**
+     * @brief Failed to get realtime clock time
+     */
+    REALTIME_CLOCK_FAILED = 2,
+    /**
      * Failed nanosleep
      */
-    SLEEP_FAILED = 2,
+    SLEEP_FAILED = 3,
     /**
      * @brief Step size must be specified above clock resolution
      */
-    STEP_SIZE_BELOW_CLOCK_RESOLUTION = 3,
+    STEP_SIZE_BELOW_CLOCK_RESOLUTION = 4,
     /**
      * @brief Step size must be specified greater than minimum
      */
-    STEP_SIZE_LESS_THAN_MINIMUM = 4
+    STEP_SIZE_LESS_THAN_MINIMUM = 5
+};
+
+struct TimeData
+{
+    /** @brief Monotic elapsed time */
+    struct timespec monotonic = {};
+    /** @brief Epoch time */
+    struct timespec realtime = {};
 };
 
 /**
@@ -79,11 +96,11 @@ public:
      * @c calling start. The actual elapsed time is equal to the addition of the
      * nominal time and remainder.
      *
-     * @param nominal_time Target elapsed time since calling @c start()
-     * @param remainder Actual time delay after target elapsed time
+     * @param nominal_time Target time since calling \c start().
+     * @param actual_time Actual time.
      * @return Timing error code
      */
-    TimingError step(real_t& nominal_time, real_t& remainder);
+    TimingError step(TimeData& nominal_time, TimeData& actual_time);
 
 private:
 
@@ -91,6 +108,8 @@ private:
     timespec m_step_req = {};
     /** @brief Initial monotonic time when starting loop */
     timespec m_init = {};
+    /** @brief Initial realtime clock time when starting loop */
+    timespec m_init_realtime = {};
     /** @brief Step size of timer loop */
     timespec m_step_size = {};
 };

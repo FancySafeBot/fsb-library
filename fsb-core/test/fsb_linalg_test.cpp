@@ -217,7 +217,14 @@ TEST_CASE("Eigenvalue decomposition of symmetric positive definite" * doctest::d
     }
     for (size_t k = 0U; k < (adim * adim); ++k)
     {
-        REQUIRE(eig_vec_actual[k] == FsbApprox(eig_vec_expected[k]));
+        if (eig_vec_actual[k] * eig_vec_expected[k] < 0.0)
+        {
+            REQUIRE(-eig_vec_actual[k] == FsbApprox(eig_vec_expected[k]));
+        }
+        else
+        {
+            REQUIRE(eig_vec_actual[k] == FsbApprox(eig_vec_expected[k]));
+        }
     }
 }
 

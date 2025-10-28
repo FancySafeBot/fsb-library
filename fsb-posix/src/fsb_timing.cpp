@@ -9,15 +9,9 @@ namespace fsb
 {
 
 // static methods
-static real_t timespec_to_seconds(const timespec& ts);
 static timespec timespec_monodiff(const timespec& ts_a, const timespec& ts_b);
 static timespec timespec_monoadd(const timespec& ts_a, const timespec& ts_b);
 static int clock_nanosleep_abstime (const timespec& req);
-
-static real_t timespec_to_seconds(const timespec& ts)
-{
-    return static_cast<real_t>(ts.tv_sec) + static_cast<real_t>(ts.tv_nsec) * 1e-9;
-}
 
 /* timespec difference (monotonic) ts_a - ts_b */
 static timespec timespec_monodiff(const timespec& ts_a, const timespec& ts_b)
@@ -134,6 +128,10 @@ TimingError PeriodicTimer::start()
     {
         err = TimingError::MONOTONIC_CLOCK_FAILED;
     }
+    else if (0 != clock_gettime(CLOCK_REALTIME, &m_init_realtime))
+    {
+        err = TimingError::REALTIME_CLOCK_FAILED;
+    }
     else
     {
         m_step_req = m_init;
@@ -141,7 +139,7 @@ TimingError PeriodicTimer::start()
     return err;
 }
 
-TimingError PeriodicTimer::step(real_t& nominal_time, real_t& remainder)
+TimingError PeriodicTimer::step(TimeData& nominal_time, TimeData& actual_time)
 {
     auto err = TimingError::SUCCESS;
     m_step_req = timespec_monoadd(m_step_req, m_step_size);
@@ -151,17 +149,18 @@ TimingError PeriodicTimer::step(real_t& nominal_time, real_t& remainder)
     }
     else
     {
-        timespec now = {};
-        if (0 != clock_gettime(CLOCK_MONOTONIC, &now))
+        struct timespec ts_now = {};
+        if (0 != clock_gettime(CLOCK_MONOTONIC, &ts_now))
         {
             err = TimingError::MONOTONIC_CLOCK_FAILED;
         }
         else
         {
-            /* elapsed from last step */
-            remainder = timespec_to_seconds(timespec_monodiff(now, m_step_req));
             /* time from start in seconds */
-            nominal_time = timespec_to_seconds(timespec_monodiff(m_step_req, m_init));
+            nominal_time.monotonic = timespec_monodiff(m_step_req, m_init);
+            nominal_time.realtime = timespec_monoadd(m_init_realtime, nominal_time.monotonic);
+            actual_time.monotonic = timespec_monodiff(ts_now, m_init);
+            actual_time.realtime = timespec_monoadd(m_init_realtime, actual_time.monotonic);
         }
     }
 
