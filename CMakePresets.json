@@ -9,20 +9,17 @@
     {
       "name": "common",
       "hidden": true,
-      "generator": "Ninja",
       "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM",
-        "FSB_BUILD_OPENBLAS": "ON"
+        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM"
       }
     },
     {
       "name": "dev",
       "hidden": true,
+      "inherits": "common",
       "generator": "Ninja",
-      "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "CPM_SOURCE_CACHE": "${sourceDir}/build/CPM",
         "FSB_BUILD_OPENBLAS": "OFF",
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"

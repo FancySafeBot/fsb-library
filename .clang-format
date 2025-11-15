@@ -1,15 +1,25 @@
 ---
+# Base Style
 BasedOnStyle: WebKit
+
+# Line Length
+ColumnLimit: 100
+
+# Indentation
+TabWidth: 4
+UseTab: Never
+IndentCaseLabels: true
+NamespaceIndentation: Inner
+ConstructorInitializerIndentWidth: 8
+
+# Alignment
 AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Left
+AlignConsecutiveDeclarations: Consecutive
 AlignEscapedNewlines: DontAlign
 AlignOperands: Align
-AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortBlocksOnASingleLine: Empty
-AllowShortLambdasOnASingleLine: Empty
-NamespaceIndentation: Inner
-BinPackArguments: false
+
+# Breaking
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel: true
@@ -28,23 +38,35 @@ BraceWrapping:
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
+
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: AfterColon
-Cpp11BracedListStyle: true
-EmptyLineBeforeAccessModifier: Always
-FixNamespaceComments: true
-IndentCaseLabels: true
-InsertBraces: true
-KeepEmptyLinesAtTheStartOfBlocks: false
-SortIncludes: Never
+PackConstructorInitializers: Never
+
+# Short Constructs
+AllowShortBlocksOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
+
+# Spacing
 SpaceAfterTemplateKeyword: true
 SpaceBeforeCpp11BracedList: false
 SpaceInEmptyBlock: false
 SpacesInContainerLiterals: false
-TabWidth: 4
-ColumnLimit: 100
-ConstructorInitializerIndentWidth: 8
-PackConstructorInitializers: Never
-AlignConsecutiveDeclarations: Consecutive
-UseTab: Never
+
+# Packing and Binning
+BinPackArguments: false
+
+# Includes and Namespaces
+SortIncludes: Never
+FixNamespaceComments: true
+
+# Empty Lines
+EmptyLineBeforeAccessModifier: Always
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Modern C++ Features
+Cpp11BracedListStyle: true
+InsertBraces: true
 ...
