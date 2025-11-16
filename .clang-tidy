@@ -12,6 +12,9 @@ Checks: >
   -modernize-use-trailing-return-type,
   -modernize-avoid-c-arrays,
   -modernize-use-designated-initializers,
+  -modernize-deprecated-headers,
+  -hicpp-deprecated-headers,
+  -misc-include-cleaner,
   -cppcoreguidelines-avoid-c-arrays,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-pro-bounds-constant-array-index,
@@ -21,7 +24,7 @@ Checks: >
   -bugprone-easily-swappable-parameters
 
 WarningsAsErrors: ''
-HeaderFilterRegex: ''
+HeaderFilterRegex: '(fsb-core|fsb-posix|fsb-urdf)/.*'
 FormatStyle: file
 
 CheckOptions:
@@ -68,13 +71,19 @@ CheckOptions:
   - key: readability-identifier-naming.PublicMemberCase
     value: lower_case
 
-  # Constants: UPPER_CASE
+  # Constant variables: snake_case
   - key: readability-identifier-naming.ConstantCase
-    value: UPPER_CASE
+    value: lower_case
+
+  # Constexpr and globals: k prefix + CamelCase
   - key: readability-identifier-naming.ConstexprVariableCase
-    value: UPPER_CASE
+    value: k
+  - key: readability-identifier-naming.ConstexprVariableCase
+    value: CamelCase
   - key: readability-identifier-naming.GlobalConstantCase
-    value: UPPER_CASE
+    value: k
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: CamelCase
 
   # Namespaces: snake_case
   - key: readability-identifier-naming.NamespaceCase

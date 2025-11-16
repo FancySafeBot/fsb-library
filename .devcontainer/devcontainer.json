@@ -14,7 +14,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "./scripts/build-dev.sh",
+	"postCreateCommand": "./scripts/build.sh 'dev-debug'",
 
 	// Configure tool-specific properties.
 	"customizations": {
