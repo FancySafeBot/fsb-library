@@ -8,32 +8,32 @@ TEST_SUITE_BEGIN("trapezoidal");
 TEST_CASE("Zero duration trajectory" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         10.0, 50.0, 0.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 50.0;
-    const fsb::real_t final_acceleration = 0.0;
+    const fsb::Real final_velocity = 50.0;
+    const fsb::Real final_acceleration = 0.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.0;
+    const fsb::Real expected_duration = 0.0;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 4;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -1e-6, 0.0, 1e-6, 1.0
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -67,32 +67,32 @@ TEST_CASE("Zero duration trajectory" * doctest::description("[fsb::VelocityTrape
 TEST_CASE("Velocity Case 0" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, 0.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 50.0;
-    const fsb::real_t final_acceleration = 0.0;
+    const fsb::Real final_velocity = 50.0;
+    const fsb::Real final_acceleration = 0.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.4472135954999579;
+    const fsb::Real expected_duration = 0.4472135954999579;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.044721359549995794, -8.94427190999916e-06, 0.0, 8.94427190999916e-06, 0.22360679774997896, 0.4472046512280479, 0.4472135954999579, 0.4472225397718679, 0.49193495504995377
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -131,32 +131,32 @@ TEST_CASE("Velocity Case 0" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 1" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, 0.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 0.1;
-    const fsb::real_t final_acceleration = 0.0;
+    const fsb::Real final_velocity = 0.1;
+    const fsb::Real final_acceleration = 0.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.02;
+    const fsb::Real expected_duration = 0.02;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.002, -4.0000000000000003e-07, 0.0, 4.0000000000000003e-07, 0.01, 0.0199996, 0.02, 0.020000399999999998, 0.022000000000000002
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -195,32 +195,32 @@ TEST_CASE("Velocity Case 1" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 2" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, 0.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 20.0;
-    const fsb::real_t final_acceleration = 0.0;
+    const fsb::Real final_velocity = 20.0;
+    const fsb::Real final_acceleration = 0.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.282842712474619;
+    const fsb::Real expected_duration = 0.282842712474619;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.0282842712474619, -5.656854249492381e-06, 0.0, 5.656854249492381e-06, 0.1414213562373095, 0.2828370556203695, 0.282842712474619, 0.2828483693288685, 0.3111269837220809
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -251,32 +251,32 @@ TEST_CASE("Velocity Case 2" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 3" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, 20.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 50.0;
-    const fsb::real_t final_acceleration = -5.0;
+    const fsb::Real final_velocity = 50.0;
+    const fsb::Real final_acceleration = -5.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.43316291680593116;
+    const fsb::Real expected_duration = 0.43316291680593116;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.043316291680593116, -8.663258336118624e-06, 0.0, 8.663258336118624e-06, 0.21658145840296558, 0.433154253547595, 0.43316291680593116, 0.43317158006426726, 0.4764792084865243
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -307,32 +307,32 @@ TEST_CASE("Velocity Case 3" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 4" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, 20.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 0.1;
-    const fsb::real_t final_acceleration = -10.0;
+    const fsb::Real final_velocity = 0.1;
+    const fsb::Real final_acceleration = -10.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.03449489742783178;
+    const fsb::Real expected_duration = 0.03449489742783178;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.0034494897427831783, -6.898979485566357e-07, 0.0, 6.898979485566357e-07, 0.01724744871391589, 0.034494207529883227, 0.03449489742783178, 0.034495587325780334, 0.03794438717061496
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -363,32 +363,32 @@ TEST_CASE("Velocity Case 4" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 5" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, 20.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 20.0;
-    const fsb::real_t final_acceleration = -10.0;
+    const fsb::Real final_velocity = 20.0;
+    const fsb::Real final_acceleration = -10.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.2746049894151541;
+    const fsb::Real expected_duration = 0.2746049894151541;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.02746049894151541, -5.492099788303083e-06, 0.0, 5.492099788303083e-06, 0.13730249470757705, 0.2745994973153658, 0.2746049894151541, 0.2746104815149424, 0.3020654883566695
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -419,32 +419,32 @@ TEST_CASE("Velocity Case 5" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 6" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, -20.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 50.0;
-    const fsb::real_t final_acceleration = 10.0;
+    const fsb::Real final_velocity = 50.0;
+    const fsb::Real final_acceleration = 10.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.45833023542919793;
+    const fsb::Real expected_duration = 0.45833023542919793;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.04583302354291979, -9.166604708583959e-06, 0.0, 9.166604708583959e-06, 0.22916511771459896, 0.45832106882448936, 0.45833023542919793, 0.4583394020339065, 0.5041632589721178
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -475,32 +475,32 @@ TEST_CASE("Velocity Case 6" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 7" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, -20.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 0.1;
-    const fsb::real_t final_acceleration = 10.0;
+    const fsb::Real final_velocity = 0.1;
+    const fsb::Real final_acceleration = 10.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.04741657386773941;
+    const fsb::Real expected_duration = 0.04741657386773941;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.004741657386773942, -9.483314773547884e-07, 0.0, 9.483314773547884e-07, 0.023708286933869706, 0.04741562553626206, 0.04741657386773941, 0.047417522199216765, 0.052158231254513354
     };
     const fsb::TrajState expected_output[num_input_values] = {
@@ -531,32 +531,32 @@ TEST_CASE("Velocity Case 7" * doctest::description("[fsb::VelocityTrapezoidal]")
 TEST_CASE("Velocity Case 8" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
     // floating point tolerance
-    const fsb::real_t tolerance = 1e-10;
+    const fsb::Real tolerance = 1e-10;
 
     // Inputs
     // ------------------------
 
     // constraints
-    const fsb::real_t max_acceleration = 300.0;
-    const fsb::real_t max_jerk  = 1000.0;
+    const fsb::Real max_acceleration = 300.0;
+    const fsb::Real max_jerk  = 1000.0;
     // start time
-    const fsb::real_t start_time = 0.0;
+    const fsb::Real start_time = 0.0;
     // initial state
     const fsb::TrajState initial_state = {
         0.0, 0.0, -20.0, 0.0
     };
     // target
-    const fsb::real_t final_velocity = 20.0;
-    const fsb::real_t final_acceleration = 10.0;
+    const fsb::Real final_velocity = 20.0;
+    const fsb::Real final_acceleration = 10.0;
 
     // Expected output
     // --------------------------
 
     // SetTargetPosition duration
-    const fsb::real_t expected_duration = 0.2946049894151541;
+    const fsb::Real expected_duration = 0.2946049894151541;
     // Evaluate inputs and expected values
     constexpr size_t num_input_values = 9;
-    const fsb::real_t input_time[num_input_values] = {
+    const fsb::Real input_time[num_input_values] = {
         -0.029460498941515412, -5.892099788303083e-06, 0.0, 5.892099788303083e-06, 0.14730249470757706, 0.2945990973153658, 0.2946049894151541, 0.2946108815149424, 0.32406548835666954
     };
     const fsb::TrajState expected_output[num_input_values] = {

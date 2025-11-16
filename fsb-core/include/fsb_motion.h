@@ -96,7 +96,7 @@ Vec3 vector_subtract(const Vec3& v_a, const Vec3& v_b);
  * @param vec Vector to scale
  * @return Scaled Vector
  */
-Vec3 vector_scale(real_t scalar, const Vec3& vec);
+Vec3 vector_scale(Real scalar, const Vec3& vec);
 
 /**
  * @brief Element-wise vector multiplication
@@ -129,7 +129,7 @@ Vec3 vector_cross(const Vec3& v_a, const Vec3& v_b);
  * @param v_b Vector b
  * @return Dot product of a and b
  */
-real_t vector_dot(const Vec3& v_a, const Vec3& v_b);
+Real vector_dot(const Vec3& v_a, const Vec3& v_b);
 
 /**
  * @brief Vector norm
@@ -139,7 +139,7 @@ real_t vector_dot(const Vec3& v_a, const Vec3& v_b);
  * @param vec Vector input
  * @return 2-norm of vector
  */
-real_t vector_norm(const Vec3& vec);
+Real vector_norm(const Vec3& vec);
 
 /**
  * @brief Element-wise vector absolute value

@@ -12,24 +12,30 @@ namespace fsb
 {
 
 static void compute_child_kinematics(
-    const CartesianPva& body_pva, const Joint& joint, const JointPva& joint_pva, const ForwardKinematicsOption opt,
-    CartesianPva& child_body_pva)
+    const CartesianPva& body_pva, const Joint& joint, const JointPva& joint_pva,
+    const ForwardKinematicsOption opt, CartesianPva& child_body_pva)
 {
     const Transform tr_parent_child = joint_parent_child_transform(joint, joint_pva.position);
     child_body_pva.pose = coord_transform(body_pva.pose, tr_parent_child);
 
-    if ((opt == ForwardKinematicsOption::POSE_VELOCITY) || (opt == ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION))
+    if ((opt == ForwardKinematicsOption::POSE_VELOCITY)
+        || (opt == ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION))
     {
         // motion velocity transform
-        const MotionVector vel_parent_child = joint_parent_child_velocity(joint, joint_pva.velocity);
-        child_body_pva.velocity
-            = motion_transform_velocity(body_pva.pose, body_pva.velocity, tr_parent_child, vel_parent_child);
+        const MotionVector vel_parent_child
+            = joint_parent_child_velocity(joint, joint_pva.velocity);
+        child_body_pva.velocity = motion_transform_velocity(
+            body_pva.pose, body_pva.velocity, tr_parent_child, vel_parent_child);
 
         if (opt == ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION)
         {
             // motion acceleration transform
             child_body_pva.acceleration = motion_transform_acceleration(
-                body_pva.pose, body_pva.velocity, body_pva.acceleration, tr_parent_child, vel_parent_child,
+                body_pva.pose,
+                body_pva.velocity,
+                body_pva.acceleration,
+                tr_parent_child,
+                vel_parent_child,
                 joint_parent_child_acceleration(joint, joint_pva));
         }
     }
@@ -40,9 +46,9 @@ void forward_kinematics(
     const ForwardKinematicsOption opt, BodyCartesianPva& body_cartesian)
 {
     // set base pva, ensure base quaternion is normalized
-    constexpr size_t base_index = 0U;
-    body_cartesian.body[base_index] = base_pva;
-    quat_normalize(body_cartesian.body[base_index].pose.rotation);
+    constexpr size_t BaseIndex = 0U;
+    body_cartesian.body[BaseIndex] = base_pva;
+    quat_normalize(body_cartesian.body[BaseIndex].pose.rotation);
     // propagate through tree
     const size_t num_bodies = body_tree.get_num_bodies();
     for (size_t body_index = 1U; body_index < num_bodies; ++body_index)
@@ -65,7 +71,7 @@ JointSpacePosition joint_add_offset(
     const JointSpace& joint_offset)
 {
     JointSpacePosition result = joint_position;
-    const size_t num_bodies = body_tree.get_num_bodies();
+    const size_t       num_bodies = body_tree.get_num_bodies();
 
     for (size_t body_index = 1U; body_index < num_bodies; ++body_index)
     {
@@ -77,17 +83,15 @@ JointSpacePosition joint_add_offset(
             case JointType::SPHERICAL:
             {
                 // Compose quaternions: q_new = q_offset * q_current
-                const Quaternion q_current = {
-                    result.q[joint.coord_index + 0U],
-                    result.q[joint.coord_index + 1U],
-                    result.q[joint.coord_index + 2U],
-                    result.q[joint.coord_index + 3U]
-                };
-                const Vec3 q_offset = {
-                    joint_offset.qv[joint.dof_index + 0U],
-                    joint_offset.qv[joint.dof_index + 1U],
-                    joint_offset.qv[joint.dof_index + 2U]
-                };
+                const Quaternion q_current
+                    = {result.q[joint.coord_index + 0U],
+                       result.q[joint.coord_index + 1U],
+                       result.q[joint.coord_index + 2U],
+                       result.q[joint.coord_index + 3U]};
+                const Vec3 q_offset
+                    = {joint_offset.qv[joint.dof_index + 0U],
+                       joint_offset.qv[joint.dof_index + 1U],
+                       joint_offset.qv[joint.dof_index + 2U]};
                 const Quaternion q_new = quat_boxplus(q_current, q_offset);
                 result.q[joint.coord_index + 0U] = q_new.qw;
                 result.q[joint.coord_index + 1U] = q_new.qx;
@@ -98,17 +102,15 @@ JointSpacePosition joint_add_offset(
             case JointType::CARTESIAN:
             {
                 // Compose quaternions: q_new = q_offset * q_current
-                const Quaternion q_current = {
-                    result.q[joint.coord_index + 0U],
-                    result.q[joint.coord_index + 1U],
-                    result.q[joint.coord_index + 2U],
-                    result.q[joint.coord_index + 3U]
-                };
-                const Vec3 q_offset = {
-                    joint_offset.qv[joint.dof_index + 0U],
-                    joint_offset.qv[joint.dof_index + 1U],
-                    joint_offset.qv[joint.dof_index + 2U]
-                };
+                const Quaternion q_current
+                    = {result.q[joint.coord_index + 0U],
+                       result.q[joint.coord_index + 1U],
+                       result.q[joint.coord_index + 2U],
+                       result.q[joint.coord_index + 3U]};
+                const Vec3 q_offset
+                    = {joint_offset.qv[joint.dof_index + 0U],
+                       joint_offset.qv[joint.dof_index + 1U],
+                       joint_offset.qv[joint.dof_index + 2U]};
                 const Quaternion q_new = quat_boxplus(q_current, q_offset);
                 result.q[joint.coord_index + 0U] = q_new.qw;
                 result.q[joint.coord_index + 1U] = q_new.qx;
@@ -165,18 +167,16 @@ JointSpace joint_difference(
             case JointType::SPHERICAL:
             {
                 // SO(3) difference: log(q_a * inv(q_b))
-                const Quaternion q_a = {
-                    joint_position_a.q[joint.coord_index + 0U],
-                    joint_position_a.q[joint.coord_index + 1U],
-                    joint_position_a.q[joint.coord_index + 2U],
-                    joint_position_a.q[joint.coord_index + 3U]
-                };
-                const Quaternion q_b = {
-                    joint_position_b.q[joint.coord_index + 0U],
-                    joint_position_b.q[joint.coord_index + 1U],
-                    joint_position_b.q[joint.coord_index + 2U],
-                    joint_position_b.q[joint.coord_index + 3U]
-                };
+                const Quaternion q_a
+                    = {joint_position_a.q[joint.coord_index + 0U],
+                       joint_position_a.q[joint.coord_index + 1U],
+                       joint_position_a.q[joint.coord_index + 2U],
+                       joint_position_a.q[joint.coord_index + 3U]};
+                const Quaternion q_b
+                    = {joint_position_b.q[joint.coord_index + 0U],
+                       joint_position_b.q[joint.coord_index + 1U],
+                       joint_position_b.q[joint.coord_index + 2U],
+                       joint_position_b.q[joint.coord_index + 3U]};
                 const Vec3 diff = quat_boxminus(q_a, q_b);
                 result.qv[joint.dof_index + 0U] = diff.x;
                 result.qv[joint.dof_index + 1U] = diff.y;
@@ -186,18 +186,16 @@ JointSpace joint_difference(
             case JointType::CARTESIAN:
             {
                 // SO(3) difference for rotation
-                const Quaternion q_a = {
-                    joint_position_a.q[joint.coord_index + 0U],
-                    joint_position_a.q[joint.coord_index + 1U],
-                    joint_position_a.q[joint.coord_index + 2U],
-                    joint_position_a.q[joint.coord_index + 3U]
-                };
-                const Quaternion q_b = {
-                    joint_position_b.q[joint.coord_index + 0U],
-                    joint_position_b.q[joint.coord_index + 1U],
-                    joint_position_b.q[joint.coord_index + 2U],
-                    joint_position_b.q[joint.coord_index + 3U]
-                };
+                const Quaternion q_a
+                    = {joint_position_a.q[joint.coord_index + 0U],
+                       joint_position_a.q[joint.coord_index + 1U],
+                       joint_position_a.q[joint.coord_index + 2U],
+                       joint_position_a.q[joint.coord_index + 3U]};
+                const Quaternion q_b
+                    = {joint_position_b.q[joint.coord_index + 0U],
+                       joint_position_b.q[joint.coord_index + 1U],
+                       joint_position_b.q[joint.coord_index + 2U],
+                       joint_position_b.q[joint.coord_index + 3U]};
                 const Vec3 diff_rot = quat_boxminus(q_a, q_b);
                 result.qv[joint.dof_index + 0U] = diff_rot.x;
                 result.qv[joint.dof_index + 1U] = diff_rot.y;

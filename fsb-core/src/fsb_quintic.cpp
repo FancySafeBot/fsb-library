@@ -8,34 +8,35 @@ namespace fsb
 {
 
 static QuinticCoeffs generate_coefficients(
-    const real_t duration, const TrajState& initial_state, const TrajState& final_state,
+    const Real duration, const TrajState& initial_state, const TrajState& final_state,
     bool& is_valid)
 {
     QuinticCoeffs coeffs = {};
     is_valid = (duration > QUINTIC_MIN_DURATION);
     if (is_valid)
     {
-        const real_t dist = final_state.position - initial_state.position;
-        const real_t tf2 = duration * duration;
-        const real_t tf3 = tf2 * duration;
-        const real_t tf4 = tf3 * duration;
-        const real_t tf5 = tf4 * duration;
+        const Real dist = final_state.position - initial_state.position;
+        const Real t_f2 = duration * duration;
+        const Real t_f3 = t_f2 * duration;
+        const Real t_f4 = t_f3 * duration;
+        const Real t_f5 = t_f4 * duration;
 
         coeffs.c0 = initial_state.position;
         coeffs.c1 = initial_state.velocity;
         coeffs.c2 = 0.5 * initial_state.acceleration;
-        coeffs.c3 = (1.0 / (2.0 * tf3))
+        coeffs.c3 = (1.0 / (2.0 * t_f3))
                     * (20.0 * dist
                        - (8.0 * final_state.velocity + 12.0 * initial_state.velocity) * duration
-                       - (3.0 * initial_state.acceleration - final_state.acceleration) * tf2);
-        coeffs.c4 = (1.0 / (2.0 * tf4))
-                    * (-30.0 * dist
-                       + (14.0 * final_state.velocity + 16.0 * initial_state.velocity) * duration
-                       + (3.0 * initial_state.acceleration - 2.0 * final_state.acceleration) * tf2);
+                       - (3.0 * initial_state.acceleration - final_state.acceleration) * t_f2);
+        coeffs.c4
+            = (1.0 / (2.0 * t_f4))
+              * (-30.0 * dist
+                 + (14.0 * final_state.velocity + 16.0 * initial_state.velocity) * duration
+                 + (3.0 * initial_state.acceleration - 2.0 * final_state.acceleration) * t_f2);
         coeffs.c5
-            = (1.0 / (2.0 * tf5))
+            = (1.0 / (2.0 * t_f5))
               * (12.0 * dist - 6.0 * (final_state.velocity + initial_state.velocity) * duration
-                 + (final_state.acceleration - initial_state.acceleration) * tf2);
+                 + (final_state.acceleration - initial_state.acceleration) * t_f2);
     }
 
     return coeffs;
@@ -91,7 +92,7 @@ static QuinticCoeffs generate_coefficients(
 //
 
 bool QuinticTrajectory::generate(
-    const real_t start_time, const real_t duration, const TrajState& initial_state,
+    const Real start_time, const Real duration, const TrajState& initial_state,
     const TrajState& final_state)
 {
     bool is_valid = false;
@@ -107,15 +108,15 @@ bool QuinticTrajectory::generate(
     return is_valid;
 }
 
-TrajState QuinticTrajectory::evaluate(real_t t_eval) const
+TrajState QuinticTrajectory::evaluate(Real t_eval) const
 {
     TrajState result = {};
     t_eval -= m_start_time;
 
-    const real_t x2 = t_eval * t_eval;
-    const real_t x3 = x2 * t_eval;
-    const real_t x4 = x3 * t_eval;
-    const real_t x5 = x4 * t_eval;
+    const Real x2 = t_eval * t_eval;
+    const Real x3 = x2 * t_eval;
+    const Real x4 = x3 * t_eval;
+    const Real x5 = x4 * t_eval;
 
     result.jerk = m_coeffs.c5 * 60.0 * x2 + m_coeffs.c4 * 24.0 * t_eval + m_coeffs.c3 * 6.0;
 

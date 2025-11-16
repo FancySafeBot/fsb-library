@@ -25,7 +25,8 @@ Transform urdf_parse_origin(
             const Vec3 xyz_value = string_to_vector(xyz_str, err);
             if (err.is_error())
             {
-                err = {err.get_type(),
+                err
+                    = {err.get_type(),
                        "Invalid origin translation xyz='" + xyz_str + "' for element '" + el_name
                            + "' in URDF file '" + fname + "'"};
             }
@@ -41,7 +42,8 @@ Transform urdf_parse_origin(
             const Vec3 rpy_value = string_to_vector(rpy_str, err);
             if (err.is_error())
             {
-                err = {err.get_type(),
+                err
+                    = {err.get_type(),
                        "Invalid origin orientation rpy='" + rpy_str + "' for element '" + el_name
                            + "' in URDF file '" + fname + "'"};
             }
@@ -64,7 +66,8 @@ Transform urdf_parse_origin(
             const Quaternion quat_value = string_to_quaternion(quat_str, err);
             if (err.is_error())
             {
-                err= {err.get_type(),
+                err
+                    = {err.get_type(),
                        "Invalid origin orientation quat='" + quat_str + "' for element '" + el_name
                            + "' in URDF file '" + fname + "'"};
             }
@@ -91,7 +94,8 @@ MotionVector urdf_parse_origin_offset(
             const Vec3 xyz_value = string_to_vector(xyz_str, err);
             if (err.is_error())
             {
-                err = {err.get_type(),
+                err
+                    = {err.get_type(),
                        "Invalid offset translation xyz='" + xyz_str + "' for body '" + body_name
                            + "' in URDF file '" + fname + "'"};
             }
@@ -107,7 +111,8 @@ MotionVector urdf_parse_origin_offset(
             const Vec3 rotvec_value = string_to_vector(rotvec_str, err);
             if (err.is_error())
             {
-                err = {err.get_type(),
+                err
+                    = {err.get_type(),
                        "Invalid offset rotation rotvec='" + rotvec_str + "' for body '" + body_name
                            + "' in URDF file '" + fname + "'"};
             }

@@ -4,28 +4,32 @@
 namespace fsb
 {
 
-void set_collision_object_ray(const Vec3& position_start, const Vec3& direction, CollisionObject& object)
+static void
+set_collision_object_ray(const Vec3& position_start, const Vec3& direction, CollisionObject& object)
 {
 }
-void set_collision_object_plane(const Vec3& position, const Vec3& normal, CollisionObject& object)
+static void
+set_collision_object_plane(const Vec3& position, const Vec3& normal, CollisionObject& object)
 {
 }
-void set_collision_object_sphere(const Vec3& position, real_t radius, CollisionObject& object)
+static void
+set_collision_object_sphere(const Vec3& position, real_t radius, CollisionObject& object)
 {
 }
-void set_collision_object_capsule(const Vec3& position_start, const Vec3& position_end, real_t radius, CollisionObject& object)
+static void set_collision_object_capsule(
+    const Vec3& position_start, const Vec3& position_end, real_t radius, CollisionObject& object)
 {
 }
 
-CollisionObject transform_object(const Transform& pose, const CollisionObject& object)
+static CollisionObject transform_object(const Transform& pose, const CollisionObject& object)
 {
     CollisionObject result = object;
 
     return result;
 }
 
-CollisionError compute_collision(const CollisionObject& object_a, const CollisionObject& object_b,
-                  CollisionResult& collision)
+static CollisionError compute_collision(
+    const CollisionObject& object_a, const CollisionObject& object_b, CollisionResult& collision)
 {
     CollisionError err = CollisionError::SUCCESS;
 
@@ -33,7 +37,7 @@ CollisionError compute_collision(const CollisionObject& object_a, const Collisio
     {
         return collision_ray_ray(object_a, object_b);
     }
-    else if (object_a.type == CollisionObjectType::RAY && object_b.type == CollisionObjectType::PLANE)
+    if (object_a.type == CollisionObjectType::RAY && object_b.type == CollisionObjectType::PLANE)
     {
         return collision_ray_plane(object_a, object_b);
     }

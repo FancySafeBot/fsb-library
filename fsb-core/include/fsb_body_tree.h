@@ -3,7 +3,6 @@
 #define FSB_BODY_TREE_H
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include "fsb_configuration.h"
 #include "fsb_body.h"
@@ -87,9 +86,9 @@ enum class BodyTreeError : uint8_t
 struct JointLimits
 {
     std::array<bool, MaxSize::dofs> set; ///< Enable limits for each joint DoF
-    std::array<real_t, MaxSize::dofs> lower_position; ///< Minimum joint position limit
-    std::array<real_t, MaxSize::dofs> upper_position; ///< Maximum joint position limit
-    std::array<real_t, MaxSize::dofs> max_velocity; ///< Maximum joint velocity limit
+    std::array<Real, MaxSize::dofs> lower_position; ///< Minimum joint position limit
+    std::array<Real, MaxSize::dofs> upper_position; ///< Maximum joint position limit
+    std::array<Real, MaxSize::dofs> max_velocity; ///< Maximum joint velocity limit
 };
 
 /**
@@ -147,7 +146,7 @@ public:
      * @return Error code SUCCESS if limits were set successfully
      */
     BodyTreeError
-    set_joint_position_limit(size_t joint_index, real_t lower_position, real_t upper_position);
+    set_joint_position_limit(size_t joint_index, Real lower_position, Real upper_position);
 
     /**
      * @brief Unset joint position limits for a joint in the body tree
@@ -172,7 +171,7 @@ public:
      * @return Error code SUCCESS if limits were retrieved successfully
      */
     BodyTreeError
-    get_joint_position_limit(size_t joint_index, bool& is_set, real_t& lower_position, real_t& upper_position) const;
+    get_joint_position_limit(size_t joint_index, bool& is_set, Real& lower_position, Real& upper_position) const;
 
     /**
      * @brief Set joint velocity limit for a joint in the body tree
@@ -185,7 +184,7 @@ public:
      * @return Error code SUCCESS if limits were set successfully
      */
     BodyTreeError
-    set_joint_velocity_limit(size_t joint_index, real_t max_velocity);
+    set_joint_velocity_limit(size_t joint_index, Real max_velocity);
 
     /**
      * @brief Get joint velocity limit for a joint in the body tree
@@ -197,7 +196,7 @@ public:
      *
      * @return Error code SUCCESS if limits were retrieved successfully
      */
-    BodyTreeError get_joint_velocity_limit(size_t joint_index, real_t& max_velocity) const;
+    BodyTreeError get_joint_velocity_limit(size_t joint_index, Real& max_velocity) const;
 
     /**
      * @brief Set the reversed flag for a joint in the body tree

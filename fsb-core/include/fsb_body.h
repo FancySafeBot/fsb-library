@@ -3,7 +3,6 @@
 #define FSB_BODY_H
 
 #include <array>
-#include <cstddef>
 #include "fsb_configuration.h"
 #include "fsb_quaternion.h"
 #include "fsb_motion.h"
@@ -25,17 +24,17 @@ namespace fsb
 struct Inertia
 {
     /** @brief Ixx component of tensor */
-    real_t ixx;
+    Real ixx;
     /** @brief Ixx component of tensor */
-    real_t iyy;
+    Real iyy;
     /** @brief Izz component of tensor */
-    real_t izz;
+    Real izz;
     /** @brief Ixy component of tensor */
-    real_t ixy;
+    Real ixy;
     /** @brief Ixz component of tensor */
-    real_t ixz;
+    Real ixz;
     /** @brief Iyz component of tensor */
-    real_t iyz;
+    Real iyz;
 };
 
 /**
@@ -46,7 +45,7 @@ struct MassProps
     /**
      * @brief Mass of body
      */
-    real_t mass;
+    Real mass;
     /**
      * @brief Center of mass
      */
@@ -151,7 +150,7 @@ MassProps body_transform_mass_props(const Transform& transf, const MassProps& ma
  * @param[in] inertia Inertia tensor with respect to center of mass
  * @return Output inertia tensor with respect to origin
  */
-Inertia body_parallel_axis_inertia(real_t mass, const Vec3& com, const Inertia& inertia);
+Inertia body_parallel_axis_inertia(Real mass, const Vec3& com, const Inertia& inertia);
 
 /**
  * @brief Combine mass properties of two bodies in origin of common frame

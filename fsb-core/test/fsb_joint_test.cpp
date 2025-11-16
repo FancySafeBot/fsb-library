@@ -5,7 +5,7 @@
 
 TEST_SUITE_BEGIN("joint");
 
-static void check_fsb_motion_vector(const fsb::MotionVector& v_actual, const fsb::MotionVector& v_expected, const fsb::real_t eps = FsbApprox::default_epsilon)
+static void check_fsb_motion_vector(const fsb::MotionVector& v_actual, const fsb::MotionVector& v_expected, const fsb::Real eps = FsbApprox::default_epsilon)
 {
     REQUIRE(v_actual.angular.x == FsbApprox(v_expected.angular.x, eps));
     REQUIRE(v_actual.angular.y == FsbApprox(v_expected.angular.y, eps));
@@ -78,9 +78,9 @@ TEST_CASE(
 
     const fsb::Vec3 joint_position = {-0.872, 1.235, -0.02};
     const fsb::Quaternion joint_rotation = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
-    const fsb::real_t joint_qpos = 0.45;
-    const fsb::real_t joint_qvel = -0.5;
-    const fsb::real_t joint_qacc = 1.5;
+    const fsb::Real joint_qpos = 0.45;
+    const fsb::Real joint_qvel = -0.5;
+    const fsb::Real joint_qacc = 1.5;
 
     // Expected
     const fsb::Vec3 expected_position = {-0.872, 1.235, -0.02};
@@ -178,7 +178,7 @@ TEST_CASE(
     * doctest::description("[fsb_joint][fsb::joint_parent_child_pva][fsb::joint_parent_child_velocity][fsb::joint_parent_child_transform]"))
 {
     // Inputs
-    const fsb::real_t eps = 2.0 * FsbApprox::default_epsilon;
+    const fsb::Real eps = 2.0 * FsbApprox::default_epsilon;
     const auto joint_type = fsb::JointType::SPHERICAL;
 
     const fsb::Vec3 joint_position = {-0.872, 1.235, -0.02};
@@ -339,9 +339,9 @@ TEST_CASE(
     fsb::Joint joint_nrm = { fsb::JointType::REVOLUTE_Z, false, tr_parent, {}, 0U, 0U, 0U, 0U };
 
     // Joint states
-    const fsb::real_t q  = 0.45;
-    const fsb::real_t qd = -0.5;
-    const fsb::real_t qdd= 1.5;
+    const fsb::Real q  = 0.45;
+    const fsb::Real qd = -0.5;
+    const fsb::Real qdd= 1.5;
 
     fsb::JointPva j_rev = {};
     j_rev.position.q[0] = q;
@@ -384,9 +384,9 @@ TEST_CASE(
     fsb::Joint joint_nrm = { fsb::JointType::PRISMATIC_Z, false, tr_parent, {}, 0U, 0U, 0U, 0U };
 
     // Joint states
-    const fsb::real_t q  = 0.2;
-    const fsb::real_t qd = 0.4;
-    const fsb::real_t qdd= -0.5;
+    const fsb::Real q  = 0.2;
+    const fsb::Real qd = 0.4;
+    const fsb::Real qdd= -0.5;
 
     fsb::JointPva j_rev = {};
     j_rev.position.q[0] = q;

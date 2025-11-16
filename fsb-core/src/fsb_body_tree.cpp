@@ -12,20 +12,17 @@ namespace fsb
 {
 
 static BodyTreeError set_joint_coordinates(
-    const JointType joint_type, size_t& num_coordinates, size_t& num_dofs, size_t& joint_coord_index,
-    size_t& joint_dof_index)
+    const JointType joint_type, size_t& num_coordinates, size_t& num_dofs,
+    size_t& joint_coord_index, size_t& joint_dof_index)
 {
     auto err = BodyTreeError::SUCCESS;
     if (joint_type != JointType::FIXED)
     {
         size_t joint_coords = 0U;
         size_t joint_dofs = 0U;
-        if ((joint_type == JointType::REVOLUTE_X) ||
-            (joint_type == JointType::REVOLUTE_Y) ||
-            (joint_type == JointType::REVOLUTE_Z) ||
-            (joint_type == JointType::PRISMATIC_X) ||
-            (joint_type == JointType::PRISMATIC_Y) ||
-            (joint_type == JointType::PRISMATIC_Z))
+        if ((joint_type == JointType::REVOLUTE_X) || (joint_type == JointType::REVOLUTE_Y)
+            || (joint_type == JointType::REVOLUTE_Z) || (joint_type == JointType::PRISMATIC_X)
+            || (joint_type == JointType::PRISMATIC_Y) || (joint_type == JointType::PRISMATIC_Z))
         {
             joint_coords = 1U;
             joint_dofs = 1U;
@@ -116,7 +113,8 @@ BodyTreeError BodyTree::validate_add_body_input(
     }
     else if (
         (joint_type != JointType::FIXED)
-        && ((fabs(body.mass_props.inertia.ixx) < FSB_TOL) || (fabs(body.mass_props.inertia.iyy) < FSB_TOL)
+        && ((fabs(body.mass_props.inertia.ixx) < FSB_TOL)
+            || (fabs(body.mass_props.inertia.iyy) < FSB_TOL)
             || (fabs(body.mass_props.inertia.izz) < FSB_TOL)))
     {
         err = BodyTreeError::INERTIA_ZERO;
@@ -141,8 +139,8 @@ BodyTreeError BodyTree::validate_add_body_input(
 }
 
 size_t BodyTree::add_massless_body(
-    const size_t parent_body_index, const JointType joint_type, const Transform& parent_joint_transform,
-    const MotionVector& origin_offset, BodyTreeError& err)
+    const size_t parent_body_index, const JointType joint_type,
+    const Transform& parent_joint_transform, const MotionVector& origin_offset, BodyTreeError& err)
 {
     size_t added_body_index = 0U;
     err = validate_massless_body_input(parent_body_index);
@@ -151,14 +149,15 @@ size_t BodyTree::add_massless_body(
         // get joint coordinates from joint type
         size_t joint_coord_index = 0U;
         size_t joint_dof_index = 0U;
-        err = set_joint_coordinates(joint_type, m_num_coordinates, m_num_dofs, joint_coord_index, joint_dof_index);
+        err = set_joint_coordinates(
+            joint_type, m_num_coordinates, m_num_dofs, joint_coord_index, joint_dof_index);
         if (err == BodyTreeError::SUCCESS)
         {
             // body and joint index to add
             const size_t joint_index = m_num_joints;
             const size_t body_index = m_num_bodies;
             // assign joint
-            Joint &new_joint = m_joints[joint_index];
+            Joint& new_joint = m_joints[joint_index];
             new_joint.type = joint_type;
             new_joint.nominal_parent_joint_transform = parent_joint_transform;
             quat_normalize(new_joint.nominal_parent_joint_transform.rotation);
@@ -170,7 +169,7 @@ size_t BodyTree::add_massless_body(
             new_joint.parent_body_index = parent_body_index;
             new_joint.child_body_index = body_index;
             // add body
-            Body &new_body = m_bodies[body_index];
+            Body& new_body = m_bodies[body_index];
             new_body.origin_offset = origin_offset;
             new_body.joint_index = joint_index;
             // parent body unset leaf status
@@ -187,8 +186,8 @@ size_t BodyTree::add_massless_body(
 }
 
 size_t BodyTree::add_body(
-    const size_t parent_body_index, const JointType joint_type, const Transform& parent_joint_transform,
-    const Body& body, BodyTreeError& err)
+    const size_t parent_body_index, const JointType joint_type,
+    const Transform& parent_joint_transform, const Body& body, BodyTreeError& err)
 {
     size_t added_body_index = 0U;
     err = validate_add_body_input(parent_body_index, joint_type, body);
@@ -197,14 +196,15 @@ size_t BodyTree::add_body(
         // get joint coordinates from joint type
         size_t joint_coord_index = 0U;
         size_t joint_dof_index = 0U;
-        err = set_joint_coordinates(joint_type, m_num_coordinates, m_num_dofs, joint_coord_index, joint_dof_index);
+        err = set_joint_coordinates(
+            joint_type, m_num_coordinates, m_num_dofs, joint_coord_index, joint_dof_index);
         if (err == BodyTreeError::SUCCESS)
         {
             // body and joint index to add
             const size_t joint_index = m_num_joints;
             const size_t body_index = m_num_bodies;
             // assign joint
-            Joint &new_joint = m_joints[joint_index];
+            Joint& new_joint = m_joints[joint_index];
             new_joint.type = joint_type;
             new_joint.nominal_parent_joint_transform = parent_joint_transform;
             quat_normalize(new_joint.nominal_parent_joint_transform.rotation);
@@ -216,7 +216,7 @@ size_t BodyTree::add_body(
             new_joint.parent_body_index = parent_body_index;
             new_joint.child_body_index = body_index;
             // add body
-            Body &new_body = m_bodies[body_index];
+            Body& new_body = m_bodies[body_index];
             new_body.origin_offset = body.origin_offset;
             new_body.mass_props = body.mass_props;
             new_body.principal_inertia = body.principal_inertia;
@@ -290,10 +290,12 @@ size_t BodyTree::get_body_dofs(const size_t body_index, BodyTreeError& err) cons
     return dofs;
 }
 
-BodyTreeError BodyTree::set_joint_position_limit(const size_t joint_index, const real_t lower_position, const real_t upper_position)
+BodyTreeError BodyTree::set_joint_position_limit(
+    const size_t joint_index, const Real lower_position, const Real upper_position)
 {
-    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
-    if (joint_index < m_num_joints) {
+    auto result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints)
+    {
         const Joint& joint = m_joints[joint_index];
         if (joint.type == JointType::FIXED ||
             joint.type == JointType::SPHERICAL ||
@@ -315,8 +317,9 @@ BodyTreeError BodyTree::set_joint_position_limit(const size_t joint_index, const
 
 BodyTreeError BodyTree::unset_joint_position_limit(const size_t joint_index)
 {
-    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
-    if (joint_index < m_num_joints) {
+    auto result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints)
+    {
         const Joint& joint = m_joints[joint_index];
         if (joint.type == JointType::FIXED ||
             joint.type == JointType::SPHERICAL ||
@@ -334,10 +337,12 @@ BodyTreeError BodyTree::unset_joint_position_limit(const size_t joint_index)
     return result;
 }
 
-BodyTreeError BodyTree::get_joint_position_limit(const size_t joint_index, bool& is_set, real_t& lower_position, real_t& upper_position) const
+BodyTreeError BodyTree::get_joint_position_limit(
+    const size_t joint_index, bool& is_set, Real& lower_position, Real& upper_position) const
 {
-    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
-    if (joint_index < m_num_joints) {
+    auto result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints)
+    {
         result = BodyTreeError::SUCCESS;
         const Joint& joint = m_joints[joint_index];
         if (joint.type == JointType::FIXED ||
@@ -361,10 +366,12 @@ BodyTreeError BodyTree::get_joint_position_limit(const size_t joint_index, bool&
     return result;
 }
 
-BodyTreeError BodyTree::set_joint_velocity_limit(const size_t joint_index, const real_t max_velocity)
+BodyTreeError
+BodyTree::set_joint_velocity_limit(const size_t joint_index, const Real max_velocity)
 {
-    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
-    if (joint_index < m_num_joints) {
+    auto result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints)
+    {
         const Joint& joint = m_joints[joint_index];
         if (joint.type == JointType::FIXED ||
             joint.type == JointType::SPHERICAL ||
@@ -382,10 +389,12 @@ BodyTreeError BodyTree::set_joint_velocity_limit(const size_t joint_index, const
     return result;
 }
 
-BodyTreeError BodyTree::get_joint_velocity_limit(const size_t joint_index, real_t& max_velocity) const
+BodyTreeError
+BodyTree::get_joint_velocity_limit(const size_t joint_index, Real& max_velocity) const
 {
-    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
-    if (joint_index < m_num_joints) {
+    auto result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints)
+    {
         result = BodyTreeError::SUCCESS;
         const Joint& joint = m_joints[joint_index];
         if (joint.type == JointType::FIXED ||
@@ -405,8 +414,9 @@ BodyTreeError BodyTree::get_joint_velocity_limit(const size_t joint_index, real_
 
 BodyTreeError BodyTree::set_joint_reversed(const size_t joint_index, const bool reversed)
 {
-    BodyTreeError result = BodyTreeError::JOINT_NOT_IN_TREE;
-    if (joint_index < m_num_joints) {
+    auto result = BodyTreeError::JOINT_NOT_IN_TREE;
+    if (joint_index < m_num_joints)
+    {
         m_joints[joint_index].reversed = reversed;
         result = BodyTreeError::SUCCESS;
     }

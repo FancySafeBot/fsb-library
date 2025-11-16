@@ -285,7 +285,7 @@ TEST_CASE("Set identity quaternion" * doctest::description("[fsb_quaternion][fsb
 TEST_CASE("Set rotation about x-axis" * doctest::description("[fsb_quaternion][fsb::quat_rx]"))
 {
     // Inputs
-    const fsb::real_t rx = 45.0 * M_PI / 180.0;
+    const fsb::Real rx = 45.0 * M_PI / 180.0;
     // Expected
     const fsb::Quaternion q_expected = {0.9238795325112867, 0.3826834323650897, 0.0, 0.0};
     // Process
@@ -301,7 +301,7 @@ TEST_CASE("Set rotation about x-axis" * doctest::description("[fsb_quaternion][f
 TEST_CASE("Set rotation about y-axis" * doctest::description("[fsb_quaternion][fsb::quat_ry]"))
 {
     // Inputs
-    const fsb::real_t ry = 30.0 * M_PI / 180.0;
+    const fsb::Real ry = 30.0 * M_PI / 180.0;
     // Expected
     const fsb::Quaternion q_expected = {0.9659258262890684, 0.0, 0.25881904510252074, 0.0};
     // Process
@@ -317,7 +317,7 @@ TEST_CASE("Set rotation about y-axis" * doctest::description("[fsb_quaternion][f
 TEST_CASE("Set rotation about z-axis" * doctest::description("[fsb_quaternion][fsb::quat_rz]"))
 {
     // Inputs
-    const fsb::real_t rz = 90.0 * M_PI / 180.0;
+    const fsb::Real rz = 90.0 * M_PI / 180.0;
     // Expected
     const fsb::Quaternion q_expected = {0.7071067811865476, 0.0, 0.0, 0.7071067811865476};
     // Process

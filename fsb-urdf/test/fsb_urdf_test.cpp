@@ -47,9 +47,9 @@ TEST_CASE("Parse URDF ur5 joint limits" * doctest::description("[urdf_parse][fsb
     const std::string fname = "data/ur5/ur5.urdf";
     // Expected
     const std::string joint_name = "shoulder_pan_joint"; // Joint name to test limits
-    const fsb::real_t expected_lower_position = -6.28318530718;
-    const fsb::real_t expected_upper_position = 6.28318530718;
-    const fsb::real_t expected_max_velocity = 3.15;
+    const fsb::Real expected_lower_position = -6.28318530718;
+    const fsb::Real expected_upper_position = 6.28318530718;
+    const fsb::Real expected_max_velocity = 3.15;
     const bool expected_set = true;
     // Process
     fsb::urdf::UrdfError err = {};
@@ -62,9 +62,9 @@ TEST_CASE("Parse URDF ur5 joint limits" * doctest::description("[urdf_parse][fsb
     REQUIRE(name_err == fsb::urdf::NameMapError::SUCCESS);
 
     bool is_set = false;
-    fsb::real_t min_position = 0.0;
-    fsb::real_t max_position = 0.0;
-    fsb::real_t max_velocity = 0.0;
+    fsb::Real min_position = 0.0;
+    fsb::Real max_position = 0.0;
+    fsb::Real max_velocity = 0.0;
     fsb::BodyTreeError limit_err = model_actual.get_joint_position_limit(joint_index, is_set, min_position, max_position);
     REQUIRE(limit_err == fsb::BodyTreeError::SUCCESS);
     limit_err = model_actual.get_joint_velocity_limit(joint_index, max_velocity);

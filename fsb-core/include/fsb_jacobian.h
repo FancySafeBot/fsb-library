@@ -48,7 +48,7 @@ struct Jacobian
     /**
      * @brief Jacobian matrix data array
      */
-    std::array<real_t, 6U * MaxSize::dofs> j;
+    std::array<Real, 6U * MaxSize::dofs> j;
 };
 
 /**
@@ -59,7 +59,7 @@ struct JointMatrix
     /**
      * @brief Square matrix data array
      */
-    std::array<real_t, MaxSize::dofs * MaxSize::dofs> j;
+    std::array<Real, MaxSize::dofs * MaxSize::dofs> j;
 };
 
 /**
@@ -82,7 +82,7 @@ struct SingularityEllipsoid
 struct Mat3Singularity
 {
     bool is_singular = false;
-    real_t condition_number = 0.0;
+    Real condition_number = 0.0;
     SingularityEllipsoid ellipsoid = {};
 };
 
@@ -176,8 +176,11 @@ JacobianError jacobian_derivative(
     size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian,
     const JointSpace& joint_velocity, Jacobian& jacobian_deriv);
 
+Jacobian jacobian_derivative_from_hessian(
+    const Hessian& hessian, const JointSpace& joint_velocity, size_t dofs);
+
 JacobianError calculate_hessian(
-    const size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian, Hessian& hessian);
+    size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian, Hessian& hessian);
 
 Jacobian hessian_multiply(
     const Hessian& hessian, const JointSpace& joint_motion, size_t dofs);

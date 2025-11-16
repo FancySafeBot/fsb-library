@@ -17,21 +17,21 @@ TEST_CASE("Forward Kinematics RPR fixed base" * doctest::description("[fsb_kinem
 
     const fsb::Vec3 joint1_position = {-0.872, 1.235, -0.02};
     const fsb::Quaternion joint1_rotation = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
-    const fsb::real_t joint1_qpos = 0.45;
-    const fsb::real_t joint1_qvel = -0.5;
-    const fsb::real_t joint1_qacc = 1.5;
+    const fsb::Real joint1_qpos = 0.45;
+    const fsb::Real joint1_qvel = -0.5;
+    const fsb::Real joint1_qacc = 1.5;
 
     const fsb::Vec3 joint2_position = {0, 0, 0};
     const fsb::Quaternion joint2_rotation = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
-    const fsb::real_t joint2_qpos = 1.73;
-    const fsb::real_t joint2_qvel = 0.71;
-    const fsb::real_t joint2_qacc = 1.03;
+    const fsb::Real joint2_qpos = 1.73;
+    const fsb::Real joint2_qvel = 0.71;
+    const fsb::Real joint2_qacc = 1.03;
 
     const fsb::Vec3 joint3_position = {0, 0, 0};
     const fsb::Quaternion joint3_rotation = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
-    const fsb::real_t joint3_qpos = 0.97;
-    const fsb::real_t joint3_qvel = -0.43;
-    const fsb::real_t joint3_qacc = 0.62;
+    const fsb::Real joint3_qpos = 0.97;
+    const fsb::Real joint3_qvel = -0.43;
+    const fsb::Real joint3_qacc = 0.62;
 
     // Expected
     const fsb::Vec3 expected_position = {-0.1609681549732388, -1.4630302404666433, 0.40345719786411616};
@@ -115,21 +115,21 @@ TEST_CASE("Forward Kinematics RPR moving base" * doctest::description("[fsb_kine
 
     const fsb::Vec3 joint1_position = {-0.872, 1.235, -0.02};
     const fsb::Quaternion joint1_rotation = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
-    const fsb::real_t joint1_qpos = 0.45;
-    const fsb::real_t joint1_qvel = -0.5;
-    const fsb::real_t joint1_qacc = 1.5;
+    const fsb::Real joint1_qpos = 0.45;
+    const fsb::Real joint1_qvel = -0.5;
+    const fsb::Real joint1_qacc = 1.5;
 
     const fsb::Vec3 joint2_position = {0.12, 0.05, -0.01};
     const fsb::Quaternion joint2_rotation = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
-    const fsb::real_t joint2_qpos = 1.73;
-    const fsb::real_t joint2_qvel = 0.71;
-    const fsb::real_t joint2_qacc = 1.03;
+    const fsb::Real joint2_qpos = 1.73;
+    const fsb::Real joint2_qvel = 0.71;
+    const fsb::Real joint2_qacc = 1.03;
 
     const fsb::Vec3 joint3_position = {0.1, -0.8, 1.4};
     const fsb::Quaternion joint3_rotation = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
-    const fsb::real_t joint3_qpos = 0.97;
-    const fsb::real_t joint3_qvel = -0.43;
-    const fsb::real_t joint3_qacc = 0.62;
+    const fsb::Real joint3_qpos = 0.97;
+    const fsb::Real joint3_qvel = -0.43;
+    const fsb::Real joint3_qacc = 0.62;
 
     const fsb::Transform joint1_tr = {joint1_rotation, joint1_position};
     const fsb::Transform joint2_tr = {joint2_rotation, joint2_position};
@@ -213,21 +213,21 @@ TEST_CASE("Forward Kinematics RPR static" * doctest::description("[fsb_kinematic
 
     const fsb::Vec3 joint1_position = {1.0, 1.0, 0};
     const fsb::Quaternion joint1_rotation = fsb::quat_rx(90.0 * M_PI / 180.0);
-    const fsb::real_t joint1_qpos = 90.0 * M_PI / 180.0;
-    const fsb::real_t joint1_qvel = 0;
-    const fsb::real_t joint1_qacc = 0;
+    const fsb::Real joint1_qpos = 90.0 * M_PI / 180.0;
+    const fsb::Real joint1_qvel = 0;
+    const fsb::Real joint1_qacc = 0;
 
     const fsb::Vec3 joint2_position = {0, 0, 0};
     const fsb::Quaternion joint2_rotation = {1, 0, 0, 0};
-    const fsb::real_t joint2_qpos = 2.0;
-    const fsb::real_t joint2_qvel = 0;
-    const fsb::real_t joint2_qacc = 0;
+    const fsb::Real joint2_qpos = 2.0;
+    const fsb::Real joint2_qvel = 0;
+    const fsb::Real joint2_qacc = 0;
 
     const fsb::Vec3 joint3_position = {0, 0, 0};
     const fsb::Quaternion joint3_rotation =  {1, 0, 0, 0};
-    const fsb::real_t joint3_qpos = 0.0;
-    const fsb::real_t joint3_qvel = 0;
-    const fsb::real_t joint3_qacc = 0;
+    const fsb::Real joint3_qpos = 0.0;
+    const fsb::Real joint3_qvel = 0;
+    const fsb::Real joint3_qacc = 0;
 
     const fsb::Vec3 expected_position = {1.0, -1.0, 0.0};
     const fsb::Quaternion expected_rotation = {0.5, 0.5, -0.5, 0.5};
@@ -314,9 +314,9 @@ TEST_CASE("Forward Kinematics SRS" * doctest::description("[fsb_kinematics][fsb:
 
     const fsb::Vec3 joint2_position = {0.12, 0.05, -0.01};
     const fsb::Quaternion joint2_rotation = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
-    const fsb::real_t joint2_qpos = 1.73;
-    const fsb::real_t joint2_qvel = 0.71;
-    const fsb::real_t joint2_qacc = 1.03;
+    const fsb::Real joint2_qpos = 1.73;
+    const fsb::Real joint2_qvel = 0.71;
+    const fsb::Real joint2_qacc = 1.03;
 
     const fsb::Vec3 joint3_position = {0.1, -0.8, 1.4};
     const fsb::Quaternion joint3_rotation = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};

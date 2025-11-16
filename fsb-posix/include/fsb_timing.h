@@ -20,9 +20,9 @@ namespace fsb
 */
 constexpr long MINIMUM_STEP_SIZE_NS = 10000;
 
-inline real_t timespec_to_seconds(const timespec& ts)
+inline Real timespec_to_seconds(const timespec& ts)
 {
-    return static_cast<real_t>(ts.tv_sec) + static_cast<real_t>(ts.tv_nsec) * 1e-9;
+    return static_cast<Real>(ts.tv_sec) + static_cast<Real>(ts.tv_nsec) * 1e-9;
 }
 
 /**

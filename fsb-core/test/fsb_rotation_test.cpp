@@ -47,7 +47,7 @@ TEST_CASE("Identity rotation matrix" * doctest::description("[fsb_rotation][fsb:
 TEST_CASE("Rotation matrix about x-axis" * doctest::description("[fsb_rotation][fsb::rot_rx]"))
 {
     // Inputs
-    const fsb::real_t rx = 0.23;
+    const fsb::Real rx = 0.23;
     // Expected
     const fsb::Mat3 rot_expected = {1.0,
                                     0.0,
@@ -75,7 +75,7 @@ TEST_CASE("Rotation matrix about x-axis" * doctest::description("[fsb_rotation][
 TEST_CASE("Rotation matrix about y-axis" * doctest::description("[fsb_rotation][fsb::rot_ry]"))
 {
     // Inputs
-    const fsb::real_t ry = -0.14;
+    const fsb::Real ry = -0.14;
     // Expected
     const fsb::Mat3 rot_expected = {0.9902159962126371,  0.0, 0.1395431146442365, 0.0, 1.0, 0.0,
                                     -0.1395431146442365, 0.0, 0.9902159962126371};
@@ -96,7 +96,7 @@ TEST_CASE("Rotation matrix about y-axis" * doctest::description("[fsb_rotation][
 TEST_CASE("Rotation matrix about z-axis" * doctest::description("[fsb_rotation][fsb::rot_rz]"))
 {
     // Inputs
-    const fsb::real_t rz = 0.5;
+    const fsb::Real rz = 0.5;
     // Expected
     const fsb::Mat3 rot_expected = {0.8775825618903728,
                                     0.479425538604203,

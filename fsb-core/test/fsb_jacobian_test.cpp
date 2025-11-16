@@ -13,17 +13,17 @@ TEST_CASE("Jacobian RPR" * doctest::description("[fsb_jacobian][fsb::calculate_j
     const fsb::Vec3       joint1_position = {-0.872, 1.235, -0.02};
     const fsb::Quaternion joint1_rotation
         = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
-    const fsb::real_t joint1_qpos = 0.45;
+    const fsb::Real joint1_qpos = 0.45;
 
     const fsb::Vec3       joint2_position = {0.12, 0.05, -0.01};
     const fsb::Quaternion joint2_rotation
         = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
-    const fsb::real_t joint2_qpos = 1.73;
+    const fsb::Real joint2_qpos = 1.73;
 
     const fsb::Vec3       joint3_position = {0.1, -0.8, 1.4};
     const fsb::Quaternion joint3_rotation
         = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
-    const fsb::real_t joint3_qpos = 0.97;
+    const fsb::Real joint3_qpos = 0.97;
 
     // Expected
     const fsb::Jacobian expected_jac = {
@@ -255,7 +255,7 @@ TEST_CASE("Jacobian single reversed joint flips one column" * doctest::descripti
     fsb::forward_kinematics(tree_a, q_a, base_pva, fk_opt, pva_a);
     fsb::forward_kinematics(tree_b, q_b, base_pva, fk_opt, pva_b);
 
-    // Sanity: end-effector poses should match
+    // End-effector poses should match
     const fsb::Transform pose_a = pva_a.body[body3_index_a].pose;
     const fsb::Transform pose_b = pva_b.body[body3_index_b].pose;
     REQUIRE(pose_a.translation.x == FsbApprox(pose_b.translation.x));
@@ -288,6 +288,213 @@ TEST_CASE("Jacobian single reversed joint flips one column" * doctest::descripti
                 REQUIRE(J_b.j[idx] == FsbApprox(J_a.j[idx]));
             }
         }
+    }
+}
+
+
+TEST_CASE("Jacobian Derivative RPR" * doctest::description("[fsb_jacobian][fsb::jacobian_derivative]"))
+{
+    // Inputs
+    const fsb::Vec3       joint1_position = {-0.872, 1.235, -0.02};
+    const fsb::Quaternion joint1_rotation
+        = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
+    const fsb::Real joint1_qpos = 0.45;
+
+    const fsb::Vec3       joint2_position = {0.12, 0.05, -0.01};
+    const fsb::Quaternion joint2_rotation
+        = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
+    const fsb::Real joint2_qpos = 1.73;
+
+    const fsb::Vec3       joint3_position = {0.1, -0.8, 1.4};
+    const fsb::Quaternion joint3_rotation
+        = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
+    const fsb::Real joint3_qpos = 0.97;
+
+    // Expected
+    const fsb::Jacobian expected_jac = {
+        {0.7726728681498187,
+         -0.5477694758322571,
+         0.3208196380703445, 1.34096103517755,
+         0.47571437286483415, -2.4173781914425607,
+         0, 0,
+         0, -0.025345073665008336,
+         -0.8845153269080936,
+         -0.46582213741468365,
+         0.716558267043151, -0.4856522484836865,
+         0.5006856733269477, 0.0,
+         0.0, 0.0}
+    };
+    // Process
+    fsb::CartesianPva    base_pva = {fsb::transform_identity(), {}, {}};
+    const fsb::Transform joint1_tr = {joint1_rotation, joint1_position};
+    const fsb::Transform joint2_tr = {joint2_rotation, joint2_position};
+    const fsb::Transform joint3_tr = {joint3_rotation, joint3_position};
+    fsb::JointPva        joint_pva = {
+        {joint1_qpos, joint2_qpos, joint3_qpos},
+        {},
+        {}
+    };
+
+    size_t        body3_index = 0U;
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
+    fsb::BodyCartesianPva actual_body_pva = {};
+    fsb::Jacobian         actual_jacobian = {};
+    const auto            opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;
+    fsb::forward_kinematics(body_tree, joint_pva, base_pva, opt, actual_body_pva);
+    fsb::calculate_jacobian(body3_index, body_tree, actual_body_pva, actual_jacobian);
+
+    // Check body 3 Jacobian
+    const size_t num_dofs = body_tree.get_num_dofs();
+    for (size_t dof_index = 0; dof_index < num_dofs; ++dof_index)
+    {
+        for (size_t motion_index = 0; motion_index < 6U; ++motion_index)
+        {
+            const size_t jac_index = motion_index + dof_index * 6U;
+            REQUIRE(actual_jacobian.j[jac_index] == FsbApprox(expected_jac.j[jac_index]));
+        }
+    }
+
+    // Compute jacobian derivative (expected zero because joint velocities/accelerations are zero)
+    fsb::JointSpace joint_velocity = {};
+    fsb::Jacobian jacobian_dot = {};
+    const fsb::JacobianError jac_dot_err
+        = fsb::jacobian_derivative(body3_index, body_tree, actual_jacobian, joint_velocity, jacobian_dot);
+    REQUIRE(jac_dot_err == fsb::JacobianError::SUCCESS);
+
+    // Check body 3 Jacobian time-derivative is zero
+    const size_t num_dofs_dot = body_tree.get_num_dofs();
+    for (size_t dof_index = 0; dof_index < num_dofs_dot; ++dof_index)
+    {
+        for (size_t motion_index = 0; motion_index < 6U; ++motion_index)
+        {
+            const size_t jac_index = motion_index + dof_index * 6U;
+            REQUIRE(jacobian_dot.j[jac_index] == FsbApprox(0.0));
+        }
+    }
+
+}
+TEST_CASE("Hessian RPR" * doctest::description("[fsb_jacobian][fsb::calculate_hessian]"))
+{
+    // Reuse the RPR sample setup
+    const fsb::Vec3       joint1_position = {-0.872, 1.235, -0.02};
+    const fsb::Quaternion joint1_rotation
+        = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
+    const fsb::Real joint1_qpos = 0.45;
+
+    const fsb::Vec3       joint2_position = {0.12, 0.05, -0.01};
+    const fsb::Quaternion joint2_rotation
+        = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
+    const fsb::Real joint2_qpos = 1.73;
+
+    const fsb::Vec3       joint3_position = {0.1, -0.8, 1.4};
+    const fsb::Quaternion joint3_rotation
+        = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
+    const fsb::Real joint3_qpos = 0.97;
+
+    // Build body tree and forward kinematics
+    fsb::CartesianPva    base_pva = {fsb::transform_identity(), {}, {}};
+    const fsb::Transform joint1_tr = {joint1_rotation, joint1_position};
+    const fsb::Transform joint2_tr = {joint2_rotation, joint2_position};
+    const fsb::Transform joint3_tr = {joint3_rotation, joint3_position};
+    fsb::JointPva        joint_pva = {
+        {joint1_qpos, joint2_qpos, joint3_qpos},
+        {},
+        {}
+    };
+
+    size_t        body3_index = 0U;
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
+
+    fsb::BodyCartesianPva actual_body_pva = {};
+    const auto            opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;
+    fsb::forward_kinematics(body_tree, joint_pva, base_pva, opt, actual_body_pva);
+
+    // Compute Jacobian first (required by calculate_hessian signature)
+    fsb::Jacobian jac = {};
+    REQUIRE(fsb::calculate_jacobian(body3_index, body_tree, actual_body_pva, jac) == fsb::JacobianError::SUCCESS);
+
+    // Compute Hessian
+    fsb::Hessian hessian = {};
+    const fsb::JacobianError h_err = fsb::calculate_hessian(body3_index, body_tree, jac, hessian);
+    REQUIRE(h_err == fsb::JacobianError::SUCCESS);
+}
+
+TEST_CASE("Jacobian derivative from Hessian RPR" * doctest::description("[fsb_jacobian][fsb::jacobian_derivative][fsb_hessian]"))
+{
+    // Setup identical to other RPR tests but with non-zero joint velocities
+    const fsb::Vec3       joint1_position = {-0.872, 1.235, -0.02};
+    const fsb::Quaternion joint1_rotation
+        = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
+    const fsb::Real joint1_qpos = 0.45;
+
+    const fsb::Vec3       joint2_position = {0.12, 0.05, -0.01};
+    const fsb::Quaternion joint2_rotation
+        = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
+    const fsb::Real joint2_qpos = 1.73;
+
+    const fsb::Vec3       joint3_position = {0.1, -0.8, 1.4};
+    const fsb::Quaternion joint3_rotation
+        = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
+    const fsb::Real joint3_qpos = 0.97;
+
+    // Build tree and FK (request velocities)
+    fsb::CartesianPva    base_pva = {fsb::transform_identity(), {}, {}};
+    const fsb::Transform joint1_tr = {joint1_rotation, joint1_position};
+    const fsb::Transform joint2_tr = {joint2_rotation, joint2_position};
+    const fsb::Transform joint3_tr = {joint3_rotation, joint3_position};
+    fsb::JointPva        joint_pva = {
+        {joint1_qpos, joint2_qpos, joint3_qpos},
+        {0.12, -0.07, 0.21}, // non-zero velocities
+        {}
+    };
+
+    size_t        body3_index = 0U;
+    constexpr fsb::MassProps unit_mass_props = { 1.0, {}, {1.0, 1.0, 1.0, 0.0, 0.0, 0.0}};
+    fsb::BodyTree body_tree = body_tree_sample_rpr(
+        joint1_tr, joint2_tr, joint3_tr,
+        unit_mass_props, unit_mass_props, unit_mass_props,
+        body3_index);
+
+    fsb::BodyCartesianPva actual_body_pva = {};
+    const auto            fk_opt = fsb::ForwardKinematicsOption::POSE_VELOCITY_ACCELERATION;
+    fsb::forward_kinematics(body_tree, joint_pva, base_pva, fk_opt, actual_body_pva);
+
+    // Compute Jacobian
+    fsb::Jacobian jac = {};
+    REQUIRE(fsb::calculate_jacobian(body3_index, body_tree, actual_body_pva, jac) == fsb::JacobianError::SUCCESS);
+
+    // Compute jacobian derivative via provided function
+    fsb::JointSpace joint_velocity = {};
+    joint_velocity.qv[0] = joint_pva.velocity.qv[0];
+    joint_velocity.qv[1] = joint_pva.velocity.qv[1];
+    joint_velocity.qv[2] = joint_pva.velocity.qv[2];
+    fsb::Jacobian jac_dot = {};
+    const fsb::JacobianError jd_err
+        = fsb::jacobian_derivative(body3_index, body_tree, jac, joint_velocity, jac_dot);
+    REQUIRE(jd_err == fsb::JacobianError::SUCCESS);
+
+    // Compute Hessian (requires Jacobian)
+    fsb::Hessian hessian = {};
+    const fsb::JacobianError h_err
+        = fsb::calculate_hessian(body3_index, body_tree, jac, hessian);
+    REQUIRE(h_err == fsb::JacobianError::SUCCESS);
+
+    // Build jacobian derivative from Hessian: for each column col_i and motion m
+    const size_t dofs = body_tree.get_num_dofs();
+    const fsb::Jacobian jac_deriv = fsb::jacobian_derivative_from_hessian(hessian, joint_velocity, dofs);
+
+    // Compare the two results
+    for (size_t i = 0; i < 6U * dofs; ++i)
+    {
+        REQUIRE(jac_dot.j[i] == FsbApprox(jac_deriv.j[i]));
     }
 }
 

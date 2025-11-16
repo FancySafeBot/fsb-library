@@ -448,7 +448,7 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
 
         /* DGETRF( M, N, A, LDA, IPIV, INFO ) */
         lapack_int info = 0;
-        lapack_int dgetrf_ret = dgetrf_(&l_s, &l_s, mat_lu, &l_s, ipiv, &info);
+        const lapack_int dgetrf_ret = dgetrf_(&l_s, &l_s, mat_lu, &l_s, ipiv, &info);
         (void)dgetrf_ret;
 
         if (info == 0)
@@ -462,7 +462,7 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
                 x_vec[idx] = y_vec[idx];
             }
             //      SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
-            lapack_int dgetrs_ret = dgetrs_(transpose_opt, &l_s, &l_nrhs, mat_lu, &l_s, ipiv, x_vec, &l_s, &info, transpose_opt_size);
+            const lapack_int dgetrs_ret = dgetrs_(transpose_opt, &l_s, &l_nrhs, mat_lu, &l_s, ipiv, x_vec, &l_s, &info, transpose_opt_size);
             (void)dgetrs_ret;
         }
 
@@ -550,7 +550,7 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(
                 for (size_t kdx = 0; kdx < min_dim; ++kdx)
                 {
                     // v_ji = v_ji / s_i where v_j is column j of V
-                    double_t v_element = vt_mat[kdx * columns + jdx];
+                    const double_t v_element = vt_mat[kdx * columns + jdx];
                     inv_mat[jdx * rows + idx] += (v_element / s_vec[kdx]);
                 }
             }
@@ -577,7 +577,7 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(
 
 FsbLinalgErrorType fsb_linalg_leastsquares_solve(
     const double_t mat[], const size_t rows, const size_t columns, const double_t b_vec[], const size_t nrhs,
-    size_t work_len, double_t work[], double_t x_vec[])
+    const size_t work_len, double_t work[], double_t x_vec[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
 

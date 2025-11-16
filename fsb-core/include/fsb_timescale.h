@@ -62,7 +62,7 @@ public:
      * @return
      */
     bool
-    set_limits(real_t max_timescale, real_t max_timescale_deriv, real_t max_timescale_2nd_deriv);
+    set_limits(Real max_timescale, Real max_timescale_deriv, Real max_timescale_2nd_deriv);
 
     /**
      *
@@ -70,7 +70,7 @@ public:
      * @param time_scaled_init Initial scaled time in seconds
      * @param timescale Initial timescale value. Default 1.0
      */
-    bool start(real_t time_mono, real_t time_scaled_init, real_t timescale = 1.0);
+    bool start(Real time_mono, Real time_scaled_init, Real timescale = 1.0);
 
     /**
      * @brief Set new timescale
@@ -79,19 +79,19 @@ public:
      * @param target_timescale Target timescale
      * @return
      */
-    TimescaleResult goto_timescale(real_t time_mono, real_t target_timescale);
+    TimescaleResult goto_timescale(Real time_mono, Real target_timescale);
 
     /**
      *
      * @param time_mono Monotonic clock time in seconds
      * @return Scaled time state
      */
-    [[nodiscard]] TrajState evaluate(real_t time_mono) const;
+    [[nodiscard]] TrajState evaluate(Real time_mono) const;
 
 private:
-    real_t m_max_timescale = 0.0;
-    real_t m_max_timescale_deriv = 0.0;
-    real_t m_max_timescale_2nd_deriv = 0.0;
+    Real m_max_timescale = 0.0;
+    Real m_max_timescale_deriv = 0.0;
+    Real m_max_timescale_2nd_deriv = 0.0;
 
     TrapezoidalVelocity m_time_traj;
 };

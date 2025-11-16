@@ -39,7 +39,7 @@ size_t string_to_index(const std::string& str, UrdfError& err);
  * @param err Error from parsing
  * @return Real value
  */
-real_t string_to_real(const std::string& str, UrdfError& err);
+Real string_to_real(const std::string& str, UrdfError& err);
 
 /**
  * @brief Split a string with space character as delimiter

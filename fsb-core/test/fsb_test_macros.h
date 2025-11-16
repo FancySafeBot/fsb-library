@@ -14,9 +14,9 @@
  */
 struct FsbApprox : doctest::Approx
 {
-    constexpr static fsb::real_t default_epsilon = 1.0e3 * std::numeric_limits<fsb::real_t>::epsilon();
+    constexpr static fsb::Real default_epsilon = 1.0e3 * std::numeric_limits<fsb::Real>::epsilon();
 
-    explicit FsbApprox(fsb::real_t value, fsb::real_t eps = default_epsilon) : doctest::Approx(value)
+    explicit FsbApprox(fsb::Real value, fsb::Real eps = default_epsilon) : doctest::Approx(value)
     {
         epsilon(eps);
         scale((fabs(value) < eps) ? 0.5 : 0.0);

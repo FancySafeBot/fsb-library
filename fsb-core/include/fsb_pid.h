@@ -48,7 +48,7 @@ public:
      * @param type Type of discretization
      */
     void initialize(
-        real_t step_size, real_t gain_kp, real_t gain_ki, real_t gain_kd, real_t filter_tf,
+        Real step_size, Real gain_kp, Real gain_ki, Real gain_kd, Real filter_tf,
         PidType type = PidType::TRAPEZOIDAL);
 
     /**
@@ -59,7 +59,7 @@ public:
      * @param command Command value at reset
      * @param measured Measured value at reset
      */
-    void reset(real_t command, real_t measured);
+    void reset(Real command, Real measured);
 
     /**
      * @brief Evalaute PID
@@ -68,27 +68,27 @@ public:
      * @param measured Measured feedback
      * @return Controller output
      */
-    real_t evaluate(real_t command, real_t measured);
+    Real evaluate(Real command, Real measured);
 
 private:
     /** proportional gain */
-    real_t m_kp = 0.0;
+    Real m_kp = 0.0;
     /** integral gain */
-    real_t m_ki = 0.0;
+    Real m_ki = 0.0;
     /** derivative gain */
-    real_t m_kd = 0.0;
+    Real m_kd = 0.0;
     /** time constant for derivative filter (in seconds) */
-    real_t m_tf = 0.0;
+    Real m_tf = 0.0;
     /** Step size in seconds */
-    real_t m_step_size = 0.0;
+    Real m_step_size = 0.0;
     /** PID type */
     PidType m_type = PidType::TRAPEZOIDAL;
 
     /** Controller state */
-    real_t m_e1 = 0.0;
-    real_t m_e2 = 0.0;
-    real_t m_u1 = 0.0;
-    real_t m_u2 = 0.0;
+    Real m_e1 = 0.0;
+    Real m_e2 = 0.0;
+    Real m_u1 = 0.0;
+    Real m_u2 = 0.0;
 };
 
 /**

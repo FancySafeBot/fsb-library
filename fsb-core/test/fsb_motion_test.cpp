@@ -333,7 +333,7 @@ TEST_CASE("Motion transform acceleration full" * doctest::description("[fsb_moti
     const fsb::MotionVector acc_actual = fsb::motion_transform_acceleration(tr_parent, vel_parent, acc_parent, tr_motion, vel_motion, acc_motion);
 
     // Check
-    const fsb::real_t acc_eps = 1.0e4 * std::numeric_limits<fsb::real_t>::epsilon();
+    const fsb::Real acc_eps = 1.0e4 * std::numeric_limits<fsb::Real>::epsilon();
     REQUIRE(acc_actual.linear.x == FsbApprox(acc_expected.linear.x, acc_eps));
     REQUIRE(acc_actual.linear.y == FsbApprox(acc_expected.linear.y, acc_eps));
     REQUIRE(acc_actual.linear.z == FsbApprox(acc_expected.linear.z, acc_eps));
@@ -393,9 +393,9 @@ TEST_CASE("Dot product" * doctest::description("[fsb_motion][fsb::vector_dot]"))
     const fsb::Vec3 vec_a = {0.12, -0.45, 1.3};
     const fsb::Vec3 vec_b = {-0.45, 0.03, 0.98};
     // Expected
-    const fsb::real_t s_expected = 1.2065;
+    const fsb::Real s_expected = 1.2065;
     // Process
-    const fsb::real_t s_actual = fsb::vector_dot(vec_a, vec_b);
+    const fsb::Real s_actual = fsb::vector_dot(vec_a, vec_b);
 
     REQUIRE(s_actual == FsbApprox(s_expected));
 }

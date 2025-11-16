@@ -26,18 +26,18 @@ TEST_CASE("Apply timescale" * doctest::description("[fsb::timescale_trajectory]"
 TEST_CASE("Evaluate timescale trajectory" * doctest::description("[fsb::Timescale]"))
 {
     // input limits
-    const fsb::real_t max_timescale = 2.0;
-    const fsb::real_t max_timescale_deriv = 10.0;
-    const fsb::real_t max_timescale_2nd_deriv = 100.0;
+    const fsb::Real max_timescale = 2.0;
+    const fsb::Real max_timescale_deriv = 10.0;
+    const fsb::Real max_timescale_2nd_deriv = 100.0;
     // input initial values
-    const fsb::real_t time_mono_start = 0.0;
-    const fsb::real_t time_scaled_start = 1.0;
-    const fsb::real_t timescale_start = 1.5;
+    const fsb::Real time_mono_start = 0.0;
+    const fsb::Real time_scaled_start = 1.0;
+    const fsb::Real timescale_start = 1.5;
     // input set timescale
-    const fsb::real_t time_mono_set = 0.0;
-    const fsb::real_t timescale_set = 1.0;
+    const fsb::Real time_mono_set = 0.0;
+    const fsb::Real timescale_set = 1.0;
     // input evaluation time
-    const fsb::real_t time_mono_eval = 0.141;
+    const fsb::Real time_mono_eval = 0.141;
 
     // Expected
     // https://www.trajectorygenerator.com/ojet-online/?xs0=1.0&xt0=0&xs1=1.5&xt1=1.0&xs2=0&xt2=0&xp0=1000&xn0=-1000&xp1=2.0&xp2=10&xp3=100&mode=1&tvec=nt&ntdt=10000#start
@@ -68,9 +68,9 @@ TEST_CASE("Evaluate timescale trajectory" * doctest::description("[fsb::Timescal
 TEST_CASE("Timescale small limits" * doctest::description("[fsb::Timescale]"))
 {
     // input limits
-    fsb::real_t max_timescale = -FSB_TOL;
-    fsb::real_t max_timescale_deriv = 10.0;
-    fsb::real_t max_timescale_2nd_deriv = 100.0;
+    fsb::Real max_timescale = -FSB_TOL;
+    fsb::Real max_timescale_deriv = 10.0;
+    fsb::Real max_timescale_2nd_deriv = 100.0;
     // Expected
     const bool set_limits_success_expected = false;
 

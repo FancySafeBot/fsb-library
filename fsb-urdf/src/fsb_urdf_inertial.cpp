@@ -6,6 +6,7 @@
 #include "fsb_types.h"
 #include "fsb_body.h"
 #include "tinyxml2.h"
+#include <string>
 
 namespace fsb::urdf
 {
@@ -40,7 +41,10 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
         body_inertia.ixx = string_to_real(std::string(ixx), err);
         if (err.is_error())
         {
-            err = {err.get_type(), "Invalid inertia ixx='" + ixx_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+            err
+                = {err.get_type(),
+                   "Invalid inertia ixx='" + ixx_str + "' for body '" + body_name
+                       + "' in URDF file '" + fname + "'"};
         }
     }
     if (!err.is_error())
@@ -49,7 +53,10 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
         body_inertia.iyy = string_to_real(iyy_str, err);
         if (err.is_error())
         {
-            err = {err.get_type(), "Invalid inertia iyy='" + iyy_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+            err
+                = {err.get_type(),
+                   "Invalid inertia iyy='" + iyy_str + "' for body '" + body_name
+                       + "' in URDF file '" + fname + "'"};
         }
     }
     if (!err.is_error())
@@ -58,7 +65,10 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
         body_inertia.izz = string_to_real(izz_str, err);
         if (err.is_error())
         {
-            err = {err.get_type(), "Invalid inertia izz='" + izz_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+            err
+                = {err.get_type(),
+                   "Invalid inertia izz='" + izz_str + "' for body '" + body_name
+                       + "' in URDF file '" + fname + "'"};
         }
     }
     if (!err.is_error() && (ixy != nullptr))
@@ -67,7 +77,10 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
         body_inertia.ixy = string_to_real(ixy_str, err);
         if (err.is_error())
         {
-            err = {err.get_type(), "Invalid inertia ixy='" + ixy_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+            err
+                = {err.get_type(),
+                   "Invalid inertia ixy='" + ixy_str + "' for body '" + body_name
+                       + "' in URDF file '" + fname + "'"};
         }
     }
     if (!err.is_error() && (ixz != nullptr))
@@ -76,7 +89,10 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
         body_inertia.ixz = string_to_real(ixz_str, err);
         if (err.is_error())
         {
-            err = {err.get_type(), "Invalid inertia ixz='" + ixz_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+            err
+                = {err.get_type(),
+                   "Invalid inertia ixz='" + ixz_str + "' for body '" + body_name
+                       + "' in URDF file '" + fname + "'"};
         }
     }
     if (!err.is_error() && (iyz != nullptr))
@@ -85,7 +101,10 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
         body_inertia.iyz = string_to_real(iyz_str, err);
         if (err.is_error())
         {
-            err = {err.get_type(), "Invalid inertia iyz='" + iyz_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+            err
+                = {err.get_type(),
+                   "Invalid inertia iyz='" + iyz_str + "' for body '" + body_name
+                       + "' in URDF file '" + fname + "'"};
         }
     }
 
@@ -101,7 +120,7 @@ static Inertia urdf_parse_inertia_elements(const std::string& fname, const std::
 }
 
 Inertia urdf_parse_inertia_mass(
-    const std::string& fname, const std::string& body_name, const tinyxml2::XMLElement* inertial_xml, real_t& body_mass,
+    const std::string& fname, const std::string& body_name, const tinyxml2::XMLElement* inertial_xml, Real& body_mass,
     UrdfError& err)
 {
     Inertia body_inertia = {};
@@ -127,7 +146,10 @@ Inertia urdf_parse_inertia_mass(
             body_mass = string_to_real(mass_str, err);
             if (err.is_error())
             {
-                err = {err.get_type(), "Invalid mass value='" + mass_str + "' for body '" + body_name + "' in URDF file '" + fname + "'"};
+                err
+                    = {err.get_type(),
+                       "Invalid mass value='" + mass_str + "' for body '" + body_name
+                           + "' in URDF file '" + fname + "'"};
             }
         }
         else

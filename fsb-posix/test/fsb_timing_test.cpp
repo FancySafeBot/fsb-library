@@ -24,8 +24,8 @@ TEST_CASE("Periodic timer 100 Hz" * doctest::description("[fsb::PeriodicTimer]")
     const fsb::TimingError err_start = timer.start();
     const fsb::TimingError err_step = timer.step(nominal_time, actual_time);
 
-    fsb::real_t nominal_time_sec = fsb::timespec_to_seconds(nominal_time.monotonic);
-    fsb::real_t actual_time_sec =  fsb::timespec_to_seconds(actual_time.monotonic);
+    fsb::Real nominal_time_sec = fsb::timespec_to_seconds(nominal_time.monotonic);
+    fsb::Real actual_time_sec =  fsb::timespec_to_seconds(actual_time.monotonic);
 
     // no error
     REQUIRE(err_expected == err_init);

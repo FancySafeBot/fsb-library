@@ -30,7 +30,9 @@ set(FSBCORE_HEADERS
     include/fsb_dynamics.h
     include/fsb_inverse_kinematics.h
     include/fsb_kinematic_redundancy.h
-    include/fsb_linalg.h)
+    include/fsb_linalg.h
+    include/fsb_cubic.h
+    include/fsb_trajectory_path.h)
 set(FSBCORE_SOURCES
     src/fsb_linalg3.cpp
     src/fsb_quaternion.cpp
@@ -52,7 +54,8 @@ set(FSBCORE_SOURCES
     src/fsb_dynamics.cpp
     src/fsb_inverse_kinematics.cpp
     src/fsb_kinematic_redundancy.cpp
-    src/fsb_linalg.c)
+    src/fsb_linalg.c
+    src/fsb_trajectory_path.cpp)
 
 # target name
 set(FSBCORE_TARGET_NAME fsbcore)
@@ -138,10 +141,10 @@ if (FSB_BUILD_OPENBLAS)
         "BUILD_LAPACK_DEPRECATED OFF"
         "BUILD_STATIC_LIBS ON"
         "BUILD_WITHOUT_CBLAS ON"
-        "${OPENBLAS_C_LAPACK_OPTION}"
         "BUILD_DOUBLE ON"
         "USE_THREAD OFF"
         "USE_LOCKING ON"
+        "${OPENBLAS_C_LAPACK_OPTION}"
     )
 
     # Copy OpenBLAS headers (hack to put generated headers somewhere accessible without installing)

@@ -11,35 +11,35 @@ namespace fsb
 
 static Mat3 skew_sq_lt(const Vec3& vec)
 {
-    const real_t vx2 = vec.x * vec.x;
-    const real_t vy2 = vec.y * vec.y;
-    const real_t vz2 = vec.z * vec.z;
+    const Real v_x2 = vec.x * vec.x;
+    const Real v_y2 = vec.y * vec.y;
+    const Real v_z2 = vec.z * vec.z;
 
     return {
-        -vy2 - vz2,
+        -v_y2 - v_z2,
         vec.x * vec.y,
         vec.x * vec.z,
         0.0,
-        -vx2 - vz2,
+        -v_x2 - v_z2,
         vec.y * vec.z,
         0.0,
         0.0,
-        -vx2 - vy2};
+        -v_x2 - v_y2};
 }
 
 static Inertia body_rotate_mat3_inertia(const Mat3& rot, const Inertia& inertia)
 {
-    const real_t c00 = inertia.ixx * rot.m00 + inertia.ixy * rot.m01 + inertia.ixz * rot.m02;
-    const real_t c01 = inertia.ixy * rot.m00 + inertia.iyy * rot.m01 + inertia.iyz * rot.m02;
-    const real_t c02 = inertia.ixz * rot.m00 + inertia.iyz * rot.m01 + inertia.izz * rot.m02;
+    const Real c00 = inertia.ixx * rot.m00 + inertia.ixy * rot.m01 + inertia.ixz * rot.m02;
+    const Real c01 = inertia.ixy * rot.m00 + inertia.iyy * rot.m01 + inertia.iyz * rot.m02;
+    const Real c02 = inertia.ixz * rot.m00 + inertia.iyz * rot.m01 + inertia.izz * rot.m02;
 
-    const real_t c10 = inertia.ixx * rot.m10 + inertia.ixy * rot.m11 + inertia.ixz * rot.m12;
-    const real_t c11 = inertia.ixy * rot.m10 + inertia.iyy * rot.m11 + inertia.iyz * rot.m12;
-    const real_t c12 = inertia.ixz * rot.m10 + inertia.iyz * rot.m11 + inertia.izz * rot.m12;
+    const Real c10 = inertia.ixx * rot.m10 + inertia.ixy * rot.m11 + inertia.ixz * rot.m12;
+    const Real c11 = inertia.ixy * rot.m10 + inertia.iyy * rot.m11 + inertia.iyz * rot.m12;
+    const Real c12 = inertia.ixz * rot.m10 + inertia.iyz * rot.m11 + inertia.izz * rot.m12;
 
-    const real_t c20 = inertia.ixx * rot.m20 + inertia.ixy * rot.m21 + inertia.ixz * rot.m22;
-    const real_t c21 = inertia.ixy * rot.m20 + inertia.iyy * rot.m21 + inertia.iyz * rot.m22;
-    const real_t c22 = inertia.ixz * rot.m20 + inertia.iyz * rot.m21 + inertia.izz * rot.m22;
+    const Real c20 = inertia.ixx * rot.m20 + inertia.ixy * rot.m21 + inertia.ixz * rot.m22;
+    const Real c21 = inertia.ixy * rot.m20 + inertia.iyy * rot.m21 + inertia.iyz * rot.m22;
+    const Real c22 = inertia.ixz * rot.m20 + inertia.iyz * rot.m21 + inertia.izz * rot.m22;
 
     return {
         rot.m00 * c00 + rot.m01 * c01 + rot.m02 * c02,
@@ -50,7 +50,7 @@ static Inertia body_rotate_mat3_inertia(const Mat3& rot, const Inertia& inertia)
         rot.m20 * c10 + rot.m21 * c11 + rot.m22 * c12};
 }
 
-Inertia body_parallel_axis_inertia(const real_t mass, const Vec3& com, const Inertia& inertia)
+Inertia body_parallel_axis_inertia(const Real mass, const Vec3& com, const Inertia& inertia)
 {
     const Mat3 transl_skew_sq_lt = skew_sq_lt(com);
     return {
@@ -125,7 +125,7 @@ bool body_inertia_principal_axis(const Inertia& inertia, PrincipalInertia& princ
     if (is_pd)
     {
         // check if the rotation matrix is a proper rotation matrix
-        if (const real_t z_dir_test = vector_dot(vector_cross(eig_vec2, eig_vec1), eig_vec0);
+        if (const Real z_dir_test = vector_dot(vector_cross(eig_vec2, eig_vec1), eig_vec0);
             z_dir_test < 0.0)
         {
             // flip the sign of the z-axis
@@ -172,9 +172,9 @@ Vec3 inertia_multiply_vector(const Inertia& inertia, const Vec3& vec)
 
 Vec3 inertia_cross_multiply_vector(const Inertia& inertia, const Vec3& vel)
 {
-    const real_t x0 = inertia.ixy * vel.z;
-    const real_t x1 = inertia.ixz * vel.y;
-    const real_t x2 = -inertia.iyz * vel.x;
+    const Real x0 = inertia.ixy * vel.z;
+    const Real x1 = inertia.ixz * vel.y;
+    const Real x2 = -inertia.iyz * vel.x;
     return {
         -vel.x * (x0 - x1) - vel.y * (inertia.iyy * vel.z - inertia.iyz * vel.y)
             - vel.z * (inertia.iyz * vel.z - inertia.izz * vel.y),

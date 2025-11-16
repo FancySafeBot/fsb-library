@@ -18,7 +18,7 @@ namespace fsb
 /**
  * @brief Real number type
  */
-using real_t = double;
+using Real = double;
 
 /**
  * @brief 3D vector
@@ -26,11 +26,11 @@ using real_t = double;
 struct Vec3
 {
     /** @brief X component */
-    real_t x;
+    Real x = 0.0;
     /** @brief Y component */
-    real_t y;
+    Real y = 0.0;
     /** @brief Z component */
-    real_t z;
+    Real z = 0.0;
 };
 
 /**
@@ -39,42 +39,42 @@ struct Vec3
 struct Mat3Sym
 {
     /** @brief Element [0, 0] of matrix */
-    real_t m00;
+    Real m00 = 0.0;
     /** @brief Element [1, 1] of matrix */
-    real_t m11;
+    Real m11 = 0.0;
     /** @brief Element [2, 2] of matrix */
-    real_t m22;
+    Real m22 = 0.0;
     /** @brief Element [0, 1] and [1, 0] of matrix */
-    real_t m01;
+    Real m01 = 0.0;
     /** @brief Element [0, 2] and [2, 0] of matrix */
-    real_t m02;
+    Real m02 = 0.0;
     /** @brief Element [1, 2] and [2, 1] of matrix */
-    real_t m12;
+    Real m12 = 0.0;
 };
 
 /**
- * @brief 3x3 matrix, column-major
+ * @brief 3x3 matrix
  */
 struct Mat3
 {
     /** @brief Element [0, 0] of matrix */
-    real_t m00;
+    Real m00 = 0.0;
     /** @brief Element [1, 0] of matrix */
-    real_t m10;
+    Real m10 = 0.0;
     /** @brief Element [2, 0] of matrix */
-    real_t m20;
+    Real m20 = 0.0;
     /** @brief Element [0, 1] of matrix */
-    real_t m01;
+    Real m01 = 0.0;
     /** @brief Element [1, 1] of matrix */
-    real_t m11;
+    Real m11 = 0.0;
     /** @brief Element [2, 1] of matrix */
-    real_t m21;
+    Real m21 = 0.0;
     /** @brief Element [0, 2] of matrix */
-    real_t m02;
+    Real m02 = 0.0;
     /** @brief Element [1, 2] of matrix */
-    real_t m12;
+    Real m12 = 0.0;
     /** @brief Element [2, 2] of matrix */
-    real_t m22;
+    Real m22 = 0.0;
 };
 
 } // namespace fsb

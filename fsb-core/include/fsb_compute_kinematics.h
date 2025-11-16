@@ -2,9 +2,6 @@
 #ifndef FSB_COMPUTE_KINEMATICS_H
 #define FSB_COMPUTE_KINEMATICS_H
 
-#include <cstdint>
-#include <cstddef>
-
 #include "fsb_body.h"
 #include "fsb_body_tree.h"
 #include "fsb_joint.h"

@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include <cmath>
 #include "fsb_types.h"
 #include "fsb_quaternion.h"
 #include "fsb_rotation.h"
@@ -17,24 +18,24 @@ Mat3 rot_identity()
     return {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 }
 
-Mat3 rot_rx(const real_t rx)
+Mat3 rot_rx(const Real rx)
 {
-    const real_t sx = sin(rx);
-    const real_t cx = cos(rx);
+    const Real sx = sin(rx);
+    const Real cx = cos(rx);
     return {1.0, 0.0, 0.0, 0.0, cx, sx, 0.0, -sx, cx};
 }
 
-Mat3 rot_ry(const real_t ry)
+Mat3 rot_ry(const Real ry)
 {
-    const real_t sy = sin(ry);
-    const real_t cy = cos(ry);
+    const Real sy = sin(ry);
+    const Real cy = cos(ry);
     return {cy, 0.0, -sy, 0.0, 1.0, 0.0, sy, 0.0, cy};
 }
 
-Mat3 rot_rz(const real_t rz)
+Mat3 rot_rz(const Real rz)
 {
-    const real_t sz = sin(rz);
-    const real_t cz = cos(rz);
+    const Real sz = sin(rz);
+    const Real cz = cos(rz);
     return {cz, sz, 0.0, -sz, cz, 0.0, 0.0, 0.0, 1.0};
 }
 
@@ -42,15 +43,14 @@ Vec3 quat_to_ezyx(const Quaternion& quat)
 {
     Vec3 ezyx = {0.0, 0.0, 0.0};
 
-    const real_t     sval = 2.0 * (quat.qw * quat.qy - quat.qx * quat.qz);
-    if (constexpr real_t unit_tol = (1.0 - FSB_TOL);
-        sval < -unit_tol)
+    const Real sval = 2.0 * (quat.qw * quat.qy - quat.qx * quat.qz);
+    if (constexpr Real UnitTol = (1.0 - FSB_TOL); sval < -UnitTol)
     {
         ezyx.z = 0.0;
         ezyx.y = -M_PI_2;
         ezyx.x = 2.0 * atan2(quat.qx, -quat.qy);
     }
-    else if (sval > unit_tol)
+    else if (sval > UnitTol)
     {
         ezyx.z = 0.0;
         ezyx.y = M_PI_2;
@@ -58,10 +58,10 @@ Vec3 quat_to_ezyx(const Quaternion& quat)
     }
     else
     {
-        const real_t sqw = quat.qw * quat.qw;
-        const real_t sqx = quat.qx * quat.qx;
-        const real_t sqy = quat.qy * quat.qy;
-        const real_t sqz = quat.qz * quat.qz;
+        const Real sqw = quat.qw * quat.qw;
+        const Real sqx = quat.qx * quat.qx;
+        const Real sqy = quat.qy * quat.qy;
+        const Real sqz = quat.qz * quat.qz;
         ezyx.z = atan2(2.0 * (quat.qy * quat.qz + quat.qw * quat.qx), sqw - sqx - sqy + sqz);
         ezyx.y = asin(sval);
         ezyx.x = atan2(2.0 * (quat.qx * quat.qy + quat.qw * quat.qz), sqw + sqx - sqy - sqz);
@@ -72,9 +72,9 @@ Vec3 quat_to_ezyx(const Quaternion& quat)
 
 Quaternion ezyx_to_quat(const Vec3& ezyx)
 {
-    const real_t ex_2 = ezyx.z / 2.0;
-    const real_t ey_2 = ezyx.y / 2.0;
-    const real_t ez_2 = ezyx.x / 2.0;
+    const Real ex_2 = ezyx.z / 2.0;
+    const Real ey_2 = ezyx.y / 2.0;
+    const Real ez_2 = ezyx.x / 2.0;
 
     return {
         cos(ex_2) * cos(ey_2) * cos(ez_2) + sin(ex_2) * sin(ey_2) * sin(ez_2),
@@ -86,28 +86,33 @@ Quaternion ezyx_to_quat(const Vec3& ezyx)
 Mat3 quat_to_rot(const Quaternion& quat)
 {
     /* work */
-    const real_t q02_2 = quat.qw * quat.qy * 2.0;
-    const real_t q12_2 = quat.qx * quat.qy * 2.0;
-    const real_t q13_2 = quat.qx * quat.qz * 2.0;
-    const real_t q23_2 = quat.qy * quat.qz * 2.0;
-    const real_t q11 = quat.qx * quat.qx;
-    const real_t q22 = quat.qy * quat.qy;
-    const real_t q33 = quat.qz * quat.qz;
+    const Real q02_2 = quat.qw * quat.qy * 2.0;
+    const Real q12_2 = quat.qx * quat.qy * 2.0;
+    const Real q13_2 = quat.qx * quat.qz * 2.0;
+    const Real q23_2 = quat.qy * quat.qz * 2.0;
+    const Real q11 = quat.qx * quat.qx;
+    const Real q22 = quat.qy * quat.qy;
+    const Real q33 = quat.qz * quat.qz;
 
     return {
-        -q33 * 2.0 - q22 * 2.0 + 1.0, q12_2 + quat.qw * quat.qz * 2.0, -q02_2 + q13_2, q12_2 - quat.qw * quat.qz * 2.0,
-        -q33 * 2.0 - q11 * 2.0 + 1.0, q23_2 + quat.qw * quat.qx * 2.0, q02_2 + q13_2,  q23_2 - quat.qw * quat.qx * 2.0,
+        -q33 * 2.0 - q22 * 2.0 + 1.0,
+        q12_2 + quat.qw * quat.qz * 2.0,
+        -q02_2 + q13_2,
+        q12_2 - quat.qw * quat.qz * 2.0,
+        -q33 * 2.0 - q11 * 2.0 + 1.0,
+        q23_2 + quat.qw * quat.qx * 2.0,
+        q02_2 + q13_2,
+        q23_2 - quat.qw * quat.qx * 2.0,
         -q11 * 2.0 - q22 * 2.0 + 1.0};
 }
 
 Quaternion rot_to_quat(const Mat3& rot)
 {
     Quaternion   quat = {1.0, 0.0, 0.0, 0.0};
-    if (const real_t trace = rot.m00 + rot.m11 + rot.m22;
-        trace > 0.0)
+    if (const Real trace = rot.m00 + rot.m11 + rot.m22; trace > 0.0)
     {
         // quaternion element |qw| greater than 1/2
-        const real_t sqw = 2.0 * sqrt(trace + 1.0); // 4 * qw
+        const Real sqw = 2.0 * sqrt(trace + 1.0); // 4 * qw
         quat.qw = 0.25 * sqw;
         quat.qx = (rot.m21 - rot.m12) / sqw;
         quat.qy = (rot.m02 - rot.m20) / sqw;
@@ -116,7 +121,7 @@ Quaternion rot_to_quat(const Mat3& rot)
     else if ((rot.m00 > rot.m11) && (rot.m00 > rot.m22))
     {
         // sqx = 4 * qx
-        const real_t sqx = 2.0 * sqrt(1.0 + rot.m00 - rot.m11 - rot.m22);
+        const Real sqx = 2.0 * sqrt(1.0 + rot.m00 - rot.m11 - rot.m22);
         quat.qw = (rot.m21 - rot.m12) / sqx;
         quat.qx = 0.25 * sqx;
         quat.qy = (rot.m01 + rot.m10) / sqx;
@@ -125,7 +130,7 @@ Quaternion rot_to_quat(const Mat3& rot)
     else if (rot.m11 > rot.m22)
     {
         // sqw = 4 * qy
-        const real_t sqy = 2.0 * sqrt(1.0 + rot.m11 - rot.m00 - rot.m22);
+        const Real sqy = 2.0 * sqrt(1.0 + rot.m11 - rot.m00 - rot.m22);
         quat.qw = (rot.m02 - rot.m20) / sqy;
         quat.qx = (rot.m01 + rot.m10) / sqy;
         quat.qy = 0.25 * sqy;
@@ -134,7 +139,7 @@ Quaternion rot_to_quat(const Mat3& rot)
     else
     {
         // sqz = 4 * qz
-        const real_t sqz = 2.0 * sqrt(1.0 + rot.m22 - rot.m00 - rot.m11);
+        const Real sqz = 2.0 * sqrt(1.0 + rot.m22 - rot.m00 - rot.m11);
         quat.qw = (rot.m10 - rot.m01) / sqz;
         quat.qx = (rot.m02 + rot.m20) / sqz;
         quat.qy = (rot.m12 + rot.m21) / sqz;

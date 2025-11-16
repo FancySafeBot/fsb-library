@@ -1,6 +1,6 @@
 
-#ifndef FSB_QUINTIC_H
-#define FSB_QUINTIC_H
+#ifndef FSB_CUBIC_H
+#define FSB_CUBIC_H
 
 #include "fsb_types.h"
 #include "fsb_trajectory_types.h"
@@ -10,36 +10,34 @@ namespace fsb
 {
 
 /**
- * @defgroup TopicQuintic Quintic Polynomial Trajectory
- * @brief Trajectory using 5th order polynomials
+ * @defgroup TopicCubic Cubic Polynomial Trajectory
+ * @brief Trajectory using 3rd order polynomials
  * @{
  */
 
 /**
- * @brief Minimum duration for a quintic trajectory
+ * @brief Minimum duration for a cubic trajectory
  */
-constexpr Real QUINTIC_MIN_DURATION = 1e-6;
+constexpr Real CUBIC_MIN_DURATION = 1e-6;
 
 /**
- * @brief Coefficients of a quintic polynomial
+ * @brief Coefficients of a cubic polynomial
  */
-struct QuinticCoeffs
+struct CubicCoeffs
 {
     Real c0 = 0.0; ///< Constant term
     Real c1 = 0.0; ///< Linear term
     Real c2 = 0.0; ///< Quadratic term
     Real c3 = 0.0; ///< Cubic term
-    Real c4 = 0.0; ///< Quartic term
-    Real c5 = 0.0; ///< Quintic term
 };
 
 /**
- * @brief Quintic trajectory
+ * @brief Cubic trajectory
  */
-class QuinticTrajectory final : public Segment
+class CubicTrajectory final : public Segment
 {
 public:
-    QuinticTrajectory() = default;
+    CubicTrajectory() = default;
 
     /**
      * @brief Generate spline
@@ -53,6 +51,16 @@ public:
     bool generate(
         Real start_time, Real duration, const TrajState& initial_state,
         const TrajState& final_state);
+
+    /**
+     * @brief Set coefficients of the cubic trajectory
+     *
+     * @param[in] start_time Start time of the trajectory
+     * @param[in] duration Duration of the trajectory
+     * @param[in] coeffs Coefficients of the cubic polynomial
+     */
+    void set_coeffs(
+        Real start_time, Real duration, const CubicCoeffs& coeffs);
 
     /**
      * @brief Evaluate position, velocity, acceleration, and jerk
@@ -104,7 +112,7 @@ private:
     Real m_start_time = 0.0;
     Real m_duration = 0.0;
 
-    QuinticCoeffs m_coeffs = {};
+    CubicCoeffs m_coeffs = {};
 };
 
 /**

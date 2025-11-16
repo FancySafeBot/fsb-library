@@ -50,8 +50,9 @@ UrdfLink urdf_parse_link(const std::string& fname, const tinyxml2::XMLElement* l
     // body mass properties
     if (!err.is_error())
     {
-        real_t body_mass = 0.0;
-        const Inertia body_inertia = urdf_parse_inertia_mass(fname, body.link_name, inertial_xml, body_mass, err);
+        Real body_mass = 0.0;
+        const Inertia body_inertia
+            = urdf_parse_inertia_mass(fname, body.link_name, inertial_xml, body_mass, err);
         if (!err.is_error())
         {
             // rotate inertia to align with body frame

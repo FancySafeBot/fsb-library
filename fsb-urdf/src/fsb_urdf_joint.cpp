@@ -34,8 +34,8 @@ static UrdfJointLimits parse_joint_limits(
         if (const char* lower = joint_limits_xml->Attribute("lower");
             lower != nullptr)
         {
-            const auto lower_position_str = std::string(lower);
-            const real_t lower_position = string_to_real(lower_position_str, err);
+            const auto   lower_position_str = std::string(lower);
+            const Real lower_position = string_to_real(lower_position_str, err);
             if (!err.is_error())
             {
                 limits.lower_position = lower_position;
@@ -43,17 +43,18 @@ static UrdfJointLimits parse_joint_limits(
             }
             else
             {
-                err = {UrdfErrorType::JOINT_LIMITS_PARSE_ERROR,
-                               "Invalid joint '" + joint_name + "' limit lower='"
-                                   + lower_position_str + "' in URDF file '" + fname + "'"};
+                err
+                    = {UrdfErrorType::JOINT_LIMITS_PARSE_ERROR,
+                       "Invalid joint '" + joint_name + "' limit lower='" + lower_position_str
+                           + "' in URDF file '" + fname + "'"};
             }
         }
         // upper limit
         if (const char* upper = joint_limits_xml->Attribute("upper");
             upper != nullptr)
         {
-            const auto upper_position_str = std::string(upper);
-            const real_t upper_position = string_to_real(upper_position_str, err);
+            const auto   upper_position_str = std::string(upper);
+            const Real upper_position = string_to_real(upper_position_str, err);
             if (!err.is_error())
             {
                 limits.upper_position = upper_position;
@@ -61,26 +62,28 @@ static UrdfJointLimits parse_joint_limits(
             }
             else
             {
-                err = {UrdfErrorType::JOINT_LIMITS_PARSE_ERROR,
-                               "Invalid joint '" + joint_name + "' limit upper='"
-                                   + upper_position_str + "' in URDF file '" + fname + "'"};
+                err
+                    = {UrdfErrorType::JOINT_LIMITS_PARSE_ERROR,
+                       "Invalid joint '" + joint_name + "' limit upper='" + upper_position_str
+                           + "' in URDF file '" + fname + "'"};
             }
         }
         // velocity limit
         if (const char* velocity = joint_limits_xml->Attribute("velocity");
             velocity != nullptr)
         {
-            const auto max_velocity_str = std::string(velocity);
-            const real_t max_velocity = string_to_real(max_velocity_str, err);
+            const auto   max_velocity_str = std::string(velocity);
+            const Real max_velocity = string_to_real(max_velocity_str, err);
             if (!err.is_error())
             {
                 limits.max_velocity = max_velocity;
             }
             else
             {
-                err = {UrdfErrorType::JOINT_LIMITS_PARSE_ERROR,
-                               "Invalid joint '" + joint_name + "' limit velocity='"
-                                   + max_velocity_str + "' in URDF file '" + fname + "'"};
+                err
+                    = {UrdfErrorType::JOINT_LIMITS_PARSE_ERROR,
+                       "Invalid joint '" + joint_name + "' limit velocity='" + max_velocity_str
+                           + "' in URDF file '" + fname + "'"};
             }
         }
     }
@@ -98,27 +101,32 @@ static void parse_joint_axis(
         if (const char* joint_axis = joint_axis_xml->Attribute("xyz"); joint_axis != nullptr)
         {
             const auto joint_axis_str = std::string(joint_axis);
-            Vec3       axis = string_to_vector(joint_axis_str, err);
+            Vec3 const axis = string_to_vector(joint_axis_str, err);
             if (!err.is_error())
             {
-                if (const real_t vec_norm = vector_norm(axis); vec_norm > FSB_TOL)
+                if (const Real vec_norm = vector_norm(axis); vec_norm > FSB_TOL)
                 {
                     const Vec3 axis_pos = vector_abs(vector_scale(1.0 / vec_norm, axis));
-                    if ((axis_pos.x > (1.0 - FSB_TOL)) && (axis_pos.y < FSB_TOL) && (axis_pos.z < FSB_TOL))
+                    if ((axis_pos.x > (1.0 - FSB_TOL)) && (axis_pos.y < FSB_TOL)
+                        && (axis_pos.z < FSB_TOL))
                     {
                         joint_type
                             = (joint_type == JointType::REVOLUTE_Z ? JointType::REVOLUTE_X :
                                                                      JointType::PRISMATIC_X);
                         reversed = (axis.x < 0.0);
                     }
-                    else if ((axis_pos.y > (1.0 - FSB_TOL)) && (axis_pos.x < FSB_TOL) && (axis_pos.z < FSB_TOL))
+                    else if (
+                        (axis_pos.y > (1.0 - FSB_TOL)) && (axis_pos.x < FSB_TOL)
+                        && (axis_pos.z < FSB_TOL))
                     {
                         joint_type
                             = (joint_type == JointType::REVOLUTE_Z ? JointType::REVOLUTE_Y :
                                                                      JointType::PRISMATIC_Y);
                         reversed = (axis.y < 0.0);
                     }
-                    else if ((axis_pos.z > (1.0 - FSB_TOL)) && (axis_pos.x < FSB_TOL) && (axis_pos.y < FSB_TOL))
+                    else if (
+                        (axis_pos.z > (1.0 - FSB_TOL)) && (axis_pos.x < FSB_TOL)
+                        && (axis_pos.y < FSB_TOL))
                     {
                         // +z-axis joint type is valid
                         reversed = (axis.z < 0.0);

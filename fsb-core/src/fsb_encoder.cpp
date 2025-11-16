@@ -6,8 +6,9 @@
 namespace fsb
 {
 
-EncoderStatus IncrementalEncoder::set_parameters(const uint8_t counter_resolution_bits, const uint32_t counts_per_rev,
-                                                        const real_t value_per_rev)
+EncoderStatus IncrementalEncoder::set_parameters(
+    const uint8_t counter_resolution_bits, const uint32_t counts_per_rev,
+    const Real value_per_rev)
 {
     auto result = EncoderStatus::SUCCESS;
     if (counter_resolution_bits == 0U)
@@ -59,19 +60,20 @@ EncoderStatus IncrementalEncoder::set_parameters(const uint8_t counter_resolutio
     return result;
 }
 
-void IncrementalEncoder::reset(const int32_t count, const real_t value)
+void IncrementalEncoder::reset(const int32_t count, const Real value)
 {
     m_count = count;
     reset_value(value);
 }
 
-void IncrementalEncoder::reset_value(const real_t value)
+void IncrementalEncoder::reset_value(const Real value)
 {
-    const real_t value_from_count = static_cast<real_t>(m_count) * m_value_per_rev / static_cast<real_t>(m_counts_per_rev);
+    const Real value_from_count
+        = static_cast<Real>(m_count) * m_value_per_rev / static_cast<Real>(m_counts_per_rev);
     m_value_offset = value - value_from_count;
 }
 
-real_t IncrementalEncoder::decode(const int32_t count)
+Real IncrementalEncoder::decode(const int32_t count)
 {
     // change in count
     int32_t delta = count - m_count;
@@ -93,13 +95,14 @@ real_t IncrementalEncoder::decode(const int32_t count)
     // save count
     m_count = count + delta;
     // convert counts to scaled value
-    return m_value_offset + static_cast<real_t>(m_count) * m_value_per_rev / static_cast<real_t>(m_counts_per_rev);
+    return m_value_offset + static_cast<Real>(m_count) * m_value_per_rev / static_cast<Real>(m_counts_per_rev);
 }
 
-int32_t IncrementalEncoder::encode(const real_t value)
+int32_t IncrementalEncoder::encode(const Real value)
 {
     // update absolute counts
-    const auto count = static_cast<int32_t>(value * static_cast<real_t>(m_counts_per_rev) / m_value_per_rev);
+    const auto count
+        = static_cast<int32_t>(value * static_cast<Real>(m_counts_per_rev) / m_value_per_rev);
     // change in count
     const int32_t delta = count - m_count;
     // save count

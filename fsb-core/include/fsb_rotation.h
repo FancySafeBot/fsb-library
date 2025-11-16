@@ -88,7 +88,7 @@ Mat3 rot_identity();
  * @param rx Rotation angle in radians
  * @return Rotation matrix
  */
-Mat3 rot_rx(real_t rx);
+Mat3 rot_rx(Real rx);
 
 /**
  * @brief Rotation matrix about y-axis
@@ -96,7 +96,7 @@ Mat3 rot_rx(real_t rx);
  * @param ry Rotation angle in radians
  * @return Rotation matrix
  */
-Mat3 rot_ry(real_t ry);
+Mat3 rot_ry(Real ry);
 
 /**
  * @brief Rotation matrix about z-axis
@@ -104,7 +104,7 @@ Mat3 rot_ry(real_t ry);
  * @param rz Rotation angle in radians
  * @return Rotation matrix
  */
-Mat3 rot_rz(real_t rz);
+Mat3 rot_rz(Real rz);
 
 /**
  * @brief Matrix multiplication with rotation matrix

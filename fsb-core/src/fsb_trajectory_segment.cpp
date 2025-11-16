@@ -6,7 +6,9 @@
 namespace fsb
 {
 
-void SegmentConstJerk::generate(const real_t start_time, const real_t duration, const TrajState& initial_state, const real_t jerk)
+void SegmentConstJerk::generate(
+    const Real start_time, const Real duration, const TrajState& initial_state,
+    const Real jerk)
 {
     m_initial_position = initial_state.position;
     m_initial_velocity = initial_state.velocity;
@@ -16,7 +18,7 @@ void SegmentConstJerk::generate(const real_t start_time, const real_t duration, 
     m_duration = duration;
 }
 
-TrajState SegmentConstJerk::evaluate(real_t t_eval) const
+TrajState SegmentConstJerk::evaluate(Real t_eval) const
 {
     t_eval -= m_start_time;
     return {
@@ -28,7 +30,9 @@ TrajState SegmentConstJerk::evaluate(real_t t_eval) const
     };
 }
 
-void SegmentConstAcc::generate(const real_t start_time, const real_t duration, const TrajState& initial_state, const real_t acceleration)
+void SegmentConstAcc::generate(
+    const Real start_time, const Real duration, const TrajState& initial_state,
+    const Real acceleration)
 {
     m_initial_position = initial_state.position;
     m_initial_velocity = initial_state.velocity;
@@ -37,7 +41,7 @@ void SegmentConstAcc::generate(const real_t start_time, const real_t duration, c
     m_duration = duration;
 }
 
-TrajState SegmentConstAcc::evaluate(real_t t_eval) const
+TrajState SegmentConstAcc::evaluate(Real t_eval) const
 {
     t_eval -= m_start_time;
     return {
@@ -48,7 +52,9 @@ TrajState SegmentConstAcc::evaluate(real_t t_eval) const
     };
 }
 
-void SegmentConstVel::generate(const real_t start_time, const real_t duration, const TrajState& initial_state, const real_t velocity)
+void SegmentConstVel::generate(
+    const Real start_time, const Real duration, const TrajState& initial_state,
+    const Real velocity)
 {
     m_initial_position = initial_state.position;
     m_velocity = velocity;
@@ -56,7 +62,7 @@ void SegmentConstVel::generate(const real_t start_time, const real_t duration, c
     m_duration = duration;
 }
 
-TrajState SegmentConstVel::evaluate(real_t t_eval) const
+TrajState SegmentConstVel::evaluate(Real t_eval) const
 {
     t_eval -= m_start_time;
     return {

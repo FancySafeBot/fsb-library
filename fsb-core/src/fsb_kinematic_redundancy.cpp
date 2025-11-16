@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstddef>
 
+#include "fsb_joint.h"
 #include "fsb_motion.h"
 #include "fsb_configuration.h"
 #include "fsb_types.h"
@@ -15,10 +16,11 @@ FsbLinalgErrorType
 jacobian_pseudoinverse(const Jacobian& jacobian, Jacobian& inverse_jacobian, const size_t dofs)
 {
     // lapack pseudoinverse c array inputs
-    constexpr size_t work_len = MaxSize::linalg_work;
-    double_t work[work_len] = {};
+    constexpr size_t WorkLen = MaxSize::linalg_work;
+    double_t         work[WorkLen] = {};
     // run pseudoinverse
-    return fsb_linalg_pseudoinverse(jacobian.j.data(), FSB_CART_SIZE, dofs, work_len, work, inverse_jacobian.j.data());
+    return fsb_linalg_pseudoinverse(
+        jacobian.j.data(), FSB_CART_SIZE, dofs, WorkLen, work, inverse_jacobian.j.data());
 }
 
 JointSpace compute_nullspace_motion(
@@ -42,9 +44,9 @@ JointSpace compute_nullspace_motion(
     // lapack pseudoinverse c array inputs
     double_t motion_vec[FSB_CART_SIZE] = {};
     double_t joint_null[MaxSize::dofs] = {};
-    constexpr size_t nrhs = 1U;
-    constexpr size_t work_len = 512U;
-    double_t work[work_len] = {};
+    constexpr size_t NRHS = 1U;
+    constexpr size_t WorkLen = 512U;
+    double_t         work[WorkLen] = {};
     // copy data to c array
     motion_vec[0] = cart_motion.angular.x;
     motion_vec[1] = cart_motion.angular.y;
@@ -53,9 +55,8 @@ JointSpace compute_nullspace_motion(
     motion_vec[4] = cart_motion.linear.y;
     motion_vec[5] = cart_motion.linear.z;
     // run least squares solve
-    FsbLinalgErrorType linalg_err = fsb_linalg_leastsquares_solve(
-        jacobian.j.data(), FSB_CART_SIZE, dofs, motion_vec, nrhs,
-        work_len, work, joint_null);
+    FsbLinalgErrorType const linalg_err = fsb_linalg_leastsquares_solve(
+        jacobian.j.data(), FSB_CART_SIZE, dofs, motion_vec, NRHS, WorkLen, work, joint_null);
 
     // Compute nullspace motion: (I - J+ * J) * qd = qd - J+ * J * qd
     if (linalg_err == FsbLinalgErrorType::EFSB_LAPACK_ERROR_NONE)

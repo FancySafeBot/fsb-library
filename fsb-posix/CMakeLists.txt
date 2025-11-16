@@ -3,6 +3,7 @@
 set(FSBPOSIX_HEADERS
     include/fsb_timing.h
     include/fsb_queue.h
+    include/fsb_broadcast.h
     include/fsb_thread.h)
 set(FSBPOSIX_SOURCES
     src/fsb_timing.cpp

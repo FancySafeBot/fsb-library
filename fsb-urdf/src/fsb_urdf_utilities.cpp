@@ -3,6 +3,7 @@
 #include <limits>
 #include <cstdlib>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "fsb_quaternion.h"
@@ -19,15 +20,15 @@ size_t string_to_index(const std::string& str, UrdfError& err)
 {
     const char*   start = str.c_str();
     char*         end = nullptr;
-    constexpr int base = 10;
-    long          value = std::strtol(start, &end, base);
+    constexpr int BASE = 10;
+    long          value = std::strtol(start, &end, BASE);
 
     if (end == str)
     {
         err = {UrdfErrorType::VALUE_CONVERSION_FAILED, "'" + str + "' is not an integer"};
         value = 0;
     }
-    else if (value < 0 || (static_cast<size_t>(value) >= MaxSize::index))
+    else if (value < 0 || (std::cmp_greater_equal(value, MaxSize::index)))
     {
         const auto str_len = static_cast<size_t>(end - start);
         err
@@ -43,7 +44,7 @@ size_t string_to_index(const std::string& str, UrdfError& err)
     return static_cast<size_t>(value);
 }
 
-real_t string_to_real(const std::string& str, UrdfError& err)
+Real string_to_real(const std::string& str, UrdfError& err)
 {
     const char* start = str.c_str();
     char*       end = nullptr;
@@ -55,8 +56,8 @@ real_t string_to_real(const std::string& str, UrdfError& err)
         value = 0.0;
     }
     else if (
-        std::isinf(value) || (value >= std::numeric_limits<real_t>::max())
-        || (value <= std::numeric_limits<real_t>::lowest()))
+        std::isinf(value) || (value >= std::numeric_limits<Real>::max())
+        || (value <= std::numeric_limits<Real>::lowest()))
     {
         const auto str_len = static_cast<size_t>(end - start);
         err
@@ -68,7 +69,7 @@ real_t string_to_real(const std::string& str, UrdfError& err)
     {
         // no error
     }
-    return static_cast<real_t>(value);
+    return static_cast<Real>(value);
 }
 
 std::vector<std::string> split_string_spaces(const std::string& str)

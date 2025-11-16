@@ -11,10 +11,10 @@ TEST_CASE("Quintic trajectory" * doctest::description("[fsb::QuinticTrajectory]"
     // Inputs
     const fsb::TrajState initial_state = {0.0, 0.0, 0.0, 0.0};
     const fsb::TrajState final_state = {10.0, 5.0, -3.0, 0.0};
-    const fsb::real_t start_time = 1.0;
-    const fsb::real_t duration = 10.0;
+    const fsb::Real start_time = 1.0;
+    const fsb::Real duration = 10.0;
     const size_t num_pnts = 2;
-    const std::array<fsb::real_t, num_pnts> input_time = {
+    const std::array<fsb::Real, num_pnts> input_time = {
         1.0, 11.0
     };
     // Expected

@@ -1,5 +1,6 @@
 
 #include <cstddef>
+#include <iterator>
 #include <string>
 #include <tinyxml2.h>
 #include <list>
@@ -48,7 +49,9 @@ static UrdfError urdf_parse_links_joints(const std::string& fname, const tinyxml
                 if (const NameMapError name_err = urdf_names.add_body(links.size(), link.link_name);
                     name_err != NameMapError::SUCCESS)
                 {
-                    err = {UrdfErrorType::REPEATED_NAME, "Link name '" + link.link_name + "' is not unique in URDF file: " + fname};
+                    err = {
+                        UrdfErrorType::REPEATED_NAME,
+                        "Link name '" + link.link_name + "' is not unique in URDF file: " + fname};
                 }
             }
             if (!err.is_error())
@@ -72,7 +75,10 @@ static UrdfError urdf_parse_links_joints(const std::string& fname, const tinyxml
                     = urdf_names.add_joint(joints.size(), joint.joint_name);
                     name_err != NameMapError::SUCCESS)
                 {
-                    err = {UrdfErrorType::REPEATED_NAME, "Joint name '" + joint.joint_name + "' is not unique in URDF file: " + fname};
+                    err
+                        = {UrdfErrorType::REPEATED_NAME,
+                           "Joint name '" + joint.joint_name
+                               + "' is not unique in URDF file: " + fname};
                 }
             }
             if (!err.is_error())
@@ -114,7 +120,8 @@ static std::list<size_t> sort_joints(
             // get sorted child index
             const auto& sorted_joint = joints[*sorted_iter];
             // if test joint parent matches sorted child index
-            if (const size_t sorted_child_index = urdf_names.get_body_index(sorted_joint.child_name, name_err);
+            if (const size_t sorted_child_index
+                = urdf_names.get_body_index(sorted_joint.child_name, name_err);
                 parent_index == sorted_child_index)
             {
                 // insert joint with parent body after sorted joint child body
@@ -154,26 +161,37 @@ static BodyTree urdf_generate_tree(
                 const auto& joint = joints[joint_index];
                 // parent from body tree map
                 auto name_err = NameMapError::SUCCESS;
-                const size_t body_tree_parent_index = body_tree_map.get_body_index(joint.parent_name, name_err);
+                const size_t body_tree_parent_index
+                    = body_tree_map.get_body_index(joint.parent_name, name_err);
                 // child from URDF map
-                const size_t child_body_index = urdf_names.get_body_index(joint.child_name, name_err);
+                const size_t child_body_index
+                    = urdf_names.get_body_index(joint.child_name, name_err);
                 // Add body to tree
                 Body child_body = {};
                 child_body.mass_props = links[child_body_index].mass_props;
                 child_body.origin_offset = links[child_body_index].origin_offset;
                 child_body.principal_inertia = links[child_body_index].principal_inertia;
                 auto tree_err = BodyTreeError::SUCCESS;
-                const size_t body_tree_child_index = body_tree.add_body(body_tree_parent_index, joint.joint_type, joint.parent_child_transform, child_body, tree_err);
+                const size_t body_tree_child_index = body_tree.add_body(
+                    body_tree_parent_index,
+                    joint.joint_type,
+                    joint.parent_child_transform,
+                    child_body,
+                    tree_err);
                 if (tree_err != BodyTreeError::SUCCESS)
                 {
                     err = {UrdfErrorType::BODY_TREE_ERROR, "Failed to add body '" + joint.child_name + "' for joint '" + + "' to body tree from URDF '" + fname + "'"};
                 }
                 else
                 {
-                    const size_t body_joint_index = body_tree.get_body(body_tree_child_index, tree_err).joint_index;
+                    const size_t body_joint_index
+                        = body_tree.get_body(body_tree_child_index, tree_err).joint_index;
                     if (joint.limits.set)
                     {
-                        body_tree.set_joint_position_limit(body_joint_index, joint.limits.lower_position, joint.limits.upper_position);
+                        body_tree.set_joint_position_limit(
+                            body_joint_index,
+                            joint.limits.lower_position,
+                            joint.limits.upper_position);
                     }
                     body_tree.set_joint_velocity_limit(body_joint_index, joint.limits.max_velocity);
                     body_tree.set_joint_reversed(body_joint_index, joint.reversed);
@@ -196,7 +214,7 @@ static BodyTree parse_urdf(
 
     // Robot xml element
     const tinyxml2::XMLElement* robot_xml = nullptr;
-    const std::string fname = (input_string_is_filename ? urdf_string : "[urdf string]");
+    const std::string           fname = (input_string_is_filename ? urdf_string : "[urdf string]");
 
     // open urdf and get <robot> element
     tinyxml2::XMLDocument doc = {};
@@ -212,7 +230,8 @@ static BodyTree parse_urdf(
         robot_xml = doc.FirstChildElement("robot");
         if (robot_xml == nullptr)
         {
-            err = {UrdfErrorType::MISSING_ROBOT, "Missing <robot> element from URDF file: " + fname};
+            err = {
+                UrdfErrorType::MISSING_ROBOT, "Missing <robot> element from URDF file: " + fname};
         }
     }
 

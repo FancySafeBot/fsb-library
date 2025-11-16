@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstddef>
 
 #include "fsb_configuration.h"
@@ -48,10 +49,7 @@ Jacobian
 spatial_jacobian_body_to_space(const Transform& pose, const Jacobian& jacobian, size_t columns)
 {
     Jacobian result = {};
-    if (columns > MaxSize::dofs)
-    {
-        columns = MaxSize::dofs;
-    }
+    columns = std::min(columns, MaxSize::dofs);
 
     for (size_t col = 0U; col < columns; ++col)
     {
@@ -61,7 +59,7 @@ spatial_jacobian_body_to_space(const Transform& pose, const Jacobian& jacobian, 
              jacobian.j[jacobian_index(2U, col)]},
             {jacobian.j[jacobian_index(3U, col)],
              jacobian.j[jacobian_index(4U, col)],
-             jacobian.j[jacobian_index(5U,  col)]}
+             jacobian.j[jacobian_index(5U, col)]}
         };
         const MotionVector result_col = spatial_body_to_space(pose, jac_col);
         result.j[jacobian_index(0U, col)] = result_col.angular.x;
@@ -79,10 +77,7 @@ Jacobian
 spatial_jacobian_space_to_body(const Transform& pose, const Jacobian& jacobian, size_t columns)
 {
     Jacobian result = {};
-    if (columns > MaxSize::dofs)
-    {
-        columns = MaxSize::dofs;
-    }
+    columns = std::min(columns, MaxSize::dofs);
 
     for (size_t col = 0U; col < columns; ++col)
     {

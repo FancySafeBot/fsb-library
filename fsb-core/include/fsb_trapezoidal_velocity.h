@@ -39,13 +39,13 @@ enum class TrapezoidalStatus: uint8_t
 struct TrapezoidalDuration
 {
     /** Duration of the start phase */
-    real_t start;
+    Real start;
 
     /** Duration of the plateau phase */
-    real_t plateau;
+    Real plateau;
 
     /** Duration of the end phase */
-    real_t end;
+    Real end;
 };
 
 /**
@@ -54,13 +54,13 @@ struct TrapezoidalDuration
 struct TrapezoidalConstraints
 {
     /** Jerk at the start of the profile */
-    real_t start_jerk;
+    Real start_jerk;
 
     /** Acceleration during the plateau phase */
-    real_t plateau_acceleration;
+    Real plateau_acceleration;
 
     /** Jerk at the end of the profile */
-    real_t end_jerk;
+    Real end_jerk;
 };
 
 /**
@@ -83,8 +83,8 @@ public:
      * @return
      */
     TrapezoidalStatus goto_velocity(
-        real_t start_time, const TrajState& initial_state, real_t final_velocity,
-        real_t final_acceleration, real_t max_acceleration, real_t max_jerk);
+        Real start_time, const TrajState& initial_state, Real final_velocity,
+        Real final_acceleration, Real max_acceleration, Real max_jerk);
 
     /**
      * @brief Evaluate trajectory
@@ -92,7 +92,7 @@ public:
      * @param t_eval Evaluation time
      * @return Trajectory state at evaluation time
      */
-    [[nodiscard]] TrajState evaluate(real_t t_eval) const override;
+    [[nodiscard]] TrajState evaluate(Real t_eval) const override;
 
     /**
      * @brief Get final state of segment.
@@ -107,7 +107,7 @@ public:
      * @brief Get start time of segment.
      * @return Start time.
      */
-    [[nodiscard]] real_t get_start_time() const override
+    [[nodiscard]] Real get_start_time() const override
     {
         return m_start_time;
     }
@@ -117,7 +117,7 @@ public:
      *
      * @return Total duration of trajectory
      */
-    [[nodiscard]] real_t get_duration() const override
+    [[nodiscard]] Real get_duration() const override
     {
         return m_total_duration;
     }
@@ -127,14 +127,14 @@ public:
      *
      * @return Final time
      */
-    [[nodiscard]] real_t get_final_time() const override
+    [[nodiscard]] Real get_final_time() const override
     {
         return m_start_time + m_total_duration;
     }
 
 private:
-    real_t m_start_time = 0.0;
-    real_t m_total_duration = 0.0;
+    Real m_start_time = 0.0;
+    Real m_total_duration = 0.0;
 
     SegmentConstJerk m_seg1;
     SegmentConstAcc  m_seg2;

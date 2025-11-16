@@ -1,8 +1,6 @@
 #pragma once
 
 #include <array>
-#include <cstdlib>
-#include <cstdint>
 
 namespace fsb
 {
@@ -70,10 +68,14 @@ class CircularBuffer
     CircularBufferStatus pop(BufferType &popped_value);
 
     /**
-     * @brief Get oldest value from buffer.
+     * @brief Pop all values from the buffer into an array.
      *
-     * @param popped_values All values in buffer.
-     * @return Status of operation.
+     * Copies up to BufferSize oldest values into popped_values in order from oldest
+     * to newest. The actual number of values copied is stored in num_popped.
+     *
+     * @param[out] popped_values Array to receive popped values (oldest at index 0).
+     * @param[out] num_popped Number of values written into popped_values.
+     * @return CircularBufferStatus::SUCCESS on success (this function always returns SUCCESS).
      */
     CircularBufferStatus pop_all(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped);
 
@@ -126,7 +128,7 @@ class CircularBuffer
      *
      * @return Total buffer size.
      */
-    size_t GetSize() const
+    static size_t GetSize()
     {
         return BufferSize;
     }
@@ -161,7 +163,7 @@ class CircularBuffer
 template<typename BufferType, size_t BufferSize>
 inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::push(BufferType push_value)
 {
-    CircularBufferStatus status = CircularBufferStatus::SUCCESS;
+    auto status = CircularBufferStatus::SUCCESS;
     if (GetRemaining() == 0)
     {
         status = CircularBufferStatus::FULL;
@@ -179,7 +181,7 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::push(BufferT
 template<typename BufferType, size_t BufferSize>
 inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::force_push(BufferType push_value)
 {
-    CircularBufferStatus status = CircularBufferStatus::SUCCESS;
+    auto status = CircularBufferStatus::SUCCESS;
     if (GetRemaining() == 0)
     {
         m_buffer[m_head] = push_value;
@@ -200,7 +202,7 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::force_push(B
 template<typename BufferType, size_t BufferSize>
 inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop(BufferType &popped_value)
 {
-    CircularBufferStatus status = CircularBufferStatus::SUCCESS;
+    auto status = CircularBufferStatus::SUCCESS;
     if (GetFilled() == 0)
     {
         status = CircularBufferStatus::EMPTY;

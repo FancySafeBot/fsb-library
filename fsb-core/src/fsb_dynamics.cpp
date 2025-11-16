@@ -23,7 +23,7 @@ static BodyForce compute_body_com_force(
         // Body mass properties
         const Body&    body = body_tree.get_body(index, err);
         const Vec3&    com = body.mass_props.com;
-        const real_t   mass = body.mass_props.mass;
+        const Real   mass = body.mass_props.mass;
         const Inertia& inertia = body.mass_props.inertia;
         // Body motion in body-fixed coordinates
         const Transform& pose = cartesian_motion.body[index].pose;
@@ -59,7 +59,7 @@ static BodyForce compute_body_com_force(
 static void joint_torque_from_force(
     const Joint& joint, const ForceVector& joint_force, JointSpace& joint_torque)
 {
-    const real_t s_neg = joint.reversed ? static_cast<real_t>(-1.0) : static_cast<real_t>(1.0);
+    const Real s_neg = joint.reversed ? -1.0 : 1.0;
     if (joint.type == JointType::REVOLUTE_X)
     {
         joint_torque.qv[joint.dof_index] = s_neg * joint_force.torque.x;

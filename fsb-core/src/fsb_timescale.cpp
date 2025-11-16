@@ -19,8 +19,8 @@ TrajState timescale_trajectory(const TrajState& timescale, const TrajState& traj
 }
 
 bool Timescale::set_limits(
-    const real_t max_timescale, const real_t max_timescale_deriv,
-    const real_t max_timescale_2nd_deriv)
+    const Real max_timescale, const Real max_timescale_deriv,
+    const Real max_timescale_2nd_deriv)
 {
     bool success = true;
     if (max_timescale < 0.0 || max_timescale_deriv < FSB_TOL || max_timescale_2nd_deriv < FSB_TOL)
@@ -36,44 +36,46 @@ bool Timescale::set_limits(
     return success;
 }
 
-bool Timescale::start(const real_t time_mono, const real_t time_scaled_init, real_t timescale)
+bool Timescale::start(const Real time_mono, const Real time_scaled_init, Real timescale)
 {
     if (fabs(timescale) > m_max_timescale)
     {
         timescale = (timescale < 0.0 ? -m_max_timescale : m_max_timescale);
     }
     const TrajState         initial_state = {time_scaled_init, timescale, 0.0, 0.0};
-    constexpr real_t        target_timescale_deriv = 0.0;
+    constexpr Real        TargetTimescaleDeriv = 0.0;
     const TrapezoidalStatus status = m_time_traj.goto_velocity(
         time_mono,
         initial_state,
         timescale,
-        target_timescale_deriv,
+        TargetTimescaleDeriv,
         m_max_timescale_deriv,
         m_max_timescale_2nd_deriv);
     return (status == TrapezoidalStatus::SUCCESS);
 }
 
-TimescaleResult Timescale::goto_timescale(const real_t time_mono, real_t target_timescale)
+TimescaleResult Timescale::goto_timescale(const Real time_mono, Real target_timescale)
 {
     const TrajState initial_state = m_time_traj.evaluate(time_mono);
     if (fabs(target_timescale) > m_max_timescale)
     {
         target_timescale = (target_timescale < 0.0 ? -m_max_timescale : m_max_timescale);
     }
-    constexpr real_t target_timescale_deriv = 0.0;
+    constexpr Real TargetTimescaleDeriv = 0.0;
 
     const TrapezoidalStatus status = m_time_traj.goto_velocity(
         time_mono,
         initial_state,
         target_timescale,
-        target_timescale_deriv,
+        TargetTimescaleDeriv,
         m_max_timescale_deriv,
         m_max_timescale_2nd_deriv);
-    return (status == TrapezoidalStatus::SUCCESS ? TimescaleResult::SUCCESS : TimescaleResult::FAILED_TO_TRANSITION);
+    return (
+        status == TrapezoidalStatus::SUCCESS ? TimescaleResult::SUCCESS :
+                                               TimescaleResult::FAILED_TO_TRANSITION);
 }
 
-TrajState Timescale::evaluate(const real_t time_mono) const
+TrajState Timescale::evaluate(const Real time_mono) const
 {
     return m_time_traj.evaluate(time_mono);
 }

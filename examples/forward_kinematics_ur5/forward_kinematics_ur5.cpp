@@ -41,7 +41,7 @@ static std::vector<std::vector<double>> csv_read(const std::string& csv_path)
         std::vector<double> row_data = {};
         while (std::getline(input_stream, input_value, ','))
         {
-            const fsb::real_t value = fsb::urdf::string_to_real(input_value, urdf_err);
+            const fsb::Real value = fsb::urdf::string_to_real(input_value, urdf_err);
             if (!urdf_err.is_error())
             {
                 row_data.push_back(value);

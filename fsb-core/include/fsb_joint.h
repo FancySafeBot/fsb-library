@@ -56,7 +56,7 @@ struct JointSpacePosition
     /**
      * @brief Joint space position data array
      */
-    std::array<real_t, MaxSize::coordinates> q;
+    std::array<Real, MaxSize::coordinates> q;
 };
 
 /**
@@ -67,7 +67,7 @@ struct JointSpace
     /**
      * @brief Joint space differential data array
      */
-    std::array<real_t, MaxSize::dofs> qv;
+    std::array<Real, MaxSize::dofs> qv;
 };
 
 /**
@@ -78,15 +78,15 @@ struct JointPva
     /**
      * @brief Joint position
      */
-    JointSpacePosition position;
+    JointSpacePosition position = {};
     /**
      * @brief Joint velocity
      */
-    JointSpace velocity;
+    JointSpace velocity = {};
     /**
      * @brief Joint acceleration
      */
-    JointSpace acceleration;
+    JointSpace acceleration = {};
 };
 
 /**
@@ -97,7 +97,7 @@ struct Joint
     /**
      * @brief Joint type
      */
-    JointType type;
+    JointType type = JointType::FIXED;
     /**
      * @brief Reversed direction of the joint axis
      */
@@ -105,29 +105,29 @@ struct Joint
     /**
      * @brief Joint pose with respect to the parent body with offset from parent body
      */
-    Transform parent_joint_transform;
+    Transform parent_joint_transform = transform_identity();
     /**
      * @brief Joint pose with respect to the parent body without offset
      */
-    Transform nominal_parent_joint_transform;
+    Transform nominal_parent_joint_transform = transform_identity();
     /**
      * @brief Index of model parent body to which the joint is attached
      */
-    size_t parent_body_index;
+    size_t parent_body_index = 0;
     /**
      * @brief Index of model child body to which the joint is connected
      */
-    size_t child_body_index;
+    size_t child_body_index = 0;
     /**
      * @brief Index of the joint's first generalized coordinate in the model joint space position
      * vector @c JointSpacePosition
      */
-    size_t coord_index;
+    size_t coord_index = 0;
     /**
      * @brief Index of the joint's first differential generalized coordinate in the model joint
      * space vector @c JointSpace
      */
-    size_t dof_index;
+    size_t dof_index = 0;
 };
 
 /**

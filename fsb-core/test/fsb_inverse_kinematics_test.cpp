@@ -10,7 +10,7 @@ TEST_SUITE_BEGIN("inverse_kinematics");
 
 TEST_CASE("Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb_inverse_kinematics]"))
 {
-    const fsb::real_t pose_tolerance = 1.0e-4;
+    const fsb::Real pose_tolerance = 1.0e-4;
     // Create the Panda robot's BodyTree
     size_t        ee_index = 0;
     fsb::BodyTree panda_tree = create_panda_body_tree(ee_index);

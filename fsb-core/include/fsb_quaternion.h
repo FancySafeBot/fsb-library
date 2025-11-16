@@ -25,19 +25,19 @@ struct Quaternion
     /**
      * @brief Scalar component
      */
-    real_t qw;
+    Real qw;
     /**
      * @brief X component
      */
-    real_t qx;
+    Real qx;
     /**
      * @brief Y component
      */
-    real_t qy;
+    Real qy;
     /**
      * @brief Z component
      */
-    real_t qz;
+    Real qz;
 };
 
 /**
@@ -82,7 +82,7 @@ Quaternion quat_conjugate(const Quaternion& q_in);
  * @param q_in Quaternion
  * @return Norm of quaternion
  */
-real_t quat_norm(const Quaternion& q_in);
+Real quat_norm(const Quaternion& q_in);
 
 /**
  * @brief Normalize quaternion
@@ -166,7 +166,7 @@ Quaternion quat_identity();
  * @param rx Rotation angle in radians
  * @return Rotation unit quaternion
  */
-Quaternion quat_rx(real_t rx);
+Quaternion quat_rx(Real rx);
 
 /**
  * @brief Rotation about y-axis
@@ -174,7 +174,7 @@ Quaternion quat_rx(real_t rx);
  * @param ry Rotation angle in radians
  * @return Rotation unit quaternion
  */
-Quaternion quat_ry(real_t ry);
+Quaternion quat_ry(Real ry);
 
 /**
  * @brief Rotation about z-axis
@@ -182,7 +182,7 @@ Quaternion quat_ry(real_t ry);
  * @param rz Rotation angle in radians
  * @return Rotation unit quaternion
  */
-Quaternion quat_rz(real_t rz);
+Quaternion quat_rz(Real rz);
 
 /**
  * @}

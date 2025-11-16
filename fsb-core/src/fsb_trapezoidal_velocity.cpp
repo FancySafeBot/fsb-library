@@ -8,36 +8,36 @@ namespace fsb
 {
 
 static TrapezoidalStatus generate_duration_fixed_plateau(
-    real_t target_change, real_t initial_rate, real_t final_rate, real_t plateau_rate, real_t start_rate_deriv,
-    real_t end_rate_deriv, TrapezoidalDuration& duration);
+    Real target_change, Real initial_rate, Real final_rate, Real plateau_rate, Real start_rate_deriv,
+    Real end_rate_deriv, TrapezoidalDuration& duration);
 
 static TrapezoidalStatus generate_duration_no_plateau(
-    real_t target_change, real_t initial_rate, real_t final_rate, real_t start_rate_deriv, real_t end_rate_deriv,
-    real_t& peak_rate, TrapezoidalDuration& duration);
+    Real target_change, Real initial_rate, Real final_rate, Real start_rate_deriv, Real end_rate_deriv,
+    Real& peak_rate, TrapezoidalDuration& duration);
 
 static TrapezoidalStatus generate_velocity_trapezoidal(
-    real_t velocity_change, real_t initial_acceleration, real_t final_acceleration, real_t max_acceleration,
-    real_t max_jerk, TrapezoidalConstraints& velocity_constraints, TrapezoidalDuration& duration);
+    Real velocity_change, Real initial_acceleration, Real final_acceleration, Real max_acceleration,
+    Real max_jerk, TrapezoidalConstraints& velocity_constraints, TrapezoidalDuration& duration);
 
 static TrapezoidalStatus generate_velocity_positive_change(
-    real_t velocity_change, real_t initial_acceleration, real_t final_acceleration,
-    real_t max_acceleration, real_t max_jerk, TrapezoidalConstraints& velocity_constraints,
+    Real velocity_change, Real initial_acceleration, Real final_acceleration,
+    Real max_acceleration, Real max_jerk, TrapezoidalConstraints& velocity_constraints,
     TrapezoidalDuration& duration);
 
 static TrapezoidalStatus generate_velocity_negative_change(
-    real_t velocity_change, real_t initial_acceleration, real_t final_acceleration,
-    real_t max_acceleration, real_t max_jerk, TrapezoidalConstraints& velocity_constraints,
+    Real velocity_change, Real initial_acceleration, Real final_acceleration,
+    Real max_acceleration, Real max_jerk, TrapezoidalConstraints& velocity_constraints,
     TrapezoidalDuration& duration);
 
 static TrapezoidalStatus generate_duration_fixed_plateau(
-        const real_t target_change,
-        const real_t initial_rate, const real_t final_rate, const real_t plateau_rate,
-        const real_t start_rate_deriv, const real_t end_rate_deriv, TrapezoidalDuration& duration)
+    const Real target_change, const Real initial_rate, const Real final_rate,
+    const Real plateau_rate, const Real start_rate_deriv, const Real end_rate_deriv,
+    TrapezoidalDuration& duration)
 {
     auto status = TrapezoidalStatus::SUCCESS;
     // ramp durations
-    real_t duration_start = (plateau_rate - initial_rate) / start_rate_deriv;
-    real_t duration_end = (final_rate - plateau_rate) / end_rate_deriv;
+    Real duration_start = (plateau_rate - initial_rate) / start_rate_deriv;
+    Real duration_end = (final_rate - plateau_rate) / end_rate_deriv;
     if (fabs(duration_start) < FSB_TOL)
     {
         duration_start = 0.0;
@@ -47,11 +47,13 @@ static TrapezoidalStatus generate_duration_fixed_plateau(
         duration_end = 0.0;
     }
     // plateau duration numerator
-    const real_t plateau_num =
-        target_change - (initial_rate * duration_start + 0.5 * start_rate_deriv * duration_start * duration_start +
-                         plateau_rate * duration_end + 0.5 * end_rate_deriv * duration_end * duration_end);
+    const Real plateau_num
+        = target_change
+          - (initial_rate * duration_start
+             + 0.5 * start_rate_deriv * duration_start * duration_start
+             + plateau_rate * duration_end + 0.5 * end_rate_deriv * duration_end * duration_end);
     // plateau duration
-    real_t duration_plateau = plateau_num / plateau_rate;
+    Real duration_plateau = plateau_num / plateau_rate;
     if (fabs(duration_plateau) < FSB_TOL)
     {
         duration_plateau = 0.0;
@@ -71,13 +73,12 @@ static TrapezoidalStatus generate_duration_fixed_plateau(
 }
 
 static TrapezoidalStatus generate_duration_no_plateau(
-        const real_t target_change,
-        const real_t initial_rate, const real_t final_rate,
-        const real_t start_rate_deriv, const real_t end_rate_deriv,
-        real_t& peak_rate, TrapezoidalDuration& duration)
+    const Real target_change, const Real initial_rate, const Real final_rate,
+    const Real start_rate_deriv, const Real end_rate_deriv, Real& peak_rate,
+    TrapezoidalDuration& duration)
 {
     auto status = TrapezoidalStatus::SUCCESS;
-    if (const real_t asqr = final_rate * final_rate + initial_rate * initial_rate
+    if (const Real asqr = final_rate * final_rate + initial_rate * initial_rate
                             + 2.0 * start_rate_deriv * target_change;
         asqr < FSB_TOL)
     {
@@ -86,34 +87,50 @@ static TrapezoidalStatus generate_duration_no_plateau(
     else
     {
         // apply plateau rate
-        const real_t plateau_rate_magnitude = 0.5 * sqrt(2.0 * asqr);
+        const Real plateau_rate_magnitude = 0.5 * sqrt(2.0 * asqr);
         peak_rate = (peak_rate < 0.0 ? -plateau_rate_magnitude : plateau_rate_magnitude);
-        status = generate_duration_fixed_plateau(target_change, initial_rate, final_rate, peak_rate, start_rate_deriv, end_rate_deriv, duration);
+        status = generate_duration_fixed_plateau(
+            target_change,
+            initial_rate,
+            final_rate,
+            peak_rate,
+            start_rate_deriv,
+            end_rate_deriv,
+            duration);
     }
     return status;
 }
 
 static TrapezoidalStatus generate_velocity_trapezoidal(
-    const real_t velocity_change, const real_t initial_acceleration, const real_t final_acceleration,
-    const real_t max_acceleration, const real_t max_jerk,
-    TrapezoidalConstraints& velocity_constraints,
-    TrapezoidalDuration& duration)
+    const Real velocity_change, const Real initial_acceleration,
+    const Real final_acceleration, const Real max_acceleration, const Real max_jerk,
+    TrapezoidalConstraints& velocity_constraints, TrapezoidalDuration& duration)
 {
     auto status = TrapezoidalStatus::SUCCESS;
     // Positive plateau acceleration
-    const real_t start_jerk = max_jerk;
-    const real_t end_jerk = -max_jerk;
-    real_t plateau_acceleration = max_acceleration;
+    const Real start_jerk = max_jerk;
+    const Real end_jerk = -max_jerk;
+    Real       plateau_acceleration = max_acceleration;
     // generate with max plateau rate
-    status = generate_duration_fixed_plateau(velocity_change, initial_acceleration, final_acceleration,
-                                   plateau_acceleration, start_jerk, end_jerk,
-                                   duration);
+    status = generate_duration_fixed_plateau(
+        velocity_change,
+        initial_acceleration,
+        final_acceleration,
+        plateau_acceleration,
+        start_jerk,
+        end_jerk,
+        duration);
     if (status != TrapezoidalStatus::SUCCESS)
     {
         // failed to reach max acceleration, try variable plateau acceleration
         status = generate_duration_no_plateau(
-            velocity_change, initial_acceleration, final_acceleration, start_jerk, end_jerk,
-            plateau_acceleration, duration);
+            velocity_change,
+            initial_acceleration,
+            final_acceleration,
+            start_jerk,
+            end_jerk,
+            plateau_acceleration,
+            duration);
     }
     if (status == TrapezoidalStatus::SUCCESS)
     {
@@ -125,35 +142,55 @@ static TrapezoidalStatus generate_velocity_trapezoidal(
 }
 
 static TrapezoidalStatus generate_velocity_positive_change(
-    const real_t velocity_change, const real_t initial_acceleration, const real_t final_acceleration,
-    const real_t max_acceleration, const real_t max_jerk, TrapezoidalConstraints& velocity_constraints,
-    TrapezoidalDuration& duration)
+    const Real velocity_change, const Real initial_acceleration,
+    const Real final_acceleration, const Real max_acceleration, const Real max_jerk,
+    TrapezoidalConstraints& velocity_constraints, TrapezoidalDuration& duration)
 {
     TrapezoidalStatus status = generate_velocity_trapezoidal(
-        velocity_change, initial_acceleration, final_acceleration,
-        max_acceleration, max_jerk, velocity_constraints, duration);
+        velocity_change,
+        initial_acceleration,
+        final_acceleration,
+        max_acceleration,
+        max_jerk,
+        velocity_constraints,
+        duration);
     if (status != TrapezoidalStatus::SUCCESS)
     {
         status = generate_velocity_trapezoidal(
-            velocity_change, initial_acceleration, final_acceleration,
-            -max_acceleration, -max_jerk, velocity_constraints, duration);
+            velocity_change,
+            initial_acceleration,
+            final_acceleration,
+            -max_acceleration,
+            -max_jerk,
+            velocity_constraints,
+            duration);
     }
     return status;
 }
 
 static TrapezoidalStatus generate_velocity_negative_change(
-    const real_t velocity_change, const real_t initial_acceleration, const real_t final_acceleration,
-    const real_t max_acceleration, const real_t max_jerk, TrapezoidalConstraints& velocity_constraints,
-    TrapezoidalDuration& duration)
+    const Real velocity_change, const Real initial_acceleration,
+    const Real final_acceleration, const Real max_acceleration, const Real max_jerk,
+    TrapezoidalConstraints& velocity_constraints, TrapezoidalDuration& duration)
 {
     TrapezoidalStatus status = generate_velocity_trapezoidal(
-        velocity_change, initial_acceleration, final_acceleration,
-        -max_acceleration, -max_jerk, velocity_constraints, duration);
+        velocity_change,
+        initial_acceleration,
+        final_acceleration,
+        -max_acceleration,
+        -max_jerk,
+        velocity_constraints,
+        duration);
     if (status != TrapezoidalStatus::SUCCESS)
     {
         status = generate_velocity_trapezoidal(
-            velocity_change, initial_acceleration, final_acceleration,
-            max_acceleration, max_jerk, velocity_constraints, duration);
+            velocity_change,
+            initial_acceleration,
+            final_acceleration,
+            max_acceleration,
+            max_jerk,
+            velocity_constraints,
+            duration);
     }
     return status;
 }
@@ -162,12 +199,11 @@ static TrapezoidalStatus generate_velocity_negative_change(
 // ====================
 
 TrapezoidalStatus TrapezoidalVelocity::goto_velocity(
-    const real_t start_time, const TrajState& initial_state, const real_t final_velocity, const real_t final_acceleration,
-    const real_t max_acceleration, const real_t max_jerk)
+    const Real start_time, const TrajState& initial_state, const Real final_velocity,
+    const Real final_acceleration, const Real max_acceleration, const Real max_jerk)
 {
     auto status = TrapezoidalStatus::SUCCESS;
-    if ((max_acceleration < FSB_TOL) ||
-        (max_jerk < FSB_TOL))
+    if ((max_acceleration < FSB_TOL) || (max_jerk < FSB_TOL))
     {
         status = TrapezoidalStatus::MAX_VALUE_BELOW_TOLERANCE;
     }
@@ -175,7 +211,7 @@ TrapezoidalStatus TrapezoidalVelocity::goto_velocity(
     {
         TrapezoidalConstraints velocity_constraints = {};
         TrapezoidalDuration duration = {};
-        if (const real_t velocity_change = final_velocity - initial_state.velocity;
+        if (const Real velocity_change = final_velocity - initial_state.velocity;
             (fabs(initial_state.acceleration) < FSB_TOL) && (fabs(velocity_change) < FSB_TOL))
         {
             // no change in position
@@ -184,13 +220,25 @@ TrapezoidalStatus TrapezoidalVelocity::goto_velocity(
         {
             if (velocity_change >= 0.0)
             {
-                status = generate_velocity_positive_change(velocity_change, initial_state.acceleration, final_acceleration,
-                    max_acceleration, max_jerk, velocity_constraints, duration);
+                status = generate_velocity_positive_change(
+                    velocity_change,
+                    initial_state.acceleration,
+                    final_acceleration,
+                    max_acceleration,
+                    max_jerk,
+                    velocity_constraints,
+                    duration);
             }
             else
             {
-                status = generate_velocity_negative_change(velocity_change, initial_state.acceleration, final_acceleration,
-                    max_acceleration, max_jerk, velocity_constraints, duration);
+                status = generate_velocity_negative_change(
+                    velocity_change,
+                    initial_state.acceleration,
+                    final_acceleration,
+                    max_acceleration,
+                    max_jerk,
+                    velocity_constraints,
+                    duration);
             }
         }
 
@@ -201,16 +249,21 @@ TrapezoidalStatus TrapezoidalVelocity::goto_velocity(
 
             m_seg1.generate(0.0, duration.start, initial_state, velocity_constraints.start_jerk);
 
-            const TrajState seg2_initial_state = m_seg1.get_final_state();
-            const real_t seg2_start_time = m_seg1.get_final_time();
-            m_seg2.generate(seg2_start_time, duration.plateau, seg2_initial_state, velocity_constraints.plateau_acceleration);
+            const TrajState se_g2_initial_state = m_seg1.get_final_state();
+            const Real    se_g2_start_time = m_seg1.get_final_time();
+            m_seg2.generate(
+                se_g2_start_time,
+                duration.plateau,
+                se_g2_initial_state,
+                velocity_constraints.plateau_acceleration);
 
-            const TrajState seg3_initial_state = m_seg2.get_final_state();
-            const real_t seg3_start_time = m_seg2.get_final_time();
-            m_seg3.generate(seg3_start_time, duration.end, seg3_initial_state, velocity_constraints.end_jerk);
+            const TrajState se_g3_initial_state = m_seg2.get_final_state();
+            const Real    se_g3_start_time = m_seg2.get_final_time();
+            m_seg3.generate(
+                se_g3_start_time, duration.end, se_g3_initial_state, velocity_constraints.end_jerk);
 
             const TrajState final_state = m_seg3.get_final_state();
-            const real_t final_time = m_seg3.get_final_time();
+            const Real    final_time = m_seg3.get_final_time();
             m_seg_extrapolate.generate(final_time, 0.0, final_state, final_state.acceleration);
 
             m_initial_state = initial_state;
@@ -221,7 +274,7 @@ TrapezoidalStatus TrapezoidalVelocity::goto_velocity(
     return status;
 }
 
-TrajState TrapezoidalVelocity::evaluate(real_t t_eval) const
+TrajState TrapezoidalVelocity::evaluate(Real t_eval) const
 {
     TrajState result = {};
     t_eval -= m_start_time;

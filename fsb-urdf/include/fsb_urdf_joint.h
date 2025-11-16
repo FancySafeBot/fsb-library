@@ -21,13 +21,13 @@ namespace fsb::urdf
 struct UrdfJointLimits
 {
     /** Lower position limit */
-    real_t lower_position = 0.0;
+    Real lower_position = 0.0;
 
     /** Upper position limit */
-    real_t upper_position = 0.0;
+    Real upper_position = 0.0;
 
     /** Maximum velocity allowed */
-    real_t max_velocity = 0.0;
+    Real max_velocity = 0.0;
 
     /** Whether position limits are set */
     bool set = false;

@@ -1,5 +1,6 @@
 
 #include "fsb_thread.h"
+#include <cstddef>
 
 namespace fsb
 {

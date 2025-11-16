@@ -49,10 +49,9 @@ Transform coord_transform(const Transform& transf_a, const Transform& transf_b)
 Transform coord_transform_inverse(const Transform& transf_a, const Transform& transf_b)
 {
     const Quaternion quat_conj = quat_conjugate(transf_a.rotation);
-    Transform  result = {
+    Transform        result = {
         quat_multiply(quat_conj, transf_b.rotation),
-        quat_rotate_vector(quat_conj, vector_subtract(transf_b.translation, transf_a.translation))
-    };
+        quat_rotate_vector(quat_conj, vector_subtract(transf_b.translation, transf_a.translation))};
     if (result.rotation.qw < 0.0)
     {
         result.rotation.qw = -result.rotation.qw;
@@ -106,15 +105,15 @@ MotionVector motion_transform_velocity(
     const Transform& parent_transf, const MotionVector& parent_velocity,
     const Transform& motion_transf, const MotionVector& motion_velocity)
 {
-    const Vec3 ang1 = quat_rotate_vector(parent_transf.rotation, motion_velocity.angular);
+    const Vec3 an_g1 = quat_rotate_vector(parent_transf.rotation, motion_velocity.angular);
 
-    const Vec3 lin1a = vector_cross(
+    const Vec3 li_n1_a = vector_cross(
         parent_velocity.angular,
         quat_rotate_vector(parent_transf.rotation, motion_transf.translation));
-    const Vec3 lin1b = quat_rotate_vector(parent_transf.rotation, motion_velocity.linear);
-    const Vec3 lin1 = vector_add(lin1a, lin1b);
+    const Vec3 li_n1_b = quat_rotate_vector(parent_transf.rotation, motion_velocity.linear);
+    const Vec3 li_n1 = vector_add(li_n1_a, li_n1_b);
 
-    return {vector_add(parent_velocity.angular, ang1), vector_add(parent_velocity.linear, lin1)};
+    return {vector_add(parent_velocity.angular, an_g1), vector_add(parent_velocity.linear, li_n1)};
 }
 
 MotionVector motion_transform_acceleration(
@@ -195,7 +194,7 @@ Vec3 vector_subtract(const Vec3& v_a, const Vec3& v_b)
     return {v_a.x - v_b.x, v_a.y - v_b.y, v_a.z - v_b.z};
 }
 
-Vec3 vector_scale(const real_t scalar, const Vec3& vec)
+Vec3 vector_scale(const Real scalar, const Vec3& vec)
 {
     return {vec.x * scalar, vec.y * scalar, vec.z * scalar};
 }
@@ -218,12 +217,12 @@ Vec3 vector_cross(const Vec3& v_a, const Vec3& v_b)
         v_a.x * v_b.y - v_a.y * v_b.x};
 }
 
-real_t vector_dot(const Vec3& v_a, const Vec3& v_b)
+Real vector_dot(const Vec3& v_a, const Vec3& v_b)
 {
     return v_a.x * v_b.x + v_a.y * v_b.y + v_a.z * v_b.z;
 }
 
-real_t vector_norm(const Vec3& vec)
+Real vector_norm(const Vec3& vec)
 {
     return sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }

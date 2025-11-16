@@ -1,3 +1,6 @@
+#include <array>
+#include <cmath>
+#include <algorithm>
 #include <cstddef>
 #include "fsb_inverse_kinematics.h"
 #include "fsb_body.h"
@@ -34,7 +37,7 @@ static Jacobian optim_jacobian(
     return jac;
 }
 
-static real_t optim_pose_error(
+static Real optim_pose_error(
     const MotionVector& cartesian_weights, const MotionVector& pose_error,
     MotionVector& weighted_pose_error)
 {
@@ -49,23 +52,31 @@ static real_t optim_pose_error(
 }
 
 static FsbLinalgErrorType optim_solve_joint_matrix(
-    const JointMatrix& joint_mat, const JointSpace& joint_vec, size_t dofs, JointSpace& result)
+    const JointMatrix& joint_mat, const JointSpace& joint_vec, const size_t dofs, JointSpace& result)
 {
     // Create lapack input, work, and output variables
-    const size_t nrhs = 1U;
-    const size_t dim = dofs;
-    constexpr size_t work_len = MaxSize::dofs * MaxSize::dofs;
-    std::array<double_t, work_len> work = {};
-    const size_t iwork_len = MaxSize::dofs;
+    const size_t                   nrhs = 1U;
+    const size_t                   dim = dofs;
+    constexpr size_t               WorkLen = MaxSize::dofs * MaxSize::dofs;
+    std::array<double_t, WorkLen>  work = {};
+    const size_t                   iwork_len = MaxSize::dofs;
     std::array<int, MaxSize::dofs> iwork = {};
     // solve for x_vec
     return fsb_linalg_matrix_sqr_solve(
-        joint_mat.j.data(), joint_vec.qv.data(), nrhs, dim, work_len, iwork_len, work.data(), iwork.data(), result.qv.data());
+        joint_mat.j.data(),
+        joint_vec.qv.data(),
+        nrhs,
+        dim,
+        WorkLen,
+        iwork_len,
+        work.data(),
+        iwork.data(),
+        result.qv.data());
 }
 
 static InverseKinematicsResult optim_levenberg_marquardt(
     const BodyTree& body_tree, const OptimParameters& params,
-    const JointSpacePosition& initial_config, size_t body_index, const Transform& target_pose,
+    const JointSpacePosition& initial_config, const size_t body_index, const Transform& target_pose,
     const Transform& base_pose, const size_t dofs)
 {
     // initialize result
@@ -89,7 +100,7 @@ static InverseKinematicsResult optim_levenberg_marquardt(
     result.error_pose = coord_transform_get_error(result.computed_pose, target_pose);
     // Weighted squared error
     MotionVector weighted_error = {};
-    real_t obj_err = optim_pose_error(params.objective_weights, result.error_pose, weighted_error);
+    Real obj_err = optim_pose_error(params.objective_weights, result.error_pose, weighted_error);
 
     // Start iterations
     // ================
@@ -161,14 +172,14 @@ static InverseKinematicsResult optim_levenberg_marquardt(
 
 InverseKinematicsResult compute_inverse_kinematics(
     const BodyTree& body_tree, const OptimParameters& params,
-    const JointSpacePosition& initial_config, size_t body_index, const Transform& target_pose,
+    const JointSpacePosition& initial_config, const size_t body_index, const Transform& target_pose,
     const Transform& base_pose)
 {
     // initialize result
     InverseKinematicsResult result = {};
 
     // number of dofs for selected body
-    BodyTreeError err = BodyTreeError::SUCCESS;
+    auto err = BodyTreeError::SUCCESS;
     const size_t  dofs = body_tree.get_body_dofs(body_index, err);
     if (dofs == 0U || err != BodyTreeError::SUCCESS)
     {
@@ -184,35 +195,40 @@ InverseKinematicsResult compute_inverse_kinematics(
 
 FsbLinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const MotionVector& cart_velocity, size_t dofs, JointSpace& joint_velocity)
 {
-    if (dofs > MaxSize::dofs)
-    {
-        dofs = MaxSize::dofs;
-    }
+    dofs = std::min(dofs, MaxSize::dofs);
 
     const size_t nrhs = 1U; // number of right-hand sides
     // Solve the least squares problem J * qv = velocity
     // where J is the Jacobian and qv is the joint velocity vector.
-    const double_t bvec[FSB_CART_SIZE] = {
-        cart_velocity.angular.x, cart_velocity.angular.y, cart_velocity.angular.z,
-        cart_velocity.linear.x, cart_velocity.linear.y, cart_velocity.linear.z
-    };
+    const double_t bvec[FSB_CART_SIZE]
+        = {cart_velocity.angular.x,
+           cart_velocity.angular.y,
+           cart_velocity.angular.z,
+           cart_velocity.linear.x,
+           cart_velocity.linear.y,
+           cart_velocity.linear.z};
     double_t work[512U] = {}; // workspace for least squares solve
     const size_t work_len = 512U; // length of workspace
-    return fsb_linalg_leastsquares_solve(jacobian.j.data(), FSB_CART_SIZE, dofs, bvec, nrhs, work_len, work,
-                                  joint_velocity.qv.data());
+    return fsb_linalg_leastsquares_solve(
+        jacobian.j.data(),
+        FSB_CART_SIZE,
+        dofs,
+        bvec,
+        nrhs,
+        work_len,
+        work,
+        joint_velocity.qv.data());
 }
 
 FsbLinalgErrorType inverse_acceleration_kinematics(
     const Jacobian& jacobian, const Jacobian& jacobian_derivative,
-    const MotionVector& cart_acceleration, const JointSpace& joint_velocity, size_t dofs,
+    const MotionVector& cart_acceleration, const JointSpace& joint_velocity, const size_t dofs,
     JointSpace& joint_acceleration)
 {
-
     const MotionVector cart_acc = jacobian_multiply(jacobian_derivative, joint_velocity, dofs);
-    const MotionVector cart_motion = {
-        vector_subtract(cart_acceleration.angular, cart_acc.angular),
-        vector_subtract(cart_acceleration.linear, cart_acc.linear)
-    };
+    const MotionVector cart_motion
+        = {vector_subtract(cart_acceleration.angular, cart_acc.angular),
+           vector_subtract(cart_acceleration.linear, cart_acc.linear)};
 
     const double bvec[FSB_CART_SIZE]
         = {cart_motion.angular.x,

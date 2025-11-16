@@ -145,14 +145,14 @@ inline QueueStatus Queue<QueueType, QueueSize>::Push(const QueueType push_value)
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.push(push_value);
+    const CircularBufferStatus buf_status = m_buffer.push(push_value);
     mutex_unlock(m_mutex);
     condvar_signal(m_cond_var);
     if (buf_status == CircularBufferStatus::FULL)
     {
         return QueueStatus::FULL;
     }
-    else if (buf_status != CircularBufferStatus::SUCCESS)
+    if (buf_status != CircularBufferStatus::SUCCESS)
     {
         return QueueStatus::ERROR;
     }
@@ -170,14 +170,14 @@ inline QueueStatus Queue<QueueType, QueueSize>::ForcePush(QueueType push_value)
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.force_push(push_value);
+    const CircularBufferStatus buf_status = m_buffer.force_push(push_value);
     mutex_unlock(m_mutex);
     condvar_signal(m_cond_var);
     if (buf_status == CircularBufferStatus::OVERWRITE)
     {
         return QueueStatus::OVERWRITE;
     }
-    else if (buf_status != CircularBufferStatus::SUCCESS)
+    if (buf_status != CircularBufferStatus::SUCCESS)
     {
         return QueueStatus::ERROR;
     }
@@ -196,7 +196,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopAll(
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.pop_all(popped_values, num_popped);
+    const CircularBufferStatus buf_status = m_buffer.pop_all(popped_values, num_popped);
     mutex_unlock(m_mutex);
     return (
         buf_status == CircularBufferStatus::SUCCESS ? QueueStatus::SUCCESS : QueueStatus::ERROR);
@@ -226,7 +226,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopWait(
     }
     // wait for new data
     const LockStatus cv_status = condvar_wait_timeout(m_cond_var, m_mutex, timeout);
-    QueueStatus result = QueueStatus::SUCCESS;
+    auto result = QueueStatus::SUCCESS;
     if (cv_status != LockStatus::SUCCESS)
     {
         result = (cv_status == LockStatus::TIMEOUT ? QueueStatus::TIMEOUT : QueueStatus::ERROR);
@@ -251,7 +251,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::Pop(QueueType& popped_value)
     {
         return QueueStatus::ERROR;
     }
-    CircularBufferStatus buf_status = m_buffer.pop(popped_value);
+    const CircularBufferStatus buf_status = m_buffer.pop(popped_value);
     mutex_unlock(m_mutex);
     return (
         buf_status == CircularBufferStatus::SUCCESS ? QueueStatus::SUCCESS : QueueStatus::ERROR);

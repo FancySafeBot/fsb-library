@@ -27,7 +27,7 @@ TEST_CASE("Rotate inertia" * doctest::description("[fsb_body][fsb::body_rotate_i
 TEST_CASE("Inertia parallel axis" * doctest::description("[fsb_body][fsb::body_parallel_axis_inertia]"))
 {
     // Inputs
-    const fsb::real_t mass = 0.845456;
+    const fsb::Real mass = 0.845456;
     const fsb::Vec3 com = {-0.509, 13.117, 6.045};
     const fsb::Inertia inertia = {5745.0, 7073.0, 2614.0, -55.722221, 136.4, 49.635477};
     // Expected

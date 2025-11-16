@@ -63,10 +63,10 @@ TEST_CASE("Convert string to real value" * doctest::description("[fsb_string_con
     // Inputs
     const std::string str = "-1e-15 ";
     // Expected
-    const fsb::real_t val_expected = -1.0e-15;
+    const fsb::Real val_expected = -1.0e-15;
     // Process
     fsb::urdf::UrdfError err_actual = {};
-    fsb::real_t val_actual = fsb::urdf::string_to_real(str, err_actual);
+    fsb::Real val_actual = fsb::urdf::string_to_real(str, err_actual);
 
     REQUIRE(!err_actual.is_error());
     REQUIRE(err_actual.get_description().empty());

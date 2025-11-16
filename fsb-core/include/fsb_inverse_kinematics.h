@@ -30,9 +30,9 @@ namespace fsb
 struct OptimParameters
 {
     size_t       max_iterations; ///< Maximum number of iterations
-    real_t       objective_tol; ///< Objective function error tolerance for convergence
-    real_t       state_tol; ///< State vector error tolerance for convergence
-    real_t       damping_factor; ///< Damping factor for Levenberg-Marquardt algorithm
+    Real       objective_tol; ///< Objective function error tolerance for convergence
+    Real       state_tol; ///< State vector error tolerance for convergence
+    Real       damping_factor; ///< Damping factor for Levenberg-Marquardt algorithm
     MotionVector objective_weights; ///< Cartesian weights for objective function
 };
 

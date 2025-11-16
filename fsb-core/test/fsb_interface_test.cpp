@@ -18,21 +18,21 @@ TEST_CASE("Interface forward kinematics" * doctest::description("[fsb_compute_ki
 
     const fsb::Vec3 joint1_position = {-0.872, 1.235, -0.02};
     const fsb::Quaternion joint1_rotation = {0.57072141808226, 0.575121276132167, 0.0939451898978092, 0.578521289130613};
-    const fsb::real_t joint1_qpos = 0.45;
-    const fsb::real_t joint1_qvel = -0.5;
-    const fsb::real_t joint1_qacc = 1.5;
+    const fsb::Real joint1_qpos = 0.45;
+    const fsb::Real joint1_qvel = -0.5;
+    const fsb::Real joint1_qacc = 1.5;
 
     const fsb::Vec3 joint2_position = {0.0, 0.0, 0.0};
     const fsb::Quaternion joint2_rotation = {0.466361491477014, -0.571547679819811, -0.124868616337094, 0.663511897115633};
-    const fsb::real_t joint2_qpos = 1.73;
-    const fsb::real_t joint2_qvel = 0.71;
-    const fsb::real_t joint2_qacc = 1.03;
+    const fsb::Real joint2_qpos = 1.73;
+    const fsb::Real joint2_qvel = 0.71;
+    const fsb::Real joint2_qacc = 1.03;
 
     const fsb::Vec3 joint3_position = {0.0, 0.0, 0.0};
     const fsb::Quaternion joint3_rotation = {0.461283965309215, 0.607100248856612, 0.205771002489209, -0.613436782171915};
-    const fsb::real_t joint3_qpos = 0.97;
-    const fsb::real_t joint3_qvel = -0.43;
-    const fsb::real_t joint3_qacc = 0.62;
+    const fsb::Real joint3_qpos = 0.97;
+    const fsb::Real joint3_qvel = -0.43;
+    const fsb::Real joint3_qacc = 0.62;
 
     // Expected
     const fsb::Vec3 expected_position = {-0.1609681549732388, -1.4630302404666433, 0.40345719786411616};

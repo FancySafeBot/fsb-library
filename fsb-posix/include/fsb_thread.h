@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FSB_THREAD_H
+#define FSB_THREAD_H
 
 #include <cstdlib>
 #include <cstdint>
@@ -49,3 +50,5 @@ LockStatus condvar_destroy(pthread_cond_t& cond_var);
   * @}
   */
 }
+
+#endif
