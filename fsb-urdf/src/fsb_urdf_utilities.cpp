@@ -28,13 +28,13 @@ size_t string_to_index(const std::string& str, UrdfError& err)
         err = {UrdfErrorType::VALUE_CONVERSION_FAILED, "'" + str + "' is not an integer"};
         value = 0;
     }
-    else if (value < 0 || (std::cmp_greater_equal(value, MaxSize::index)))
+    else if (value < 0 || (std::cmp_greater_equal(value, MaxSize::kIndex)))
     {
         const auto str_len = static_cast<size_t>(end - start);
         err
             = {UrdfErrorType::RANGE_ERROR,
                "Value (" + str.substr(str_len) + ") is larger than max array length ("
-                   + std::to_string(MaxSize::index) + ")"};
+                   + std::to_string(MaxSize::kIndex) + ")"};
         value = 0;
     }
     else

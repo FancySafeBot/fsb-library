@@ -109,7 +109,7 @@ TimingError PeriodicTimer::initialize(const timespec& step_size)
     // check minimum step size
     if ((err == TimingError::SUCCESS) &&
         (step_size.tv_sec == 0) &&
-        (step_size.tv_nsec < MINIMUM_STEP_SIZE_NS))
+        (step_size.tv_nsec < kMinimumStepSizeNs))
     {
         err = TimingError::STEP_SIZE_LESS_THAN_MINIMUM;
     }

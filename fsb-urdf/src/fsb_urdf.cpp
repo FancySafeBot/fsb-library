@@ -153,7 +153,7 @@ static BodyTree urdf_generate_tree(
         if (!err.is_error())
         {
             // add base body name
-            body_tree_map.add_body(BodyTree::base_index, joints[joints_sorted.front()].parent_name);
+            body_tree_map.add_body(BodyTree::kBaseIndex, joints[joints_sorted.front()].parent_name);
             // add bodies to tree
             size_t joint_count = 0U;
             for (const auto joint_index : joints_sorted)

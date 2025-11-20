@@ -56,7 +56,7 @@ struct JointSpacePosition
     /**
      * @brief Joint space position data array
      */
-    std::array<Real, MaxSize::coordinates> q;
+    std::array<Real, MaxSize::kCoordinates> q;
 };
 
 /**
@@ -67,7 +67,7 @@ struct JointSpace
     /**
      * @brief Joint space differential data array
      */
-    std::array<Real, MaxSize::dofs> qv;
+    std::array<Real, MaxSize::kDofs> qv;
 };
 
 /**

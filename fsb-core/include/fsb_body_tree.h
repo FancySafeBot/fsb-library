@@ -54,7 +54,7 @@ enum class BodyTreeError : uint8_t
      */
     MAX_JOINT_COORDINATES_REACHED = 6,
     /**
-     * @brief Joint requires more DoFs than is available. Maximum is specified by @c MaxSize::dofs
+     * @brief Joint requires more DoFs than is available. Maximum is specified by @c MaxSize::kDofs
      */
     MAX_JOINT_DOFS_REACHED = 7,
     /**
@@ -85,10 +85,10 @@ enum class BodyTreeError : uint8_t
  */
 struct JointLimits
 {
-    std::array<bool, MaxSize::dofs> set; ///< Enable limits for each joint DoF
-    std::array<Real, MaxSize::dofs> lower_position; ///< Minimum joint position limit
-    std::array<Real, MaxSize::dofs> upper_position; ///< Maximum joint position limit
-    std::array<Real, MaxSize::dofs> max_velocity; ///< Maximum joint velocity limit
+    std::array<bool, MaxSize::kDofs> set; ///< Enable limits for each joint DoF
+    std::array<Real, MaxSize::kDofs> lower_position; ///< Minimum joint position limit
+    std::array<Real, MaxSize::kDofs> upper_position; ///< Maximum joint position limit
+    std::array<Real, MaxSize::kDofs> max_velocity; ///< Maximum joint velocity limit
 };
 
 /**
@@ -104,7 +104,7 @@ public:
     BodyTree() = default;
 
     /** @brief Index of base body is always 0 */
-    static constexpr size_t base_index = 0U;
+    static constexpr size_t kBaseIndex = 0U;
 
     /**
      * @brief Add a body to the body tree
@@ -170,8 +170,8 @@ public:
      *
      * @return Error code SUCCESS if limits were retrieved successfully
      */
-    BodyTreeError
-    get_joint_position_limit(size_t joint_index, bool& is_set, Real& lower_position, Real& upper_position) const;
+    BodyTreeError get_joint_position_limit(
+        size_t joint_index, bool& is_set, Real& lower_position, Real& upper_position) const;
 
     /**
      * @brief Set joint velocity limit for a joint in the body tree
@@ -183,8 +183,7 @@ public:
      *
      * @return Error code SUCCESS if limits were set successfully
      */
-    BodyTreeError
-    set_joint_velocity_limit(size_t joint_index, Real max_velocity);
+    BodyTreeError set_joint_velocity_limit(size_t joint_index, Real max_velocity);
 
     /**
      * @brief Get joint velocity limit for a joint in the body tree
@@ -319,9 +318,9 @@ public:
      * @param num_leaves Number of leaves in body tree
      * @return Array of body indexes which are leaves.
      */
-    [[ nodiscard ]] std::array<size_t, MaxSize::bodies> get_leaves(size_t& num_leaves) const
+    [[nodiscard]] std::array<size_t, MaxSize::kBodies> get_leaves(size_t& num_leaves) const
     {
-        std::array<size_t, MaxSize::bodies> result = {};
+        std::array<size_t, MaxSize::kBodies> result = {};
         num_leaves = 0U;
         for (size_t index = 0; index < m_num_bodies; ++index)
         {
@@ -339,10 +338,10 @@ private:
     [[nodiscard]] BodyTreeError
     validate_add_body_input(size_t parent_body_index, JointType joint_type, const Body& body) const;
 
-    std::array<Body, MaxSize::bodies>  m_bodies = {};
-    std::array<Joint, MaxSize::joints> m_joints = {};
-    JointLimits m_limits = {};
-    Vec3 m_gravity = {};
+    std::array<Body, MaxSize::kBodies>  m_bodies = {};
+    std::array<Joint, MaxSize::kJoints> m_joints = {};
+    JointLimits                         m_limits = {};
+    Vec3                                m_gravity = {};
 
     size_t m_num_coordinates = 0U;
     size_t m_num_dofs = 0U;

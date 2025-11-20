@@ -31,7 +31,12 @@ TEST_CASE("Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb_inverse_
     // target body
     const size_t target_body_index = 8U;
     // default optimization parameters
-    fsb::OptimParameters optim_params = fsb::default_optim_parameters();
+    fsb::OptimParameters optim_params = {};
+    optim_params.max_iterations = 100U;
+    optim_params.objective_tol = 1.0e-12;
+    optim_params.state_tol = 1.0e-12;
+    optim_params.damping_factor = 0.001;
+    optim_params.objective_weights = {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}};
 
     // compute result
     const fsb::InverseKinematicsResult result = fsb::compute_inverse_kinematics(panda_tree, optim_params, initial_config,

@@ -211,7 +211,7 @@ TEST_CASE("Jacobian single reversed joint flips one column" * doctest::descripti
     fsb::Body body1 = {origin_offset, unit_mass_props, {}, 0U, false};
     fsb::Body body2 = {origin_offset, unit_mass_props, {}, 0U, false};
     fsb::Body body3 = {origin_offset, unit_mass_props, {}, 0U, true};
-    const size_t body1_index_a = tree_a.add_body(fsb::BodyTree::base_index, fsb::JointType::REVOLUTE_Z, joint1_tr, body1, err);
+    const size_t body1_index_a = tree_a.add_body(fsb::BodyTree::kBaseIndex, fsb::JointType::REVOLUTE_Z, joint1_tr, body1, err);
     REQUIRE(err == fsb::BodyTreeError::SUCCESS);
     const size_t body2_index_a = tree_a.add_body(body1_index_a, fsb::JointType::PRISMATIC_Z, joint2_tr, body2, err);
     REQUIRE(err == fsb::BodyTreeError::SUCCESS);
@@ -220,7 +220,7 @@ TEST_CASE("Jacobian single reversed joint flips one column" * doctest::descripti
 
     // Create tree B identically
     fsb::BodyTree tree_b = {};
-    const size_t body1_index_b = tree_b.add_body(fsb::BodyTree::base_index, fsb::JointType::REVOLUTE_Z, joint1_tr, body1, err);
+    const size_t body1_index_b = tree_b.add_body(fsb::BodyTree::kBaseIndex, fsb::JointType::REVOLUTE_Z, joint1_tr, body1, err);
     REQUIRE(err == fsb::BodyTreeError::SUCCESS);
     const size_t body2_index_b = tree_b.add_body(body1_index_b, fsb::JointType::PRISMATIC_Z, joint2_tr, body2, err);
     REQUIRE(err == fsb::BodyTreeError::SUCCESS);

@@ -71,4 +71,4 @@ Quaternion string_to_quaternion(const std::string& str, UrdfError& err);
  * @}
  */
 
-} // namespace fsb
+} // namespace fsb::urdf

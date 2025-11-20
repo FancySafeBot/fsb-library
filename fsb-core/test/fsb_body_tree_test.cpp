@@ -157,7 +157,7 @@ TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics
         // process
         auto err_actual = fsb::BodyTreeError::SUCCESS;
         fsb::BodyTree body_tree = {};
-        for (size_t index = 0; index < (fsb::MaxSize::bodies - 1U); ++index)
+        for (size_t index = 0; index < (fsb::MaxSize::kBodies - 1U); ++index)
         {
             fsb::BodyTreeError err = fsb::BodyTreeError::SUCCESS;
             const size_t body_index = body_tree.add_body(parent_body_index, joint_type, parent_joint_tr, body, err);

@@ -31,7 +31,9 @@ namespace fsb::urdf
  * @param err Error status returned after parsing
  * @return Coordinate transform of origin
  */
-Transform urdf_parse_origin(const std::string& fname, const std::string& el_name, const tinyxml2::XMLElement* el_xml, UrdfError& err);
+Transform urdf_parse_origin(
+    const std::string& fname, const std::string& el_name, const tinyxml2::XMLElement* el_xml,
+    UrdfError& err);
 
 /**
  * @brief Parse first child origin offset element.
@@ -53,10 +55,11 @@ Transform urdf_parse_origin(const std::string& fname, const std::string& el_name
  * @return Linear and angular coordinate transform offset
  */
 MotionVector urdf_parse_origin_offset(
-    const std::string& fname, const std::string& body_name, const tinyxml2::XMLElement* body_xml, UrdfError& err);
+    const std::string& fname, const std::string& body_name, const tinyxml2::XMLElement* body_xml,
+    UrdfError& err);
 
 /**
  * @}
  */
 
-} // namespace fsb
+} // namespace fsb::urdf

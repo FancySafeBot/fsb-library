@@ -24,17 +24,17 @@ namespace fsb
 struct Inertia
 {
     /** @brief Ixx component of tensor */
-    Real ixx;
+    Real ixx = 0.0;
     /** @brief Ixx component of tensor */
-    Real iyy;
+    Real iyy = 0.0;
     /** @brief Izz component of tensor */
-    Real izz;
+    Real izz = 0.0;
     /** @brief Ixy component of tensor */
-    Real ixy;
+    Real ixy = 0.0;
     /** @brief Ixz component of tensor */
-    Real ixz;
+    Real ixz = 0.0;
     /** @brief Iyz component of tensor */
-    Real iyz;
+    Real iyz = 0.0;
 };
 
 /**
@@ -45,15 +45,15 @@ struct MassProps
     /**
      * @brief Mass of body
      */
-    Real mass;
+    Real mass = 0.0;
     /**
      * @brief Center of mass
      */
-    Vec3 com;
+    Vec3 com = {};
     /**
      * @brief Inertia tensor
      */
-    Inertia inertia;
+    Inertia inertia = {};
 };
 
 /**
@@ -64,11 +64,11 @@ struct PrincipalInertia
     /**
      * @brief Orientation of principal inertia axes
      */
-    Quaternion rot;
+    Quaternion rot = {};
     /**
      * @brief Principal inertia values. Ixy, Ixz, and Iyz are zero.
      */
-    Inertia inertia;
+    Inertia inertia = {};
 };
 
 /**
@@ -79,7 +79,7 @@ struct BodyCartesianPva
     /**
      * @brief List of bodies with Cartesian pose, velocity, and acceleration.
      */
-    std::array<CartesianPva, MaxSize::bodies> body;
+    std::array<CartesianPva, MaxSize::kBodies> body = {};
 };
 
 /**
@@ -90,23 +90,23 @@ struct Body
     /**
      * @brief Transform offset of from nominal body origin
      */
-    MotionVector origin_offset;
+    MotionVector origin_offset = {};
     /**
      * @brief Mass properties of body
      */
-    MassProps mass_props;
+    MassProps mass_props = {};
     /**
      * @brief Principal inertia of body
      */
-    PrincipalInertia principal_inertia;
+    PrincipalInertia principal_inertia = {};
     /**
      * @brief Index of parent joint
      */
-    size_t joint_index;
+    size_t joint_index = 0;
     /**
      * @brief true if body is leaf (no children)
      */
-    bool is_leaf;
+    bool is_leaf = true;
 };
 
 /**

@@ -76,11 +76,11 @@ CheckOptions:
     value: lower_case
 
   # Constexpr and globals: k prefix + CamelCase
-  - key: readability-identifier-naming.ConstexprVariableCase
+  - key: readability-identifier-naming.ConstexprVariablePrefix
     value: k
   - key: readability-identifier-naming.ConstexprVariableCase
     value: CamelCase
-  - key: readability-identifier-naming.GlobalConstantCase
+  - key: readability-identifier-naming.GlobalConstantPrefix
     value: k
   - key: readability-identifier-naming.GlobalConstantCase
     value: CamelCase

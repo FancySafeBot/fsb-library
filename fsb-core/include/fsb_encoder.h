@@ -19,7 +19,7 @@ namespace fsb
  * @brief Status from setting encoder parameters
  *
  */
-enum class EncoderStatus: uint8_t
+enum class EncoderStatus : uint8_t
 {
     /**
      * @brief Parameters applied successfully

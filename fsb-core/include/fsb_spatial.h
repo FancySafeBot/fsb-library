@@ -59,7 +59,8 @@ MotionVector spatial_body_to_space(const Transform& pose, const MotionVector& ve
  * @param columns Number of columns (degrees of freedom) of Jacobian matrix
  * @return Jacobian in body-fixed frame
  */
-Jacobian spatial_jacobian_body_to_space(const Transform& pose, const Jacobian& jacobian, size_t columns = MaxSize::dofs);
+Jacobian spatial_jacobian_body_to_space(
+    const Transform& pose, const Jacobian& jacobian, size_t columns = MaxSize::kDofs);
 
 /**
  * @brief Convert from jacobian in space frame to body-fixed frame.
@@ -69,7 +70,8 @@ Jacobian spatial_jacobian_body_to_space(const Transform& pose, const Jacobian& j
  * @param columns Number of columns (degrees of freedom) of Jacobian matrix
  * @return Jacobian in body-fixed frame
  */
-Jacobian spatial_jacobian_space_to_body(const Transform& pose, const Jacobian& jacobian, size_t columns = MaxSize::dofs);
+Jacobian spatial_jacobian_space_to_body(
+    const Transform& pose, const Jacobian& jacobian, size_t columns = MaxSize::kDofs);
 
 /**
  * @}

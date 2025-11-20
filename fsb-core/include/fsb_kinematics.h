@@ -21,7 +21,7 @@ namespace fsb
 /**
  * @brief Forward kinematics options
  */
-enum class ForwardKinematicsOption: uint8_t
+enum class ForwardKinematicsOption : uint8_t
 {
     /**
      * @brief Calculate Cartesian pose from joint position
@@ -60,7 +60,8 @@ void forward_kinematics(
  * @return Joint position with offset added
  */
 JointSpacePosition joint_add_offset(
-    const BodyTree& body_tree, const JointSpacePosition& joint_position, const JointSpace& joint_offset);
+    const BodyTree& body_tree, const JointSpacePosition& joint_position,
+    const JointSpace& joint_offset);
 
 /**
  * @brief Get difference between joint positions
@@ -71,7 +72,8 @@ JointSpacePosition joint_add_offset(
  * @return Joint position difference
  */
 JointSpace joint_difference(
-    const BodyTree& body_tree, const JointSpacePosition& joint_position_a, const JointSpacePosition& joint_position_b);
+    const BodyTree& body_tree, const JointSpacePosition& joint_position_a,
+    const JointSpacePosition& joint_position_b);
 
 /**
  * @}

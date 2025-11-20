@@ -301,8 +301,7 @@ motion_transform_space_to_body(const Transform& pose, const MotionVector& space_
  * @param body_motion Motion in body-fixed frame
  * @return Motion in space frame
  */
-MotionVector
-motion_transform_body_to_space(const Transform& pose, const MotionVector& body_motion);
+MotionVector motion_transform_body_to_space(const Transform& pose, const MotionVector& body_motion);
 
 /**
  * @brief Get velocity of child frame with respect to a common frame given transform between parent

@@ -19,10 +19,10 @@ namespace fsb
  *
  */
 
-enum class QueueStatus
+enum class QueueStatus : uint8_t
 {
-    SUCCESS,
     UNINITIALIZED,
+    SUCCESS,
     FULL,
     OVERWRITE,
     TIMEOUT,
@@ -53,7 +53,7 @@ public:
      * @param push_value New value to add to buffer.
      * @return Status of operation.
      */
-    QueueStatus Push(QueueType push_value);
+    QueueStatus push(QueueType push_value);
 
     /**
      * @brief Add value to buffer and overwrite oldest value if buffer is full.
@@ -61,7 +61,7 @@ public:
      * @param push_value New value to add to buffer.
      * @return Status of operation.
      */
-    QueueStatus ForcePush(QueueType push_value);
+    QueueStatus force_push(QueueType push_value);
 
     /**
      * @brief Get oldest value from buffer.
@@ -69,7 +69,7 @@ public:
      * @param popped_value Oldest value in buffer.
      * @return Status of operation.
      */
-    QueueStatus Pop(QueueType& popped_value);
+    QueueStatus pop(QueueType& popped_value);
 
     /**
      * @brief Wait for a new value to be added to the buffer, then pop all values.
@@ -78,7 +78,7 @@ public:
      * @param num_popped Number of values removed from buffer.
      * @return Status of operation.
      */
-    QueueStatus PopAll(std::array<QueueType, QueueSize>& popped_values, size_t& num_popped);
+    QueueStatus pop_all(std::array<QueueType, QueueSize>& popped_values, size_t& num_popped);
 
     /**
      * @brief Wait for a new value to be added to the buffer, then pop all values.
@@ -88,7 +88,7 @@ public:
      * @param timeout Maximum time to wait for new data.
      * @return Status of operation.
      */
-    QueueStatus PopWait(
+    QueueStatus pop_wait(
         std::array<QueueType, QueueSize>& popped_values, size_t& num_popped,
         const struct timespec& timeout);
 
@@ -96,7 +96,7 @@ public:
      * @brief Reset buffer to empty state.
      *
      */
-    QueueStatus Reset();
+    QueueStatus reset();
 
 private:
     bool                                 m_initialized = false;
@@ -135,7 +135,7 @@ template <typename QueueType, size_t QueueSize> Queue<QueueType, QueueSize>::~Qu
 }
 
 template <typename QueueType, size_t QueueSize>
-inline QueueStatus Queue<QueueType, QueueSize>::Push(const QueueType push_value)
+inline QueueStatus Queue<QueueType, QueueSize>::push(const QueueType push_value)
 {
     if (!m_initialized)
     {
@@ -160,7 +160,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::Push(const QueueType push_value)
 }
 
 template <typename QueueType, size_t QueueSize>
-inline QueueStatus Queue<QueueType, QueueSize>::ForcePush(QueueType push_value)
+inline QueueStatus Queue<QueueType, QueueSize>::force_push(QueueType push_value)
 {
     if (!m_initialized)
     {
@@ -185,7 +185,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::ForcePush(QueueType push_value)
 }
 
 template <typename QueueType, size_t QueueSize>
-inline QueueStatus Queue<QueueType, QueueSize>::PopAll(
+inline QueueStatus Queue<QueueType, QueueSize>::pop_all(
     std::array<QueueType, QueueSize>& popped_values, size_t& num_popped)
 {
     if (!m_initialized)
@@ -203,7 +203,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopAll(
 }
 
 template <typename QueueType, size_t QueueSize>
-inline QueueStatus Queue<QueueType, QueueSize>::PopWait(
+inline QueueStatus Queue<QueueType, QueueSize>::pop_wait(
     std::array<QueueType, QueueSize>& popped_values, size_t& num_popped,
     const struct timespec& timeout)
 {
@@ -226,7 +226,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopWait(
     }
     // wait for new data
     const LockStatus cv_status = condvar_wait_timeout(m_cond_var, m_mutex, timeout);
-    auto result = QueueStatus::SUCCESS;
+    auto             result = QueueStatus::SUCCESS;
     if (cv_status != LockStatus::SUCCESS)
     {
         result = (cv_status == LockStatus::TIMEOUT ? QueueStatus::TIMEOUT : QueueStatus::ERROR);
@@ -241,7 +241,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::PopWait(
 }
 
 template <typename QueueType, size_t QueueSize>
-inline QueueStatus Queue<QueueType, QueueSize>::Pop(QueueType& popped_value)
+inline QueueStatus Queue<QueueType, QueueSize>::pop(QueueType& popped_value)
 {
     if (!m_initialized)
     {
@@ -258,7 +258,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::Pop(QueueType& popped_value)
 }
 
 template <typename QueueType, size_t QueueSize>
-inline QueueStatus Queue<QueueType, QueueSize>::Reset()
+inline QueueStatus Queue<QueueType, QueueSize>::reset()
 {
     if (!m_initialized)
     {
@@ -268,7 +268,7 @@ inline QueueStatus Queue<QueueType, QueueSize>::Reset()
     {
         return QueueStatus::ERROR;
     }
-    m_buffer.Reset();
+    m_buffer.reset();
     mutex_unlock(m_mutex);
     return QueueStatus::SUCCESS;
 }

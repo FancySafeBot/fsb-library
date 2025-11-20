@@ -1,7 +1,6 @@
 #ifndef FSB_TRAJECTORY_SEGMENT_H
 #define FSB_TRAJECTORY_SEGMENT_H
 
-#include "fsb_motion.h"
 #include "fsb_trajectory_types.h"
 #include "fsb_types.h"
 
@@ -13,7 +12,6 @@ namespace fsb
  * @brief Segments with motion constraints
  * @{
  */
-
 
 /**
  * @brief Constant jerk profile
@@ -104,7 +102,8 @@ public:
      * @param[in] initial_state Initial state of segment
      * @param[in] acceleration Constant acceleration constraint
      */
-    void generate(Real start_time, Real duration, const TrajState& initial_state, Real acceleration);
+    void
+    generate(Real start_time, Real duration, const TrajState& initial_state, Real acceleration);
 
     /**
      * @brief Evaluate constant acceleration segment.

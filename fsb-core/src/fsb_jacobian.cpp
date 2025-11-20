@@ -18,7 +18,7 @@ namespace fsb
 
 static Mat3Sym jacobian_multiply_jacobian_transpose_angular(const Jacobian& jacobian, size_t dofs)
 {
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     Mat3Sym result = {};
     for (size_t col = 0U; col < dofs; ++col)
     {
@@ -34,7 +34,7 @@ static Mat3Sym jacobian_multiply_jacobian_transpose_angular(const Jacobian& jaco
 
 static Mat3Sym jacobian_multiply_jacobian_transpose_linear(const Jacobian& jacobian, size_t dofs)
 {
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     Mat3Sym result = {};
     for (size_t col = 0U; col < dofs; ++col)
     {
@@ -309,7 +309,7 @@ static bool is_prismatic(const JointType jt)
 }
 
 static Jacobian jacobian_derivative_all_revolute_prismatic(
-    const std::array<JointType, MaxSize::dofs>& dof_joint_type, const Jacobian& jacobian,
+    const std::array<JointType, MaxSize::kDofs>& dof_joint_type, const Jacobian& jacobian,
     const JointSpace& joint_velocity, const size_t dofs)
 {
     Jacobian result = {};
@@ -375,7 +375,7 @@ JacobianError jacobian_derivative(
 
     // propagate through parent bodies
     bool all_revolute_or_prismatic = true;
-    std::array<JointType, MaxSize::dofs> dof_joint_type = {JointType::FIXED};
+    std::array<JointType, MaxSize::kDofs> dof_joint_type = {JointType::FIXED};
     size_t temp_body_index = body_index;
     while ((temp_body_index > 0U) && all_revolute_or_prismatic)
     {
@@ -404,7 +404,7 @@ JacobianError jacobian_derivative(
 }
 
 static Hessian calculate_hessian_all_revolute_prismatic(
-    const std::array<JointType, MaxSize::dofs>& dof_joint_type, const Jacobian& jacobian,
+    const std::array<JointType, MaxSize::kDofs>& dof_joint_type, const Jacobian& jacobian,
     const size_t dofs)
 {
     Hessian result = {};
@@ -471,7 +471,7 @@ JacobianError calculate_hessian(
 
     // propagate through parent bodies
     bool all_revolute_or_prismatic = true;
-    std::array<JointType, MaxSize::dofs> dof_joint_type = {JointType::FIXED};
+    std::array<JointType, MaxSize::kDofs> dof_joint_type = {JointType::FIXED};
     size_t                               temp_body_index = body_index;
     while ((temp_body_index > 0U) && all_revolute_or_prismatic)
     {
@@ -502,7 +502,7 @@ Jacobian hessian_multiply(
     const Hessian& hessian, const JointSpace& joint_motion, size_t dofs)
 {
     Jacobian result = {};
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
         const MotionVector result_col = jacobian_multiply(hessian.h[ind], joint_motion);
@@ -520,7 +520,7 @@ MotionVector jacobian_multiply(
     const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs)
 {
     MotionVector result = {};
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
         result.angular.x += jacobian.j[jacobian_index(0U, ind)] * joint_motion.qv[ind];
@@ -537,7 +537,7 @@ JointSpace jacobian_transpose_multiply(
     const Jacobian& jacobian, const MotionVector& cartesian_motion, size_t dofs)
 {
     JointSpace result = {};
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
         result.qv[ind] =
@@ -553,7 +553,7 @@ JointSpace jacobian_transpose_multiply(
 
 JointMatrix jacobian_transpose_multiply_jacobian(const Jacobian& jacobian, const MotionVector& cartesian_weights, size_t dofs)
 {
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     Jacobian scaled_jacobian = {};
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
@@ -584,7 +584,7 @@ JointMatrix jacobian_transpose_multiply_jacobian(const Jacobian& jacobian, const
 Jacobian jacobian_derivative_from_hessian(const Hessian& hessian, const JointSpace& joint_velocity, size_t dofs)
 {
     Jacobian result = {};
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
         const MotionVector result_col = jacobian_multiply(hessian.h[ind], joint_velocity);

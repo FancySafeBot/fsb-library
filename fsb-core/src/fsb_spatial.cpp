@@ -49,7 +49,7 @@ Jacobian
 spatial_jacobian_body_to_space(const Transform& pose, const Jacobian& jacobian, size_t columns)
 {
     Jacobian result = {};
-    columns = std::min(columns, MaxSize::dofs);
+    columns = std::min(columns, MaxSize::kDofs);
 
     for (size_t col = 0U; col < columns; ++col)
     {
@@ -77,7 +77,7 @@ Jacobian
 spatial_jacobian_space_to_body(const Transform& pose, const Jacobian& jacobian, size_t columns)
 {
     Jacobian result = {};
-    columns = std::min(columns, MaxSize::dofs);
+    columns = std::min(columns, MaxSize::kDofs);
 
     for (size_t col = 0U; col < columns; ++col)
     {

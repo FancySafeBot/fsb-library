@@ -16,7 +16,7 @@ FsbLinalgErrorType
 jacobian_pseudoinverse(const Jacobian& jacobian, Jacobian& inverse_jacobian, const size_t dofs)
 {
     // lapack pseudoinverse c array inputs
-    constexpr size_t WorkLen = MaxSize::linalg_work;
+    constexpr size_t WorkLen = MaxSize::kLinalgWork;
     double_t         work[WorkLen] = {};
     // run pseudoinverse
     return fsb_linalg_pseudoinverse(
@@ -43,7 +43,7 @@ JointSpace compute_nullspace_motion(
     // Then, compute qn = J+ * (J * qd) = J+ * cart_motion
     // lapack pseudoinverse c array inputs
     double_t motion_vec[FSB_CART_SIZE] = {};
-    double_t joint_null[MaxSize::dofs] = {};
+    double_t joint_null[MaxSize::kDofs] = {};
     constexpr size_t NRHS = 1U;
     constexpr size_t WorkLen = 512U;
     double_t         work[WorkLen] = {};

@@ -36,7 +36,7 @@ struct BodyForce
     /**
      * @brief List of bodies with Cartesian pose, velocity, and acceleration.
      */
-    std::array<ForceVector, MaxSize::bodies> body;
+    std::array<ForceVector, MaxSize::kBodies> body;
 };
 
 /**
@@ -49,13 +49,13 @@ struct BodyForce
  * @return Joint torque vector resulting from dynamics
  */
 JointSpace inverse_dynamics(
-    const BodyTree& body_tree, const BodyCartesianPva& cartesian_motion, const BodyForce& external_force,
-    BodyForce& body_force);
+    const BodyTree& body_tree, const BodyCartesianPva& cartesian_motion,
+    const BodyForce& external_force, BodyForce& body_force);
 
 /**
  * @}
  */
 
-}
+} // namespace fsb
 
-#endif //FSB_DYNAMICS_H
+#endif // FSB_DYNAMICS_H

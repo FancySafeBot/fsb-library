@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 
 namespace fsb
 {
@@ -37,10 +39,9 @@ enum class CircularBufferStatus : uint8_t
  * @brief Circular Buffer
  *
  */
-template<typename BufferType, size_t BufferSize>
-class CircularBuffer
+template <typename BufferType, size_t BufferSize> class CircularBuffer
 {
-   public:
+public:
     CircularBuffer() = default;
 
     /**
@@ -65,7 +66,7 @@ class CircularBuffer
      * @param popped_value Oldest value in buffer.
      * @return Status of operation.
      */
-    CircularBufferStatus pop(BufferType &popped_value);
+    CircularBufferStatus pop(BufferType& popped_value);
 
     /**
      * @brief Pop all values from the buffer into an array.
@@ -77,20 +78,21 @@ class CircularBuffer
      * @param[out] num_popped Number of values written into popped_values.
      * @return CircularBufferStatus::SUCCESS on success (this function always returns SUCCESS).
      */
-    CircularBufferStatus pop_all(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped);
+    CircularBufferStatus
+    pop_all(std::array<BufferType, BufferSize>& popped_values, size_t& num_popped);
 
     /**
      * @brief Reset buffer to empty state.
      *
      */
-    void Reset();
+    void reset();
 
     /**
      * @brief Get number of filled buffer positions.
      *
      * @return Number of filled buffer positions.
      */
-    size_t GetFilled() const
+    [[nodiscard]] size_t get_filled() const
     {
         size_t filled_size = 0;
         if (m_full)
@@ -109,7 +111,7 @@ class CircularBuffer
      *
      * @return Number of remaining buffer positions.
      */
-    size_t GetRemaining() const
+    [[nodiscard]] size_t get_remaining() const
     {
         size_t remaining_size = 0;
         if (m_full)
@@ -128,16 +130,16 @@ class CircularBuffer
      *
      * @return Total buffer size.
      */
-    static size_t GetSize()
+    static size_t get_size()
     {
         return BufferSize;
     }
 
-   private:
+private:
     /**
      * @brief Circular buffer of commands for stepper
      */
-    std::array<BufferType, BufferSize> m_buffer;
+    std::array<BufferType, BufferSize> m_buffer = {};
     /**
      * @brief Index of oldest filled buffer position
      *
@@ -160,11 +162,11 @@ class CircularBuffer
 // CircularBuffer Implementation
 // ===============================
 
-template<typename BufferType, size_t BufferSize>
+template <typename BufferType, size_t BufferSize>
 inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::push(BufferType push_value)
 {
     auto status = CircularBufferStatus::SUCCESS;
-    if (GetRemaining() == 0)
+    if (get_remaining() == 0)
     {
         status = CircularBufferStatus::FULL;
     }
@@ -178,11 +180,12 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::push(BufferT
     return status;
 }
 
-template<typename BufferType, size_t BufferSize>
-inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::force_push(BufferType push_value)
+template <typename BufferType, size_t BufferSize>
+inline CircularBufferStatus
+CircularBuffer<BufferType, BufferSize>::force_push(BufferType push_value)
 {
     auto status = CircularBufferStatus::SUCCESS;
-    if (GetRemaining() == 0)
+    if (get_remaining() == 0)
     {
         m_buffer[m_head] = push_value;
         m_head = (m_head + 1) % BufferSize;
@@ -199,11 +202,11 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::force_push(B
     return status;
 }
 
-template<typename BufferType, size_t BufferSize>
-inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop(BufferType &popped_value)
+template <typename BufferType, size_t BufferSize>
+inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop(BufferType& popped_value)
 {
     auto status = CircularBufferStatus::SUCCESS;
-    if (GetFilled() == 0)
+    if (get_filled() == 0)
     {
         status = CircularBufferStatus::EMPTY;
     }
@@ -218,11 +221,12 @@ inline CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop(BufferTy
     return status;
 }
 
-template<typename BufferType, size_t BufferSize>
-CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop_all(std::array<BufferType, BufferSize> &popped_values, size_t& num_popped)
+template <typename BufferType, size_t BufferSize>
+CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop_all(
+    std::array<BufferType, BufferSize>& popped_values, size_t& num_popped)
 {
     num_popped = 0;
-    while (GetFilled() > 0)
+    while (get_filled() > 0)
     {
         // consume at tail of queue
         popped_values[num_popped] = m_buffer[m_tail];
@@ -234,13 +238,12 @@ CircularBufferStatus CircularBuffer<BufferType, BufferSize>::pop_all(std::array<
     return CircularBufferStatus::SUCCESS;
 }
 
-
-template<typename BufferType, size_t BufferSize>
-inline void CircularBuffer<BufferType, BufferSize>::Reset()
+template <typename BufferType, size_t BufferSize>
+inline void CircularBuffer<BufferType, BufferSize>::reset()
 {
     m_head = 0;
     m_tail = 0;
     m_full = false;
 }
 
-}
+} // namespace fsb

@@ -36,11 +36,11 @@ namespace fsb::urdf
  * @return Inertia tensor
  */
 Inertia urdf_parse_inertia_mass(
-    const std::string& fname, const std::string& body_name, const tinyxml2::XMLElement* inertial_xml, Real& body_mass,
-    UrdfError& err);
+    const std::string& fname, const std::string& body_name,
+    const tinyxml2::XMLElement* inertial_xml, Real& body_mass, UrdfError& err);
 
 /**
  * @}
  */
 
-} // namespace fsb
+} // namespace fsb::urdf

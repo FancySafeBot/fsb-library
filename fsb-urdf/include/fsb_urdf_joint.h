@@ -17,7 +17,6 @@ namespace fsb::urdf
  * @{
  */
 
-
 struct UrdfJointLimits
 {
     /** Lower position limit */
@@ -79,10 +78,11 @@ struct UrdfJoint
  * @param[out] err Error status returned after parsing
  * @return Parsed URDF joint
  */
-UrdfJoint urdf_parse_joint(const std::string& fname, const tinyxml2::XMLElement* joint_xml, UrdfError& err);
+UrdfJoint
+urdf_parse_joint(const std::string& fname, const tinyxml2::XMLElement* joint_xml, UrdfError& err);
 
 /**
  * @}
  */
 
-} // namespace fsb
+} // namespace fsb::urdf

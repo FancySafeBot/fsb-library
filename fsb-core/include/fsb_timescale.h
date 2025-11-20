@@ -27,8 +27,8 @@ namespace fsb
 TrajState timescale_trajectory(const TrajState& timescale, const TrajState& traj);
 
 /**
-* @brief Result of timescale transition
-*/
+ * @brief Result of timescale transition
+ */
 enum class TimescaleResult : uint8_t
 {
     /**
@@ -61,8 +61,7 @@ public:
      * @param max_timescale_2nd_deriv Maximum second derivative of timescale transition
      * @return
      */
-    bool
-    set_limits(Real max_timescale, Real max_timescale_deriv, Real max_timescale_2nd_deriv);
+    bool set_limits(Real max_timescale, Real max_timescale_deriv, Real max_timescale_2nd_deriv);
 
     /**
      *

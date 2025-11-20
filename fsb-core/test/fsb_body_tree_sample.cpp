@@ -19,7 +19,7 @@ BodyTree body_tree_sample_rpr(
     Body body3 = {origin_offset, body3_massprops, {}, 0U, true};
 
     const size_t body1_index
-        = body_tree.add_body(BodyTree::base_index, JointType::REVOLUTE_Z, joint1_tr, body1, err);
+        = body_tree.add_body(BodyTree::kBaseIndex, JointType::REVOLUTE_Z, joint1_tr, body1, err);
     REQUIRE(err == BodyTreeError::SUCCESS);
     const size_t body2_index
         = body_tree.add_body(body1_index, JointType::PRISMATIC_Z, joint2_tr, body2, err);
@@ -44,7 +44,7 @@ BodyTree body_tree_sample_srs(
     Body body3 = {origin_offset, body3_massprops, {}, 0U, true};
 
     const size_t body1_index
-        = body_tree.add_body(BodyTree::base_index, JointType::SPHERICAL, joint1_tr, body1, err);
+        = body_tree.add_body(BodyTree::kBaseIndex, JointType::SPHERICAL, joint1_tr, body1, err);
     REQUIRE(err == BodyTreeError::SUCCESS);
     const size_t body2_index
         = body_tree.add_body(body1_index, JointType::REVOLUTE_Z, joint2_tr, body2, err);
@@ -65,7 +65,7 @@ BodyTree create_panda_body_tree(size_t& ee_index)
     Transform tr1 = transform_identity();
     tr1.translation.z = 0.333;
     size_t link_index
-        = body_tree.add_massless_body(BodyTree::base_index, JointType::REVOLUTE_Z, tr1, {}, err);
+        = body_tree.add_massless_body(BodyTree::kBaseIndex, JointType::REVOLUTE_Z, tr1, {}, err);
     REQUIRE(err == BodyTreeError::SUCCESS);
 
     Transform tr2 = transform_identity();

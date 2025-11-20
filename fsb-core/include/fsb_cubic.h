@@ -4,7 +4,6 @@
 
 #include "fsb_types.h"
 #include "fsb_trajectory_types.h"
-#include "fsb_trajectory_segment.h"
 
 namespace fsb
 {
@@ -18,7 +17,7 @@ namespace fsb
 /**
  * @brief Minimum duration for a cubic trajectory
  */
-constexpr Real CUBIC_MIN_DURATION = 1e-6;
+constexpr Real kCubicMinDuration = 1e-6;
 
 /**
  * @brief Coefficients of a cubic polynomial
@@ -59,8 +58,7 @@ public:
      * @param[in] duration Duration of the trajectory
      * @param[in] coeffs Coefficients of the cubic polynomial
      */
-    void set_coeffs(
-        Real start_time, Real duration, const CubicCoeffs& coeffs);
+    void set_coeffs(Real start_time, Real duration, const CubicCoeffs& coeffs);
 
     /**
      * @brief Evaluate position, velocity, acceleration, and jerk

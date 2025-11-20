@@ -16,7 +16,7 @@ namespace fsb::urdf
 /**
  * @brief Name map errors
  */
-enum class NameMapError
+enum class NameMapError : uint8_t
 {
     /** @brief No error */
     SUCCESS,
@@ -195,20 +195,19 @@ inline NameMapError NameMap::add(const size_t index, const std::string& name)
 {
     auto err = NameMapError::SUCCESS;
 
-    auto name_err = NameMapError::SUCCESS;
+    auto              name_err = NameMapError::SUCCESS;
     const std::string existing_name = get_name(index, name_err);
-    auto index_err = NameMapError::SUCCESS;
-    const size_t existing_index = get_index(name, index_err);
+    auto              index_err = NameMapError::SUCCESS;
+    const size_t      existing_index = get_index(name, index_err);
     if (name_err == NameMapError::NOT_FOUND && index_err == NameMapError::NOT_FOUND)
     {
         // Name and index do not exist - Add to map
         m_index_map[name] = index;
         m_name_map[index] = name;
     }
-    else if ((name_err == NameMapError::EXISTS) &&
-             (existing_name == name) &&
-             (index_err == NameMapError::EXISTS) &&
-             (existing_index == index))
+    else if (
+        (name_err == NameMapError::EXISTS) && (existing_name == name)
+        && (index_err == NameMapError::EXISTS) && (existing_index == index))
     {
         // no error, already in map
     }

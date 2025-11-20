@@ -1,12 +1,10 @@
 #ifndef FSB_TRAJECTORY_PATH_H
 #define FSB_TRAJECTORY_PATH_H
 
-#include <cstdint>
-#include <array>
+#include "fsb_trajectory_types.h"
 #include "fsb_types.h"
 
 #include "fsb_motion.h"
-#include "fsb_trajectory_segment.h"
 
 namespace fsb
 {
@@ -17,10 +15,11 @@ namespace fsb
  * @{
  */
 
-struct PathPoint {
+struct PathPoint
+{
     Transform pose = transform_identity();
-    Real displacement = 0.0;
-    Vec3 direction = {};
+    Real      displacement = 0.0;
+    Vec3      direction = {};
 };
 
 struct PathPva
@@ -54,7 +53,6 @@ public:
     CartesianPva get_final_state() const final;
 
 private:
-
     CartesianPva m_initial = {};
     CartesianPva m_final = {};
 
@@ -63,15 +61,12 @@ private:
 };
 
 class PathTrajectory : public Segment6
-{
-
-
-};
+{};
 
 /**
  * @}
  */
 
-}
+} // namespace fsb
 
 #endif // FANCYSAFEBOT_FSB_PATH_H

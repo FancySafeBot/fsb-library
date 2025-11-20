@@ -12,7 +12,7 @@ static QuinticCoeffs generate_coefficients(
     bool& is_valid)
 {
     QuinticCoeffs coeffs = {};
-    is_valid = (duration > QUINTIC_MIN_DURATION);
+    is_valid = (duration > kQuinticMinDuration);
     if (is_valid)
     {
         const Real dist = final_state.position - initial_state.position;

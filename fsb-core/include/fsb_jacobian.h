@@ -48,7 +48,7 @@ struct Jacobian
     /**
      * @brief Jacobian matrix data array
      */
-    std::array<Real, 6U * MaxSize::dofs> j;
+    std::array<Real, 6U * MaxSize::kDofs> j;
 };
 
 /**
@@ -59,7 +59,7 @@ struct JointMatrix
     /**
      * @brief Square matrix data array
      */
-    std::array<Real, MaxSize::dofs * MaxSize::dofs> j;
+    std::array<Real, MaxSize::kDofs * MaxSize::kDofs> j;
 };
 
 /**
@@ -70,7 +70,7 @@ struct Hessian
     /**
      * @brief Hessian tensor data "pages"
      */
-    std::array<Jacobian, MaxSize::dofs> h;
+    std::array<Jacobian, MaxSize::kDofs> h;
 };
 
 struct SingularityEllipsoid
@@ -81,8 +81,8 @@ struct SingularityEllipsoid
 
 struct Mat3Singularity
 {
-    bool is_singular = false;
-    Real condition_number = 0.0;
+    bool                 is_singular = false;
+    Real                 condition_number = 0.0;
     SingularityEllipsoid ellipsoid = {};
 };
 
@@ -130,7 +130,7 @@ inline size_t joint_matrix_index(const size_t row, const size_t col, const size_
  * @return Cartesian velocity
  */
 MotionVector jacobian_multiply(
-    const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs = MaxSize::dofs);
+    const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs = MaxSize::kDofs);
 
 /**
  * @brief Jacobian transpose multiply cartesian motion
@@ -141,7 +141,7 @@ MotionVector jacobian_multiply(
  * @return Joint motion
  */
 JointSpace jacobian_transpose_multiply(
-    const Jacobian& jacobian, const MotionVector& cartesian_motion, size_t dofs = MaxSize::dofs);
+    const Jacobian& jacobian, const MotionVector& cartesian_motion, size_t dofs = MaxSize::kDofs);
 
 /**
  * @brief Jacobian transpose multiply jacobian
@@ -153,8 +153,8 @@ JointSpace jacobian_transpose_multiply(
  * @param dofs
  * @return
  */
-JointMatrix jacobian_transpose_multiply_jacobian(const Jacobian& jacobian, const MotionVector& cartesian_weights, size_t dofs = MaxSize::dofs);
-
+JointMatrix jacobian_transpose_multiply_jacobian(
+    const Jacobian& jacobian, const MotionVector& cartesian_weights, size_t dofs = MaxSize::kDofs);
 
 /**
  * @brief Determine Jacobian matrix for a single body in tree
@@ -182,8 +182,7 @@ Jacobian jacobian_derivative_from_hessian(
 JacobianError calculate_hessian(
     size_t body_index, const BodyTree& body_tree, const Jacobian& jacobian, Hessian& hessian);
 
-Jacobian hessian_multiply(
-    const Hessian& hessian, const JointSpace& joint_motion, size_t dofs);
+Jacobian hessian_multiply(const Hessian& hessian, const JointSpace& joint_motion, size_t dofs);
 
 /**
  * @brief Calculate Jacobian metrics for a given Jacobian matrix
@@ -192,7 +191,7 @@ Jacobian hessian_multiply(
  * @param dofs Number of dofs (elements in joint velocity vector)
  * @return Jacobian metrics including condition number, manipulability, and singularity ellipsoids
  */
-JacobianMetrics calculate_jacobian_metrics(const Jacobian& jacobian, size_t dofs= MaxSize::dofs);
+JacobianMetrics calculate_jacobian_metrics(const Jacobian& jacobian, size_t dofs = MaxSize::kDofs);
 
 /**
  * @}

@@ -25,19 +25,19 @@ struct Quaternion
     /**
      * @brief Scalar component
      */
-    Real qw;
+    Real qw = 1.0;
     /**
      * @brief X component
      */
-    Real qx;
+    Real qx = 0.0;
     /**
      * @brief Y component
      */
-    Real qy;
+    Real qy = 0.0;
     /**
      * @brief Z component
      */
-    Real qz;
+    Real qz = 0.0;
 };
 
 /**

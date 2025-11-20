@@ -26,7 +26,7 @@ static fsb::BodyTree create_panda_body_tree(fsb::BodyTreeError& err, size_t& ee_
     // Add bodies and joints for the Panda robot
     fsb::Transform tr1 = fsb::transform_identity();
     tr1.translation.z = 0.333;
-    size_t link_index = body_tree.add_massless_body(fsb::BodyTree::base_index, fsb::JointType::REVOLUTE_Z, tr1, {}, err);
+    size_t link_index = body_tree.add_massless_body(fsb::BodyTree::kBaseIndex, fsb::JointType::REVOLUTE_Z, tr1, {}, err);
 
     if (err == fsb::BodyTreeError::SUCCESS)
     {

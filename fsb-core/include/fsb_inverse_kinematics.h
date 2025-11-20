@@ -5,12 +5,10 @@
 #ifndef FSB_INVERSE_KINEMATICS_H
 #define FSB_INVERSE_KINEMATICS_H
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include "fsb_body.h"
 #include "fsb_body_tree.h"
-#include "fsb_configuration.h"
 #include "fsb_motion.h"
 #include "fsb_joint.h"
 #include "fsb_types.h"
@@ -29,11 +27,14 @@ namespace fsb
 
 struct OptimParameters
 {
-    size_t       max_iterations; ///< Maximum number of iterations
-    Real       objective_tol; ///< Objective function error tolerance for convergence
-    Real       state_tol; ///< State vector error tolerance for convergence
-    Real       damping_factor; ///< Damping factor for Levenberg-Marquardt algorithm
-    MotionVector objective_weights; ///< Cartesian weights for objective function
+    size_t       max_iterations = 100U; ///< Maximum number of iterations
+    Real         objective_tol = 1.0e-12; ///< Objective function error tolerance for convergence
+    Real         state_tol = 1.0e-12; ///< State vector error tolerance for convergence
+    Real         damping_factor = 0.001; ///< Damping factor for Levenberg-Marquardt algorithm
+    MotionVector objective_weights = {
+        {1.0, 1.0, 1.0},
+        {1.0, 1.0, 1.0}
+    }; ///< Cartesian weights for objective function
 };
 
 enum class InverseKinematicsInfo : uint8_t
@@ -50,25 +51,14 @@ enum class InverseKinematicsInfo : uint8_t
 
 struct InverseKinematicsResult
 {
-    InverseKinematicsInfo info; ///< Convergence information
-    JointSpacePosition    joint_position; ///< Joint position
-    BodyCartesianPva      body_poses; ///< Body poses
-    Jacobian              jacobian; ///< Jacobian matrix
-    Transform             computed_pose; ///< Computed end-effector pose
-    MotionVector          error_pose; ///< Error between computed and desired pose
-    size_t                iterations; ///< Number of iterations
+    InverseKinematicsInfo info = InverseKinematicsInfo::INVALID_INPUT; ///< Convergence information
+    JointSpacePosition    joint_position = {}; ///< Joint position
+    BodyCartesianPva      body_poses = {}; ///< Body poses
+    Jacobian              jacobian = {}; ///< Jacobian matrix
+    Transform             computed_pose = {}; ///< Computed end-effector pose
+    MotionVector          error_pose = {}; ///< Error between computed and desired pose
+    size_t                iterations = 0; ///< Number of iterations
 };
-
-inline OptimParameters default_optim_parameters()
-{
-    return {
-        100U, // max iterations
-        1.0e-12, // objective tolerance
-        1.0e-12, // f tolerance
-        0.001,
-        {{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}}
-    };
-}
 
 /**
  * @brief Compute inverse kinematics for a given end-effector pose

@@ -17,7 +17,7 @@ namespace fsb
 /**
  * @brief Result of attempting to compute trapezoidal trajectory
  */
-enum class TrapezoidalStatus: uint8_t
+enum class TrapezoidalStatus : uint8_t
 {
     /**
      * @brief Generation of trapezoidal trajectory is successful

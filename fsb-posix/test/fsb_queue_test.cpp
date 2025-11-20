@@ -16,25 +16,25 @@ TEST_CASE("Queue" * doctest::description("[fsb::Queue]"))
     fsb::Queue<int, 5> queue;
 
     // Test push
-    REQUIRE(queue.Push(1) == fsb::QueueStatus::SUCCESS);
+    REQUIRE(queue.push(1) == fsb::QueueStatus::SUCCESS);
 
     // Test pop
     int value;
-    REQUIRE(queue.Pop(value) == fsb::QueueStatus::SUCCESS);
+    REQUIRE(queue.pop(value) == fsb::QueueStatus::SUCCESS);
     REQUIRE(value == 1);
 
     // Test push to full queue
     for (int i = 0; i < 5; ++i)
     {
-        REQUIRE(queue.Push(i) == fsb::QueueStatus::SUCCESS);
+        REQUIRE(queue.push(i) == fsb::QueueStatus::SUCCESS);
     }
-    REQUIRE(queue.Push(5) == fsb::QueueStatus::FULL);
+    REQUIRE(queue.push(5) == fsb::QueueStatus::FULL);
 
     // Test force push
-    REQUIRE(queue.ForcePush(5) == fsb::QueueStatus::OVERWRITE);
+    REQUIRE(queue.force_push(5) == fsb::QueueStatus::OVERWRITE);
 
     // Test reset
-    queue.Reset();
+    queue.reset();
 }
 
 TEST_CASE("Queue Multithreading" * doctest::description("[fsb::Queue]"))
@@ -57,7 +57,7 @@ TEST_CASE("Queue Multithreading" * doctest::description("[fsb::Queue]"))
     // Producer thread
     prod_thread = std::thread([queue]() {
         for (int i = 0; i < num_items; ++i) {
-            const fsb::QueueStatus status = queue->Push(i);
+            const fsb::QueueStatus status = queue->push(i);
             REQUIRE(status == fsb::QueueStatus::SUCCESS);
         }
     });
@@ -73,7 +73,7 @@ TEST_CASE("Queue Multithreading" * doctest::description("[fsb::Queue]"))
             ts.tv_nsec += 100 * 1000 * 1000;  // 100 milliseconds
             // wait and pop
             size_t num_popped = 0;
-            const fsb::QueueStatus status = queue_cons->PopWait(vals, num_popped, ts);
+            const fsb::QueueStatus status = queue_cons->pop_wait(vals, num_popped, ts);
             REQUIRE(status == fsb::QueueStatus::SUCCESS);
             REQUIRE(num_popped > 0);
             for (size_t j = 0; j < num_popped; ++j)

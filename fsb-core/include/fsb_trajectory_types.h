@@ -4,7 +4,8 @@
 #include "fsb_types.h"
 #include "fsb_motion.h"
 
-namespace fsb {
+namespace fsb
+{
 
 /**
  * @defgroup TopicTrajectorySegment Small segment trajectories
@@ -15,7 +16,8 @@ namespace fsb {
 /**
  * @brief Trajectory scalar motion state
  */
-struct TrajState {
+struct TrajState
+{
     /**
      * @brief Position
      */
@@ -37,7 +39,8 @@ struct TrajState {
 /**
  * @brief Trajectory vector motion state
  */
-struct TrajState3 {
+struct TrajState3
+{
     /**
      * @brief Position
      */
@@ -147,6 +150,6 @@ public:
  * @}
  */
 
-}
+} // namespace fsb
 
 #endif

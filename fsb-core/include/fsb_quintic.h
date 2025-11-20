@@ -4,7 +4,6 @@
 
 #include "fsb_types.h"
 #include "fsb_trajectory_types.h"
-#include "fsb_trajectory_segment.h"
 
 namespace fsb
 {
@@ -18,7 +17,7 @@ namespace fsb
 /**
  * @brief Minimum duration for a quintic trajectory
  */
-constexpr Real QUINTIC_MIN_DURATION = 1e-6;
+constexpr Real kQuinticMinDuration = 1e-6;
 
 /**
  * @brief Coefficients of a quintic polynomial

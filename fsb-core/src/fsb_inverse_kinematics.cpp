@@ -57,10 +57,10 @@ static FsbLinalgErrorType optim_solve_joint_matrix(
     // Create lapack input, work, and output variables
     const size_t                   nrhs = 1U;
     const size_t                   dim = dofs;
-    constexpr size_t               WorkLen = MaxSize::dofs * MaxSize::dofs;
+    constexpr size_t               WorkLen = MaxSize::kDofs * MaxSize::kDofs;
     std::array<double_t, WorkLen>  work = {};
-    const size_t                   iwork_len = MaxSize::dofs;
-    std::array<int, MaxSize::dofs> iwork = {};
+    const size_t                   iwork_len = MaxSize::kDofs;
+    std::array<int, MaxSize::kDofs> iwork = {};
     // solve for x_vec
     return fsb_linalg_matrix_sqr_solve(
         joint_mat.j.data(),
@@ -195,7 +195,7 @@ InverseKinematicsResult compute_inverse_kinematics(
 
 FsbLinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const MotionVector& cart_velocity, size_t dofs, JointSpace& joint_velocity)
 {
-    dofs = std::min(dofs, MaxSize::dofs);
+    dofs = std::min(dofs, MaxSize::kDofs);
 
     const size_t nrhs = 1U; // number of right-hand sides
     // Solve the least squares problem J * qv = velocity

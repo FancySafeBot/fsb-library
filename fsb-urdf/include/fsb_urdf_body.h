@@ -25,8 +25,8 @@ struct UrdfLink
      */
     std::string link_name;
     /**
-    * @brief Transform offset of from nominal body origin.
-    */
+     * @brief Transform offset of from nominal body origin.
+     */
     MotionVector origin_offset = {};
     /**
      * @brief Mass properties of body
@@ -59,10 +59,11 @@ struct UrdfLink
  * @param err Error object
  * @return Link data from parsed link element
  */
-UrdfLink urdf_parse_link(const std::string& fname, const tinyxml2::XMLElement* link_xml, UrdfError& err);
+UrdfLink
+urdf_parse_link(const std::string& fname, const tinyxml2::XMLElement* link_xml, UrdfError& err);
 
 /**
  * @}
  */
 
-} // namespace fsb
+} // namespace fsb::urdf

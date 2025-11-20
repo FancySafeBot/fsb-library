@@ -15,7 +15,7 @@ namespace fsb::urdf
 /**
  * @brief Errors from parsing URDF
  */
-enum class UrdfErrorType
+enum class UrdfErrorType : uint8_t
 {
     /** @brief No error */
     SUCCESS,
@@ -83,7 +83,7 @@ public:
      * @param type Error type
      * @param description Error description
      */
-    UrdfError(const UrdfErrorType type, std::string  description) :
+    UrdfError(const UrdfErrorType type, std::string description) :
             m_type(type),
             m_description(std::move(description))
     {}

@@ -16,10 +16,16 @@ namespace fsb
  */
 
 /**
-* Minimum step size in nanoseconds
-*/
-constexpr long MINIMUM_STEP_SIZE_NS = 10000;
+ * @brief Minimum step size in nanoseconds
+ */
+constexpr long kMinimumStepSizeNs = 10000;
 
+/**
+ * @brief Convert timespec to seconds as a Real value
+ *
+ * @param ts The timespec structure to convert
+ * @return Real The time in seconds
+ */
 inline Real timespec_to_seconds(const timespec& ts)
 {
     return static_cast<Real>(ts.tv_sec) + static_cast<Real>(ts.tv_nsec) * 1e-9;
@@ -43,7 +49,7 @@ enum class TimingError : uint8_t
      */
     REALTIME_CLOCK_FAILED = 2,
     /**
-     * Failed nanosleep
+     * @brief Failed nanosleep
      */
     SLEEP_FAILED = 3,
     /**
@@ -58,14 +64,14 @@ enum class TimingError : uint8_t
 
 struct TimeData
 {
-    /** @brief Monotic elapsed time */
+    /** @brief Monotonic elapsed time */
     struct timespec monotonic = {};
     /** @brief Epoch time */
     struct timespec realtime = {};
 };
 
 /**
- * @brief Compute forward kinematics
+ * @brief Periodic timer
  */
 class PeriodicTimer
 {
@@ -103,7 +109,6 @@ public:
     TimingError step(TimeData& nominal_time, TimeData& actual_time);
 
 private:
-
     /** @brief Next requested time to wake after sleeping in timestep */
     timespec m_step_req = {};
     /** @brief Initial monotonic time when starting loop */
@@ -113,7 +118,6 @@ private:
     /** @brief Step size of timer loop */
     timespec m_step_size = {};
 };
-
 
 /**
  * @}
