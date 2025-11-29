@@ -59,15 +59,17 @@ public:
      * @param max_timescale Maximum timescale
      * @param max_timescale_deriv Maximum first derivative of timescale transition
      * @param max_timescale_2nd_deriv Maximum second derivative of timescale transition
-     * @return
+     * @return true if limits were set successfully, false otherwise
      */
     bool set_limits(Real max_timescale, Real max_timescale_deriv, Real max_timescale_2nd_deriv);
 
     /**
+     * @brief Start timescale with initial conditions
      *
      * @param time_mono Monotonic clock time in seconds
      * @param time_scaled_init Initial scaled time in seconds
      * @param timescale Initial timescale value. Default 1.0
+     * @return true if started successfully, false otherwise
      */
     bool start(Real time_mono, Real time_scaled_init, Real timescale = 1.0);
 
@@ -76,14 +78,15 @@ public:
      *
      * @param time_mono Monotonic clock time in seconds
      * @param target_timescale Target timescale
-     * @return
+     * @return TimescaleResult indicating success or failure reason
      */
     TimescaleResult goto_timescale(Real time_mono, Real target_timescale);
 
     /**
+     * @brief Evaluate timescale at given monotonic time
      *
      * @param time_mono Monotonic clock time in seconds
-     * @return Scaled time state
+     * @return Scaled time state (position, velocity, acceleration)
      */
     [[nodiscard]] TrajState evaluate(Real time_mono) const;
 

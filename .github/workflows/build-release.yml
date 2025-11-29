@@ -38,6 +38,4 @@ jobs:
       # Execute tests defined by the CMake configuration.
       run: |
         cmake --build --preset "fsb-test-${{env.BUILD_TYPE}}"
-        ctest --test-dir "${{github.workspace}}/build/${{env.BUILD_TYPE}}/fsb-core/test"
-        ctest --test-dir "${{github.workspace}}/build/${{env.BUILD_TYPE}}/fsb-posix/test"
-        ctest --test-dir "${{github.workspace}}/build/${{env.BUILD_TYPE}}/fsb-urdf/test"
+        ctest --test-dir "${{github.workspace}}/build/${{env.BUILD_TYPE}}"

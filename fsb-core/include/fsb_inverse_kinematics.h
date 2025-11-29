@@ -93,13 +93,18 @@ FsbLinalgErrorType inverse_velocity_kinematics(
     JointSpace& joint_velocity);
 
 /**
- * @brief Inverse velocity kinematics
+ * @brief Inverse acceleration kinematics
  *
- * The equation for inverse velocity kinematics is given by:
- * \[ \ddot{q} = J^{\dagger} \left( \ddot{x} - \dot{J} \dot{q} \]
+ * The equation for inverse acceleration kinematics is given by:
+ * \[ \ddot{q} = J^{\dagger} \left( \ddot{x} - \dot{J} \dot{q} \right) \]
  *
  * @param jacobian Jacobian matrix
- *
+ * @param jacobian_derivative Time derivative of Jacobian matrix
+ * @param cart_acceleration Cartesian acceleration vector
+ * @param joint_velocity Joint velocity vector
+ * @param dofs Number of degrees of freedom (dofs)
+ * @param[out] joint_acceleration Joint acceleration vector
+ * @return Linear algebra error code
  */
 FsbLinalgErrorType inverse_acceleration_kinematics(
     const Jacobian& jacobian, const Jacobian& jacobian_derivative,

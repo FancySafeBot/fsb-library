@@ -82,16 +82,16 @@ public:
     /**
      * @brief Get value in scaled units from counter update
      *
-     * @param count new input from counter
-     * @return real_t scaled value
+     * @param count New input from counter
+     * @return Scaled value in user-defined units
      */
     Real decode(int32_t count);
 
     /**
-     * @brief encode value to number of counts
+     * @brief Encode value to number of counts
      *
-     * @param value value to encode
-     * @return change in counts from last encode update
+     * @param value Value to encode
+     * @return Change in counts from last encode update
      */
     int32_t encode(Real value);
 

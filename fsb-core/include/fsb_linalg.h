@@ -110,11 +110,12 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
  *
  * @param[in]    mat   input matrix (sxs)
  * @param[in]    dim   matrix A dimension
- * @param[in]  work_len    buffer
- * @param[in,out]  work    buffer
+ * @param[in]  work_len    buffer length
+ * @param[in,out]  work    work buffer
  * @param[out]   val eigenvalues (sx1)
  * @param[out]   vec column eigenvectors (sxs)
  *
+ * @return Error code
  */
 FsbLinalgErrorType fsb_linalg_sym_lt_eig(
     const double_t mat[], size_t dim, size_t work_len, double_t work[],
@@ -138,14 +139,14 @@ FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
  * solve for b from x = A b
  * Variable x is overwritten by b on exit
  *
- * @param mat
- * @param b_vec
- * @param nrhs
- * @param dim
- * @param work_len
- * @param work
- * @param x_vec
- * @return
+ * @param[in] mat Input matrix (dim x dim)
+ * @param[in] b_vec Right-hand side vector (dim x nrhs)
+ * @param[in] nrhs Number of right-hand side vectors
+ * @param[in] dim Matrix dimension
+ * @param[in] work_len Work buffer length
+ * @param[in,out] work Work buffer
+ * @param[out] x_vec Solution vector (dim x nrhs)
+ * @return Error code
  */
 FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_t b_vec[],
                                              size_t nrhs, size_t dim,
@@ -155,12 +156,11 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
 /**
  * @brief Check if lower triangular symmetric matrix is positive definite
  *
- * @param mat Input lower triangular matrix (sxs)
- * @param dim Matrix A dimension
- * @param work_len Work vector length
- * @param work Work vector
- * @return true
- * @return false
+ * @param[in] mat Input lower triangular matrix (sxs)
+ * @param[in] dim Matrix A dimension
+ * @param[in] work_len Work vector length
+ * @param[in,out] work Work vector
+ * @return true if matrix is positive definite, false otherwise
  */
 bool fsb_linalg_is_posdef(const double_t mat[], size_t dim, size_t work_len, double_t work[]);
 
@@ -220,9 +220,9 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
     const double_t mat[], size_t rows, size_t columns, const double_t b_vec[], size_t nrhs,
     size_t work_len, double_t work[], double_t x_vec[]);
 
-    /**
-     *
-     */
+/**
+ * @brief Example demonstrating DGELS (least squares solver) usage
+ */
 void sample_dgels_example(void);
 
 /**
