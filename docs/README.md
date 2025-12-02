@@ -17,3 +17,17 @@ Check out the [Tutorials](tutorials.html) section to learn as you go.
 
 Navigate to the <a href="topics.html">Topics</a> section for
 detailed code documentation.
+
+## Install PlantUML
+
+```bash
+PLANTUML_VERSION=1.2025.8
+PLANTUML_URL="https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
+
+mkdir -p "/opt/plantuml" && \
+    wget -O "/opt/plantuml/plantuml.jar" "$PLANTUML_URL" && \
+    ln -sf "/opt/plantuml/plantuml.jar" /usr/local/bin/plantuml.jar && \
+    echo "#!/bin/bash" >> /usr/local/bin/plantuml && \
+    echo 'exec java -jar /usr/local/bin/plantuml.jar "$@"' >> /usr/local/bin/plantuml && \
+    chmod +x /usr/local/bin/plantuml
+```

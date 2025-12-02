@@ -36,7 +36,9 @@ jobs:
         run: sudo apt install -y graphviz doxygen
 
       - name: Build Documentation
-        run: cmake --workflow --preset "docs"
+        run: |
+          cmake --preset "debug"
+          cmake --build --preset "doc"
 
       - name: Upload static files as artifact
         id: deployment

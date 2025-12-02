@@ -11,21 +11,23 @@ The FSB library uses CMake as the build system and is compatible with gcc and cl
 With Ubuntu as an example, install prerequisites:
 
 ```sh
-sudo apt install -y cmake ninja-build g++ graphviz doxygen
+LLVM_VERSION=20
+sudo ./install-ubuntu-dev-tools.sh
+sudo ./llvm-update-alternatives.sh ${LLVM_VERSION}
+sudo ./install-dependencies.sh
 ```
 
 Build debug libraries, tests, examples, and documentation:
 
 ```sh
-cmake --workflow --preset default
+cmake --preset dev-debug
+cmake --build --preset dev-debug
 ```
 
 Run unit tests:
 
 ```sh
-ctest --test-dir build/debug/fsb-core/test
-ctest --test-dir build/debug/fsb-urdf/test
-ctest --test-dir build/debug/fsb-posix/test
+ctest --test-dir build/debug
 ```
 
 Run an example:

@@ -15,14 +15,17 @@
       }
     },
     {
-      "name": "dev",
-      "hidden": true,
+      "name": "dev-debug",
+      "displayName": "Dev Debug",
       "inherits": "common",
       "generator": "Ninja",
       "cacheVariables": {
-        "FSB_BUILD_OPENBLAS": "OFF",
         "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "FSB_ENABLE_DOCS": "ON",
+        "FSB_ENABLE_EXAMPLES": "ON",
+        "FSB_BUILD_OPENBLAS": "OFF"
       }
     },
     {
@@ -30,19 +33,7 @@
       "displayName": "Debug",
       "inherits": "common",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "FSB_ENABLE_DOCS": "ON",
-        "FSB_ENABLE_EXAMPLES": "ON"
-      }
-    },
-    {
-      "name": "dev-debug",
-      "displayName": "Dev Debug",
-      "inherits": "dev",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "FSB_ENABLE_DOCS": "ON",
-        "FSB_ENABLE_EXAMPLES": "ON"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -51,16 +42,6 @@
       "inherits": "common",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "codeql",
-      "displayName": "CodeQL",
-      "inherits": "common",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "FSB_BUILD_TESTING": "OFF",
-        "FSB_BUILD_OPENBLAS": "OFF"
       }
     },
     {
@@ -78,41 +59,9 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Instrument"
       }
-    },
-    {
-      "name": "profile",
-      "displayName": "Profiling with gprof",
-      "inherits": "common",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Profile"
-      }
     }
   ],
   "buildPresets": [
-    {
-      "name": "fsb-release",
-      "displayName": "FSB Library Release Build",
-      "configurePreset": "release",
-      "targets": ["fsbcore", "fsbposix", "fsburdf"]
-    },
-    {
-      "name": "fsb-codeql",
-      "displayName": "FSB Library CodeQL Build",
-      "configurePreset": "codeql",
-      "targets": ["fsbcore", "fsbposix"]
-    },
-    {
-      "name": "fsb-debug",
-      "displayName": "FSB Library Debug Build",
-      "configurePreset": "debug",
-      "targets": ["fsbcore", "fsbposix", "fsburdf"]
-    },
-    {
-      "name": "fsb-examples",
-      "displayName": "FSB Examples",
-      "configurePreset": "debug",
-      "targets": ["fsb_examples"]
-    },
     {
       "name": "dev-debug",
       "displayName": "FSB Dev Container",
@@ -120,109 +69,34 @@
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test", "fsb_examples"]
     },
     {
-      "name": "fsb-doc",
-      "displayName": "FSB Library Documentation",
-      "configurePreset": "debug",
-      "targets": ["Documentation-FancySafeBot"]
-    },
-    {
-      "name": "fsb-test-debug",
-      "displayName": "FSB Library Unit Tests Build",
-      "configurePreset": "debug",
-      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
-    },
-    {
-      "name": "fsb-test-release",
-      "displayName": "FSB Library Unit Tests Build",
+      "name": "release",
+      "displayName": "FSB Library Release Build",
       "configurePreset": "release",
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
     },
     {
-      "name": "fsb-test-coverage",
+      "name": "debug",
+      "displayName": "FSB Library Debug Build",
+      "configurePreset": "debug",
+      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
+    },
+    {
+      "name": "doc",
+      "displayName": "FSB Library Documentation",
+      "configurePreset": "dev-debug",
+      "targets": ["Documentation-FancySafeBot"]
+    },
+    {
+      "name": "coverage",
       "displayName": "FSB Library Test Coverage Build",
       "configurePreset": "coverage",
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
     },
     {
-      "name": "fsb-test-instrument",
+      "name": "instrument",
       "displayName": "FSB Library Test Address Sanitizer Build",
       "configurePreset": "instrument",
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
-    }
-  ],
-  "workflowPresets": [
-    {
-      "name": "default",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "debug"
-        },
-        {
-          "type": "build",
-          "name": "fsb-debug"
-        },
-        {
-          "type": "build",
-          "name": "fsb-test-debug"
-        },
-        {
-          "type": "build",
-          "name": "fsb-examples"
-        }
-      ]
-    },
-    {
-      "name": "docs",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "debug"
-        },
-        {
-          "type": "build",
-          "name": "fsb-doc"
-        }
-      ]
-    },
-    {
-      "name": "coverage",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "coverage"
-        },
-        {
-          "type": "build",
-          "name": "fsb-test-coverage"
-        }
-      ]
-    },
-    {
-      "name": "release",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "release"
-        },
-        {
-          "type": "build",
-          "name": "fsb-release"
-        }
-      ]
-    },
-    {
-      "name": "codeql",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "codeql"
-        },
-        {
-          "type": "build",
-          "name": "fsb-codeql"
-        }
-      ]
     }
   ]
 }

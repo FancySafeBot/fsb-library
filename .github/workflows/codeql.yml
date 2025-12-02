@@ -87,7 +87,8 @@ jobs:
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
-        cmake --workflow --preset codeql
+        cmake --preset debug
+        cmake --build --preset debug
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
