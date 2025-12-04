@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/fancysafebot/fsb-library:develop
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     env:
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
     steps:

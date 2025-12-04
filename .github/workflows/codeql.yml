@@ -30,6 +30,9 @@ jobs:
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     container:
       image: ghcr.io/fancysafebot/fsb-library:develop
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     permissions:
       # required for all workflows
       security-events: write
