@@ -24,8 +24,7 @@
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Debug",
         "FSB_ENABLE_DOCS": "ON",
-        "FSB_ENABLE_EXAMPLES": "ON",
-        "FSB_BUILD_OPENBLAS": "OFF"
+        "FSB_ENABLE_EXAMPLES": "ON"
       }
     },
     {

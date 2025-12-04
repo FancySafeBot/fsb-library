@@ -30,8 +30,9 @@ set(YAMLCPP_VERSION 0.8.0 CACHE STRING "yaml-cpp version")
 
 set(FSB_CONFIG "default" CACHE STRING "FSB Library configuration")
 
-option(FSB_BUILD_OPENBLAS "Build OpenBLAS for linear algebra operations" ON)
+option(FSB_BUILD_OPENBLAS "Build OpenBLAS for linear algebra operations" OFF)
 option(FSB_OPENBLAS_WITH_FORTRAN "Use Fortran to compile OpenBLAS" ON)
+
 option(FSB_BUILD_TESTING "Enable Tests" ON)
 option(FSB_ENABLE_DOCS "Enable doxygen documentation" OFF)
 option(FSB_ENABLE_EXAMPLES "Enable building example applications" OFF)
