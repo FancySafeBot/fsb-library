@@ -15,16 +15,12 @@
       }
     },
     {
-      "name": "dev-debug",
-      "displayName": "Dev Debug",
+      "name": "docs",
+      "displayName": "Documentation",
       "inherits": "common",
-      "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Debug",
-        "FSB_ENABLE_DOCS": "ON",
-        "FSB_ENABLE_EXAMPLES": "ON"
+        "FSB_ENABLE_DOCS": "ON"
       }
     },
     {
@@ -62,12 +58,6 @@
   ],
   "buildPresets": [
     {
-      "name": "dev-debug",
-      "displayName": "FSB Dev Container",
-      "configurePreset": "dev-debug",
-      "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test", "fsb_examples"]
-    },
-    {
       "name": "release",
       "displayName": "FSB Library Release Build",
       "configurePreset": "release",
@@ -80,9 +70,9 @@
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
     },
     {
-      "name": "doc",
+      "name": "docs",
       "displayName": "FSB Library Documentation",
-      "configurePreset": "dev-debug",
+      "configurePreset": "docs",
       "targets": ["Documentation-FancySafeBot"]
     },
     {
@@ -96,6 +86,68 @@
       "displayName": "FSB Library Test Address Sanitizer Build",
       "configurePreset": "instrument",
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "displayName": "FSB Library Debug Tests",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 6
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "FSB Library Coverage Tests",
+      "configurePreset": "coverage",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 6
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "test",
+      "displayName": "FSB Library Test Workflow (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "debug"
+        },
+        {
+          "type": "build",
+          "name": "debug"
+        },
+        {
+          "type": "test",
+          "name": "debug"
+        }
+      ]
+    },
+    {
+      "name": "coverage",
+      "displayName": "FSB Library Coverage Workflow",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "coverage"
+        },
+        {
+          "type": "build",
+          "name": "coverage"
+        },
+        {
+          "type": "test",
+          "name": "coverage"
+        }
+      ]
     }
   ]
 }

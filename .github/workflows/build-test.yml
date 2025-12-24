@@ -1,0 +1,106 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: Build and Test
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: release
+
+jobs:
+  build-devcontainer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Container to Registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .devcontainer/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+
+  build:
+    needs: build-devcontainer
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ${{ needs.build-devcontainer.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake --preset "${{env.BUILD_TYPE}}"
+
+      - name: Build
+        run: cmake --build --preset "${{env.BUILD_TYPE}}"
+
+  test:
+    needs: ["build-devcontainer", "build"]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ${{ needs.build-devcontainer.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Test
+        # Execute tests defined by the CMake configuration.
+        run: |
+          cmake --workflow --preset test
+
+  analyze:
+    needs: ["build-devcontainer", "build"]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ${{ needs.build-devcontainer.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake --preset "${{env.BUILD_TYPE}}"
+
+      - name: Build
+        run: cmake --build --preset "${{env.BUILD_TYPE}}"
+
+      - name: Analyze
+        run: ./scripts/clang-tidy-fix.sh --no-fix

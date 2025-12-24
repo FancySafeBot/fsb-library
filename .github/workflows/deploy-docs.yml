@@ -26,7 +26,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/fancysafebot/fsb-library:develop
+      image: ghcr.io/${{ github.repository }}/devcontaine:stable
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -36,14 +36,14 @@ jobs:
 
       - name: Build Documentation
         run: |
-          cmake --preset "debug"
-          cmake --build --preset "doc"
+          cmake --preset "docs"
+          cmake --build --preset "docs"
 
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{github.workspace}}/build/debug/doc/FancySafeBot/html
+          path: ${{github.workspace}}/build/docs/doc/FancySafeBot/html
 
   deploy:
     environment:

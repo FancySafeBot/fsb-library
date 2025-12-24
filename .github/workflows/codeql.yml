@@ -29,7 +29,7 @@ jobs:
     # Consider using larger runners or machines with greater resources for possible analysis time improvements.
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     container:
-      image: ghcr.io/fancysafebot/fsb-library:develop
+      image: ghcr.io/${{ github.repository }}/devcontainer:stable
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
