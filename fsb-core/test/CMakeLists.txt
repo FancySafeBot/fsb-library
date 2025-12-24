@@ -11,6 +11,7 @@ set(FSBCORE_TEST_SOURCES
     fsb_body_tree_test.cpp
     fsb_kinematics_test.cpp
     fsb_jacobian_test.cpp
+    fsb_kinematic_redundancy_test.cpp
     fsb_body_tree_sample.cpp
     fsb_linalg_test.cpp
     fsb_linalg3_test.cpp

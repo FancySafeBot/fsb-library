@@ -1,8 +1,10 @@
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 
 #include "fsb_joint.h"
 #include "fsb_motion.h"
+#include "fsb_body_tree.h"
 #include "fsb_configuration.h"
 #include "fsb_types.h"
 #include "fsb_kinematic_redundancy.h"
@@ -104,6 +106,69 @@ JointSpace compute_nullspace_motion(
     for (size_t i = 0; i < dofs; ++i)
     {
         result.qv[i] = joint_motion.qv[i] - projection.qv[i];
+    }
+
+    return result;
+}
+
+JointSpace joint_limit_avoidance_objective(
+    const JointSpacePosition& joint_positions, const JointLimits& joint_limits, size_t dofs,
+    double gain)
+{
+    JointSpace result = {};
+
+    const size_t max_dofs = MaxSize::kDofs;
+    const size_t max_coords = MaxSize::kCoordinates;
+    const size_t n_dofs = (dofs < max_dofs) ? dofs : max_dofs;
+    const size_t n = (n_dofs < max_coords) ? n_dofs : max_coords;
+
+    if ((n == 0U) || (!std::isfinite(gain)) || (gain == 0.0))
+    {
+        return result;
+    }
+
+    // Numerical safety: avoid division by 0 near limits.
+    constexpr Real eps = 1e-9;
+
+    for (size_t i = 0U; i < n; ++i)
+    {
+        if (!joint_limits.set[i])
+        {
+            continue;
+        }
+
+        const Real q = joint_positions.q[i];
+        const Real qmin = joint_limits.lower_position[i];
+        const Real qmax = joint_limits.upper_position[i];
+
+        // Skip invalid/degenerate limits.
+        if ((!std::isfinite(q)) || (!std::isfinite(qmin)) || (!std::isfinite(qmax))
+            || (qmax <= qmin))
+        {
+            continue;
+        }
+
+        // Potential-field objective (matches the header documentation).
+        Real const d_lower = std::max(q - qmin, eps);
+        Real const d_upper = std::max(qmax - q, eps);
+
+        const Real k = gain;
+        Real qdot = k * ((1.0 / d_lower) - (1.0 / d_upper));
+
+        // Respect configured max velocity if provided.
+        if (const Real vmax = joint_limits.max_velocity[i]; std::isfinite(vmax) && (vmax > 0.0))
+        {
+            if (qdot > vmax)
+            {
+                qdot = vmax;
+            }
+            else if (qdot < -vmax)
+            {
+                qdot = -vmax;
+            }
+        }
+
+        result.qv[i] = qdot;
     }
 
     return result;

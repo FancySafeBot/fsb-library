@@ -9,6 +9,8 @@
 namespace fsb
 {
 
+struct JointLimits;
+
 /**
  * @defgroup KinematicsRedundancy Redundant Robotics Kinematics
  * @brief Redundancy resolution with joint limit avoidance and singularity avoidance.
@@ -80,6 +82,32 @@ JointSpace compute_nullspace_motion(
  */
 JointSpace
 compute_nullspace_motion(const Jacobian& jacobian, const JointSpace& joint_motion, size_t dofs);
+
+/**
+ * @brief Joint limit avoidance objective function
+ *
+ * Computes a joint velocity vector that drives joints away from their limits using a
+ * potential field approach. The objective is to maximize distance from joint limits.
+ *
+ * The joint limit avoidance velocity for each joint is computed as:
+ * \f[
+ *    \dot{q}_i = k \left( \frac{1}{q_i - q_{i,min}} - \frac{1}{q_{i,max} - q_i} \right)
+ * \f]
+ * where:
+ * - \f$ \dot{q}_i \f$ is the joint limit avoidance velocity for joint i
+ * - \f$ k \f$ is a gain factor
+ * - \f$ q_i \f$ is the current joint position
+ * - \f$ q_{i,min} \f$ and \f$ q_{i,max} \f$ are the minimum and maximum joint limits
+ *
+ * @param[in] joint_positions  Current joint positions
+ * @param[in] joint_limits     Joint limits for each joint
+ * @param[in] dofs            Number of degrees of freedom (joints)
+ * @param[in] gain            Gain factor for scaling the avoidance velocity (default: 0.1)
+ * @return                    Joint velocity vector for joint limit avoidance
+ */
+JointSpace joint_limit_avoidance_objective(
+    const JointSpacePosition& joint_positions, const JointLimits& joint_limits, size_t dofs,
+    double gain = 0.1);
 
 /**
  * @}
