@@ -47,7 +47,11 @@ jobs:
           context: .
           file: .devcontainer/Dockerfile
           push: true
-          tags: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:${{ github.sha }}
+          tags: |
+            ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable
+            ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   build:
     needs: build-devcontainer
