@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       repo_lower: ${{ steps.repo.outputs.repo_lower }}
-
     steps:
       - id: repo
         run: |
@@ -50,7 +49,7 @@ jobs:
           context: .
           file: .devcontainer/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+          tags: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:${{ github.sha }}
 
   build:
     needs: build-devcontainer
