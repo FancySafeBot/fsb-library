@@ -41,6 +41,7 @@ jobs:
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     container:
       image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable
+      options: --user root
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
