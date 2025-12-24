@@ -13,13 +13,25 @@ env:
   BUILD_TYPE: release
 
 jobs:
+
+  prep:
+    runs-on: ubuntu-latest
+    outputs:
+      repo_lower: ${{ steps.repo.outputs.repo_lower }}
+
+    steps:
+      - id: repo
+        run: |
+          echo "repo_lower=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
   build-devcontainer:
+    needs: prep
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
     outputs:
-      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:${{ github.sha }}
 
     steps:
       - name: Checkout Code

@@ -10,11 +10,22 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
+
+  prep:
+    runs-on: ubuntu-latest
+    outputs:
+      repo_lower: ${{ steps.repo.outputs.repo_lower }}
+    steps:
+      - id: repo
+        run: |
+          echo "repo_lower=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
   build:
+    needs: prep
     name: Build and analyze
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/devcontainer:stable
+      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}

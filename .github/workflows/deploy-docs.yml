@@ -23,10 +23,20 @@ concurrency:
 
 jobs:
 
+  prep:
+    runs-on: ubuntu-latest
+    outputs:
+      repo_lower: ${{ steps.repo.outputs.repo_lower }}
+    steps:
+      - id: repo
+        run: |
+          echo "repo_lower=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
   build:
+    needs: prep
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/devcontaine:stable
+      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontaine:stable
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
