@@ -532,43 +532,39 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(
         return retval;
     }
 
-    // Compute pseudoinverse: V * S^+ * U^T
-    // First, create S^+ by inverting non-zero singular values
+    // Compute pseudoinverse A^+ = V * S^+ * U^T
+    // LAPACK storage is column-major.
+    // - U is (rows x min_dim) with leading dimension = rows
+    // - V^T is (min_dim x columns) with leading dimension = min_dim
+    // Output inv_mat is (columns x rows) in column-major order.
+
     const double_t epsilon = 1.0e-12;  // Small threshold for numerical stability
 
     // Initialize the output inverse matrix with zeros
     memset(inv_mat, 0, columns * rows * sizeof(double_t));
 
-    // Compute V * S^+
-    for (size_t jdx = 0; jdx < columns; ++jdx)
+    // Accumulate: inv_mat(i,j) += V(i,k) * (1/s_k) * U(j,k)
+    // where inv_mat is (columns x rows).
+    for (size_t k = 0U; k < min_dim; ++k)
     {
-        for (size_t idx = 0; idx < min_dim; ++idx)
+        const double_t s = s_vec[k];
+        if (s <= epsilon)
         {
-            if (s_vec[idx] > epsilon)
-            {
-                // Scale the corresponding row in V^T by 1/s_i
-                for (size_t kdx = 0; kdx < min_dim; ++kdx)
-                {
-                    // v_ji = v_ji / s_i where v_j is column j of V
-                    const double_t v_element = vt_mat[kdx * columns + jdx];
-                    inv_mat[jdx * rows + idx] += (v_element / s_vec[kdx]);
-                }
-            }
-            // If singular value is effectively zero, contribution remains zero
+            continue;
         }
-    }
+        const double_t inv_s = 1.0 / s;
 
-    // Multiply by U^T to get final result: (V * S^+) * U^T
-    for (size_t idx = 0; idx < columns; ++idx)
-    {
-        for (size_t jdx = 0; jdx < rows; ++jdx)
+        // V(i,k) can be read from V^T(k,i) stored in vt_mat (col-major): vt_mat[i*min_dim + k]
+        for (size_t i = 0U; i < columns; ++i)
         {
-            double_t sum = 0.0;
-            for (size_t kdx = 0; kdx < min_dim; ++kdx)
+            const double_t v_ik = vt_mat[i * min_dim + k];
+            const double_t scale = v_ik * inv_s;
+
+            // U(j,k) is u_mat[k*rows + j] (col-major)
+            for (size_t j = 0U; j < rows; ++j)
             {
-                sum += inv_mat[idx * rows + kdx] * u_mat[jdx * min_dim + kdx];
+                inv_mat[j * columns + i] += scale * u_mat[k * rows + j];
             }
-            inv_mat[idx * rows + jdx] = sum;
         }
     }
 
