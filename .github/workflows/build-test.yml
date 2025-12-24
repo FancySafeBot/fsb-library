@@ -58,6 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read
     container:
       image: ${{ needs.build-devcontainer.outputs.image }}
       credentials:
@@ -79,6 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read
     container:
       image: ${{ needs.build-devcontainer.outputs.image }}
       credentials:
@@ -99,6 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read
     container:
       image: ${{ needs.build-devcontainer.outputs.image }}
       credentials:
