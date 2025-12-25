@@ -170,12 +170,10 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Instrument")
             -fno-omit-frame-pointer
             -fno-optimize-sibling-calls
             -fsanitize=address
-            -fsanitize=undefined
-            -fsanitize=memory)
+            -fsanitize=undefined)
         list(APPEND FSB_LINK_FLAGS
             -fsanitize=address
-            -fsanitize=undefined
-            -fsanitize=memory)
+            -fsanitize=undefined)
     elseif (FSB_ENABLE_TSAN)
         list(APPEND FSB_COMPILE_FLAGS_COMMON
             -g

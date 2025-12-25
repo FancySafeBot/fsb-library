@@ -40,7 +40,7 @@ jobs:
     # Consider using larger runners or machines with greater resources for possible analysis time improvements.
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     container:
-      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable
+      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable-amd64
       options: --user root
       credentials:
         username: ${{ github.actor }}

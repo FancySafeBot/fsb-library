@@ -26,7 +26,7 @@ jobs:
     name: Build and analyze
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable
+      image: ghcr.io/${{ needs.prep.outputs.repo_lower }}/devcontainer:stable-amd64
       options: --user root
       credentials:
         username: ${{ github.actor }}
