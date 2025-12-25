@@ -50,7 +50,8 @@ apt-get -y install \
     software-properties-common \
     unzip \
     valgrind \
-    wget
+    wget \
+    curl
 rm -rf /var/lib/apt/lists/*
 
 # CMake
