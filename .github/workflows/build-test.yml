@@ -123,7 +123,7 @@ jobs:
         run: |
           cmake --preset "${{ env.BUILD_TYPE }}"
           cmake --build --preset "${{ env.BUILD_TYPE }}"
-          ctest ./build/"${{ env.BUILD_TYPE }}"
+          ctest --test-dir ./build/"${{ env.BUILD_TYPE }}"
 
   analyze:
     needs: [prep, build-devcontainer]
