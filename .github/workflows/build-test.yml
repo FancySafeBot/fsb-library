@@ -121,7 +121,7 @@ jobs:
 
       - name: Test
         run: |
-          cmake cmake --preset "${{ env.BUILD_TYPE }}"
+          cmake --preset "${{ env.BUILD_TYPE }}"
           cmake --build --preset "${{ env.BUILD_TYPE }}"
           ctest ./build/"${{ env.BUILD_TYPE }}"
 
