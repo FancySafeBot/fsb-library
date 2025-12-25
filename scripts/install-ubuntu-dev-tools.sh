@@ -8,8 +8,8 @@ LLVM_VERSION=20
 # Check for Ubuntu 22.04
 if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [ "$ID" != "ubuntu" ] || [ "$VERSION_ID" != "22.04" ]; then
-        echo "Error: This script requires Ubuntu 22.04"
+    if [ "$ID" != "ubuntu" ] || [ "$VERSION_ID" != "24.04" ]; then
+        echo "Error: This script requires Ubuntu 24.04"
         echo "Detected: $ID $VERSION_ID"
         exit 1
     fi
@@ -43,9 +43,9 @@ apt-get -y install \
     ninja-build \
     pkg-config \
     python3-pip \
-    python3.10 \
-    python3.10-distutils \
-    python3.10-venv \
+    python3 \
+    python3-setuptools \
+    python3-venv \
     rsync \
     software-properties-common \
     unzip \
