@@ -1,13 +1,18 @@
 #pragma once
+#include <math.h>
+#include <stddef.h>
+#include <stdbool.h>
+
+#ifdef __cplusplus
+#include <array>
+#endif
+
+#include "openblas/lapack.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
-#include <math.h>
-#include <stddef.h>
-#include <stdbool.h>
 
 /**
  * @defgroup LinearAlgebra Linear Algebra
@@ -180,7 +185,7 @@ bool fsb_linalg_is_posdef(const double_t mat[], size_t dim, size_t work_len, dou
  */
 FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     const double_t mat[], const double_t y_vec[], size_t nrhs, size_t dim, size_t work_len,
-    size_t iwork_len, double_t work[], int iwork[], double_t x_vec[]);
+    size_t iwork_len, double_t work[], lapack_int iwork[], double_t x_vec[]);
 
 /**
  * @brief Inverse of a matrix where number of columns are great er than or equal to number of rows
@@ -231,4 +236,126 @@ void sample_dgels_example(void);
 
 #ifdef __cplusplus
 }
+
+/**
+ * @brief C++ convenience wrappers that accept std::array.
+ *
+ * These are header-only and forward to the C ABI functions above.
+ */
+template <size_t Rows, size_t Cols, size_t WorkLen>
+inline FsbLinalgErrorType fsb_linalg_svd_array(
+    const std::array<double_t, Rows * Cols>& mat,
+    bool u_full,
+    bool v_full,
+    std::array<double_t, WorkLen>& work,
+    std::array<double_t, Rows * Rows>& unitary_u,
+    std::array<double_t, FSB_MIN(Rows, Cols)>& sing_val,
+    std::array<double_t, Cols * Cols>& unitary_vt)
+{
+    return fsb_linalg_svd(
+        mat.data(), Rows, Cols,
+        u_full, v_full,
+        WorkLen, work.data(),
+        unitary_u.data(), sing_val.data(), unitary_vt.data());
+}
+
+template <size_t Dim, size_t WorkLen>
+inline FsbLinalgErrorType fsb_linalg_matrix_eig_array(
+    const std::array<double_t, Dim * Dim>& mat,
+    std::array<double_t, WorkLen>& work,
+    std::array<double_t, Dim>& val_real,
+    std::array<double_t, Dim>& val_imag,
+    std::array<double_t, Dim * Dim>& vec_real,
+    std::array<double_t, Dim * Dim>& vec_imag)
+{
+    return fsb_linalg_matrix_eig(
+        mat.data(), Dim, WorkLen, work.data(),
+        val_real.data(), val_imag.data(),
+        vec_real.data(), vec_imag.data());
+}
+
+template <size_t Dim, size_t WorkLen>
+inline FsbLinalgErrorType fsb_linalg_sym_lt_eig_array(
+    const std::array<double_t, Dim * Dim>& mat,
+    std::array<double_t, WorkLen>& work,
+    std::array<double_t, Dim>& val,
+    std::array<double_t, Dim * Dim>& vec)
+{
+    return fsb_linalg_sym_lt_eig(
+        mat.data(), Dim, WorkLen, work.data(),
+        val.data(), vec.data());
+}
+
+template <size_t Dim>
+inline FsbLinalgErrorType fsb_linalg_cholesky_decomposition_array(
+    const std::array<double_t, Dim * Dim>& mat,
+    std::array<double_t, Dim * Dim>& mat_chol)
+{
+    return fsb_linalg_cholesky_decomposition(mat.data(), Dim, mat_chol.data());
+}
+
+template <size_t Dim, size_t WorkLen>
+inline bool fsb_linalg_is_posdef_array(
+    const std::array<double_t, Dim * Dim>& mat,
+    std::array<double_t, WorkLen>& work)
+{
+    return fsb_linalg_is_posdef(mat.data(), Dim, WorkLen, work.data());
+}
+
+template <size_t Dim, size_t Nrhs, size_t WorkLen>
+inline FsbLinalgErrorType fsb_linalg_cholesky_solve_array(
+    const std::array<double_t, Dim * Dim>& mat,
+    const std::array<double_t, Dim * Nrhs>& b_vec,
+    std::array<double_t, WorkLen>& work,
+    std::array<double_t, Dim * Nrhs>& x_vec)
+{
+    return fsb_linalg_cholesky_solve(
+        mat.data(), b_vec.data(),
+        Nrhs, Dim,
+        WorkLen, work.data(),
+        x_vec.data());
+}
+
+template <size_t Dim, size_t Nrhs, size_t WorkLen, size_t IWorkLen>
+inline FsbLinalgErrorType fsb_linalg_matrix_sqr_solve_array(
+    const std::array<double_t, Dim * Dim>& mat,
+    const std::array<double_t, Dim * Nrhs>& y_vec,
+    std::array<double_t, WorkLen>& work,
+    std::array<lapack_int, IWorkLen>& iwork,
+    std::array<double_t, Dim * Nrhs>& x_vec)
+{
+    return fsb_linalg_matrix_sqr_solve(
+        mat.data(), y_vec.data(),
+        Nrhs, Dim,
+        WorkLen, IWorkLen,
+        work.data(), iwork.data(),
+        x_vec.data());
+}
+
+template <size_t Rows, size_t Cols, size_t WorkLen>
+inline FsbLinalgErrorType fsb_linalg_pseudoinverse_array(
+    const std::array<double_t, Rows * Cols>& mat,
+    std::array<double_t, WorkLen>& work,
+    std::array<double_t, Cols * Rows>& inv_mat)
+{
+    return fsb_linalg_pseudoinverse(
+        mat.data(), Rows, Cols,
+        WorkLen, work.data(),
+        inv_mat.data());
+}
+
+template <size_t Rows, size_t Cols, size_t Nrhs, size_t WorkLen>
+inline FsbLinalgErrorType fsb_linalg_leastsquares_solve_array(
+    const std::array<double_t, Rows * Cols>& mat,
+    const std::array<double_t, Rows * Nrhs>& b_vec,
+    std::array<double_t, WorkLen>& work,
+    std::array<double_t, Cols * Nrhs>& x_vec)
+{
+    return fsb_linalg_leastsquares_solve(
+        mat.data(), Rows, Cols,
+        b_vec.data(), Nrhs,
+        WorkLen, work.data(),
+        x_vec.data());
+}
+
 #endif

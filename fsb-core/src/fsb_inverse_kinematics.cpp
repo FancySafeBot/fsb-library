@@ -60,7 +60,7 @@ static FsbLinalgErrorType optim_solve_joint_matrix(
     constexpr size_t               WorkLen = MaxSize::kDofs * MaxSize::kDofs;
     std::array<double_t, WorkLen>  work = {};
     const size_t                   iwork_len = MaxSize::kDofs;
-    std::array<int, MaxSize::kDofs> iwork = {};
+    std::array<lapack_int, MaxSize::kDofs> iwork = {};
     // solve for x_vec
     return fsb_linalg_matrix_sqr_solve(
         joint_mat.j.data(),

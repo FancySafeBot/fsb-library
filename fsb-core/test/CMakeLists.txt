@@ -26,7 +26,8 @@ set(FSBCORE_TEST_SOURCES
     fsb_trajectory_segment_test.cpp
     fsb_dynamics_test.cpp
     fsb_inverse_kinematics_test.cpp
-    fsb_circular_buffer_test.cpp)
+    fsb_circular_buffer_test.cpp
+    fsb_work_test.cpp)
 
 add_executable(fsbcore_test
     ${FSBCORE_TEST_HEADERS}

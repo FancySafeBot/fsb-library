@@ -8,6 +8,7 @@ configure_max_sizes(FSBCORE_CONFIG_NAME)
 set(FSBCORE_HEADERS
     include/fsb_configuration.h
     include/fsb_circular_buffer.h
+    include/fsb_work.h
     include/fsb_types.h
     include/fsb_linalg3.h
     include/fsb_quaternion.h
@@ -54,7 +55,7 @@ set(FSBCORE_SOURCES
     src/fsb_dynamics.cpp
     src/fsb_inverse_kinematics.cpp
     src/fsb_kinematic_redundancy.cpp
-    src/fsb_linalg.c
+    src/fsb_linalg.cpp
     src/fsb_trajectory_path.cpp)
 
 # target name
