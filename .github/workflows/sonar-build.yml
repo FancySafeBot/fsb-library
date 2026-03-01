@@ -7,9 +7,12 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
     types: [opened, synchronize, reopened]
+
+env:
+  BUILD_TYPE: coverage
+
 jobs:
 
   prep:
@@ -32,7 +35,8 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     env:
-      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
+      BUILD_WRAPPER_OUT_DIR: build/${{ env.BUILD_TYPE }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +57,7 @@ jobs:
 
       - name: Run Build Wrapper
         run: |
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --workflow --preset coverage
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --workflow --preset ${{ env.BUILD_TYPE }}
 
       - name: Collect coverage into one XML report
         run: |
@@ -61,7 +65,7 @@ jobs:
 
       - name: Run tests to generate coverage statistics
         run: |
-          ctest --test-dir build/coverage
+          ctest --test-dir build/${{ env.BUILD_TYPE }}
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5

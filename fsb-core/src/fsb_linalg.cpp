@@ -1,11 +1,12 @@
-#include <stdint.h>
-#include <string.h>
-#include <printf.h>
+#include <algorithm>
+#include <cstdint>
+#include <cstring>
 
 #include "fsb_linalg.h"
+
 #include "openblas/lapack.h"
 
-FsbLinalgErrorType fsb_linalg_svd(
+extern "C" FsbLinalgErrorType fsb_linalg_svd(
                const double_t mat[], const size_t rows, const size_t cols,
                const bool u_full, const bool v_full,
                const size_t work_len, double_t work[],
@@ -13,7 +14,11 @@ FsbLinalgErrorType fsb_linalg_svd(
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
 
-    if (cols >= (INT32_MAX / rows))
+    if ((rows == 0U) || (cols == 0U))
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (cols >= (static_cast<size_t>(INT32_MAX) / rows))
     {
         retval = EFSB_LAPACK_ERROR_INPUT;
     }
@@ -34,20 +39,17 @@ FsbLinalgErrorType fsb_linalg_svd(
         const size_t v_opt_size = 1U;
 
         // copy A to buffer
-        for (size_t idx = 0U; idx < a_len; ++idx)
-        {
-            a_mat_tmp[idx] = mat[idx];
-        }
+        std::copy_n(mat, a_len, a_mat_tmp);
 
-        const lapack_int l_m = (lapack_int)rows;
-        const lapack_int l_n = (lapack_int)cols;
-        const lapack_int ldvt = (lapack_int)(((rows < cols) && !v_full) ? rows : cols);
+        const lapack_int l_m = static_cast<lapack_int>(rows);
+        const lapack_int l_n = static_cast<lapack_int>(cols);
+        const lapack_int ldvt = static_cast<lapack_int>(((rows < cols) && !v_full) ? rows : cols);
         double_t work_query = 0.0;
         lapack_int lwork = -1;
         lapack_int info = 0;
         dgesvd_(u_opt, v_opt, &l_m, &l_n, a_mat_tmp, &l_m, sing_val, unitary_u, &l_m, unitary_vt, &ldvt, &work_query, &lwork, &info, u_opt_size, v_opt_size);
-        lwork = (lapack_int)(work_query);
-        const size_t s_lwork = (size_t)lwork;
+        lwork = static_cast<lapack_int>(work_query);
+        const size_t s_lwork = static_cast<size_t>(lwork);
 
         if (info != 0)
         {
@@ -68,7 +70,7 @@ FsbLinalgErrorType fsb_linalg_svd(
             dgesvd_(u_opt, v_opt, &l_m, &l_n, a_mat_tmp, &l_m, sing_val, unitary_u, &l_m, unitary_vt, &ldvt, svd_work, &lwork, &info, u_opt_size, v_opt_size);
             if (info < 0)
             {
-                // Some intput error
+                // Some input error
                 retval = EFSB_LAPACK_ERROR_INPUT;
             }
             else if (info > 0)
@@ -85,14 +87,18 @@ FsbLinalgErrorType fsb_linalg_svd(
     return retval;
 }
 
-FsbLinalgErrorType fsb_linalg_matrix_eig(
+extern "C" FsbLinalgErrorType fsb_linalg_matrix_eig(
         const double_t mat[], const size_t dim, const size_t work_len, double_t work[],
         double_t val_real[], double_t val_imag[],
         double_t vec_real[], double_t vec_imag[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
     /* alias data */
-    if (dim >= (INT32_MAX / dim))
+    if (dim == 0U)
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (dim >= (static_cast<size_t>(INT32_MAX) / dim))
     {
         retval = EFSB_LAPACK_ERROR_INPUT;
     }
@@ -108,17 +114,14 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
         const size_t work_partial_len = a_len;
 
         // copy A to buffer
-        for (size_t idx = 0U; idx < a_len; ++idx)
-        {
-            a_mat_tmp[idx] = mat[idx];
-        }
+        std::copy_n(mat, a_len, a_mat_tmp);
 
         // work query inputs
         const char* left_vec_opt = "N";
         const char* right_vec_opt = "V";
         const size_t left_opt_size = 1U;
         const size_t right_opt_size = 1U;
-        const lapack_int l_s = (lapack_int)dim;
+        const lapack_int l_s = static_cast<lapack_int>(dim);
         const lapack_int lvd = 1;
         double_t work_query = 0.0;
         lapack_int lwork = -1;
@@ -128,12 +131,12 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
         dgeev_(left_vec_opt, right_vec_opt,
                &l_s, a_mat_tmp, &l_s,
                val_real, val_imag,
-               NULL, &lvd,
+               nullptr, &lvd,
                vec_real, &l_s,
                &work_query, &lwork, &info,
                left_opt_size, right_opt_size);
-        lwork = (lapack_int)(work_query);
-        const size_t s_lwork = (size_t)lwork;
+        lwork = static_cast<lapack_int>(work_query);
+        const size_t s_lwork = static_cast<size_t>(lwork);
 
         if (info != 0)
         {
@@ -154,19 +157,19 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
             dgeev_(left_vec_opt, right_vec_opt,
                 &l_s, a_mat_tmp, &l_s,
                 val_real, val_imag,
-                NULL, &lvd,
+                nullptr, &lvd,
                 vec_real, &l_s,
                 eig_work, &lwork, &info,
                 left_opt_size, right_opt_size);
 
             if (info < 0)
             {
-                // Some intput error
+                // Some input error
                 retval = EFSB_LAPACK_ERROR_INPUT;
             }
             else if (info > 0)
             {
-                // DBDSQR did not converge (see DGESVD)
+                // did not converge (see dgeev)
                 retval = EFSB_LAPACK_ERROR_CONVERGE;
             }
             else
@@ -209,14 +212,18 @@ FsbLinalgErrorType fsb_linalg_matrix_eig(
     return retval;
 }
 
-FsbLinalgErrorType fsb_linalg_sym_lt_eig(
+extern "C" FsbLinalgErrorType fsb_linalg_sym_lt_eig(
     const double_t mat[], const size_t dim, const size_t work_len, double_t work[],
     double_t val[], double_t vec[])
 {
 
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
     /* alias data */
-    if (dim >= (INT32_MAX / dim))
+    if (dim == 0U)
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (dim >= (static_cast<size_t>(INT32_MAX) / dim))
     {
         retval = EFSB_LAPACK_ERROR_INPUT;
     }
@@ -225,17 +232,14 @@ FsbLinalgErrorType fsb_linalg_sym_lt_eig(
         const size_t a_len = dim * dim;
 
         // copy A to output vector
-        for (size_t idx = 0U; idx < a_len; ++idx)
-        {
-            vec[idx] = mat[idx];
-        }
+        std::copy_n(mat, a_len, vec);
 
         // work query inputs
         const char* job_opt = "V";
         const char* uplo_opt = "L";
         const size_t job_opt_size = 1U;
         const size_t uplo_opt_size = 1U;
-        const lapack_int l_s = (lapack_int)dim;
+        const lapack_int l_s = static_cast<lapack_int>(dim);
         double_t work_query = 0.0;
         lapack_int lwork = -1;
         lapack_int info = 0;
@@ -246,12 +250,12 @@ FsbLinalgErrorType fsb_linalg_sym_lt_eig(
                val,
                &work_query, &lwork, &info,
                job_opt_size, uplo_opt_size);
-        lwork = (lapack_int)(work_query);
-        const size_t s_lwork = (size_t)lwork;
+        lwork = static_cast<lapack_int>(work_query);
+        const size_t s_lwork = static_cast<size_t>(lwork);
 
         if (info != 0)
         {
-            /* dgeev_ work query failed */
+            /* dsyev_ work query failed */
             retval = EFSB_LAPACK_ERROR_QUERY;
         }
         else if (work_len < s_lwork)
@@ -270,7 +274,7 @@ FsbLinalgErrorType fsb_linalg_sym_lt_eig(
 
             if (info < 0)
             {
-                // Intput error
+                // Input error
                 retval = EFSB_LAPACK_ERROR_INPUT;
             }
             else if (info > 0)
@@ -288,12 +292,16 @@ FsbLinalgErrorType fsb_linalg_sym_lt_eig(
     return retval;
 }
 
-FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
+extern "C" FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
     const double_t mat[], const size_t dim, double_t mat_chol[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
     /* alias data */
-    if (dim >= (INT32_MAX / dim))
+    if (dim == 0U)
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (dim >= (static_cast<size_t>(INT32_MAX) / dim))
     {
         retval = EFSB_LAPACK_ERROR_INPUT;
     }
@@ -302,14 +310,11 @@ FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
         const size_t a_len = dim * dim;
         const char* uplo_opt = "L";
         const size_t uplo_opt_size = 1U;
-        const lapack_int l_s = (lapack_int)dim;
+        const lapack_int l_s = static_cast<lapack_int>(dim);
         lapack_int info = 0;
 
         // copy A to output vector
-        for (size_t idx = 0U; idx < a_len; ++idx)
-        {
-            mat_chol[idx] = mat[idx];
-        }
+        std::copy_n(mat, a_len, mat_chol);
 
         /* cholesky factorization */
         const lapack_int chol_ret = dpotrf_(uplo_opt, &l_s, mat_chol, &l_s, &info, uplo_opt_size);
@@ -331,14 +336,18 @@ FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
     return retval;
 }
 
-FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_t b_vec[],
+extern "C" FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_t b_vec[],
                                              const size_t nrhs, const size_t dim,
                                              const size_t work_len, double_t work[],
                                              double_t x_vec[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
     /* alias data */
-    if (dim >= (INT32_MAX / dim))
+    if (dim == 0U)
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (dim >= (static_cast<size_t>(INT32_MAX) / dim))
     {
         retval = EFSB_LAPACK_ERROR_INPUT;
     }
@@ -349,18 +358,15 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
     }
     else
     {
-        double* mat_temp = work;
+        double_t* mat_temp = work;
         const size_t a_len = dim * dim;
         // copy mat to buffer
-        for (size_t idx = 0U; idx < a_len; ++idx)
-        {
-            mat_temp[idx] = mat[idx];
-        }
+        std::copy_n(mat, a_len, mat_temp);
 
         const char* uplo_opt = "L";
         const size_t uplo_opt_size = 1U;
-        const lapack_int l_s = (lapack_int)dim;
-        const lapack_int l_nrhs = (lapack_int)nrhs;
+        const lapack_int l_s = static_cast<lapack_int>(dim);
+        const lapack_int l_nrhs = static_cast<lapack_int>(nrhs);
         lapack_int info = 0;
 
         /* DPOTRF( UPLO, N, A, LDA, INFO ) */
@@ -371,10 +377,7 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
         if (info == 0)
         {
             // no error, copy b to x
-            for (size_t idx = 0U; idx < (nrhs * dim); ++idx)
-            {
-                x_vec[idx] = b_vec[idx];
-            }
+            std::copy_n(b_vec, (nrhs * dim), x_vec);
             dpotrs_(uplo_opt, &l_s, &l_nrhs, mat_temp, &l_s, x_vec, &l_s, &info, uplo_opt_size);
         }
 
@@ -395,10 +398,10 @@ FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_
     return retval;
 }
 
-bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, const size_t work_len, double_t work[])
+extern "C" bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, const size_t work_len, double_t work[])
 {
     bool retval = false;
-    if (dim < (INT32_MAX / dim))
+    if ((dim > 0U) && (dim < (static_cast<size_t>(INT32_MAX) / dim)))
     {
         const size_t a_len = dim * dim;
         if (work_len >= a_len)
@@ -419,13 +422,17 @@ bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, const size_t w
  *  The factorization has the form
  *     A = P * L * U
  */
-FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
+extern "C" FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     const double_t mat[], const double_t y_vec[], const size_t nrhs, const size_t dim, const size_t work_len,
     const size_t iwork_len, double_t work[], lapack_int iwork[], double_t x_vec[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
     /* alias data */
-    if (dim >= (INT32_MAX / dim))
+    if (dim == 0U)
+    {
+        retval = EFSB_LAPACK_ERROR_INPUT;
+    }
+    else if (dim >= (static_cast<size_t>(INT32_MAX) / dim))
     {
         retval = EFSB_LAPACK_ERROR_INPUT;
     }
@@ -436,15 +443,12 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     }
     else
     {
-        double* mat_lu = work;
+        double_t* mat_lu = work;
         lapack_int* ipiv = iwork;
         const size_t a_len = dim * dim;
-        const lapack_int l_s = (lapack_int)dim;
+        const lapack_int l_s = static_cast<lapack_int>(dim);
         // copy mat to buffer
-        for (size_t idx = 0U; idx < a_len; ++idx)
-        {
-            mat_lu[idx] = mat[idx];
-        }
+        std::copy_n(mat, a_len, mat_lu);
 
         /* DGETRF( M, N, A, LDA, IPIV, INFO ) */
         lapack_int info = 0;
@@ -455,12 +459,9 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
         {
             const char*      transpose_opt = "N";
             const size_t     transpose_opt_size = 1U;
-            const lapack_int l_nrhs = (lapack_int)nrhs;
+            const lapack_int l_nrhs = static_cast<lapack_int>(nrhs);
             // copy y to x vector
-            for (size_t idx = 0U; idx < dim; ++idx)
-            {
-                x_vec[idx] = y_vec[idx];
-            }
+            std::copy_n(y_vec, (nrhs * dim), x_vec);
             //      SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
             const lapack_int dgetrs_ret = dgetrs_(transpose_opt, &l_s, &l_nrhs, mat_lu, &l_s, ipiv, x_vec, &l_s, &info, transpose_opt_size);
             (void)dgetrs_ret;
@@ -487,12 +488,16 @@ FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     return retval;
 }
 
-FsbLinalgErrorType fsb_linalg_pseudoinverse(
-    const double_t mat[], const size_t rows, const size_t columns, const size_t work_len, double_t work[], double inv_mat[])
+extern "C" FsbLinalgErrorType fsb_linalg_pseudoinverse(
+    const double_t mat[], const size_t rows, const size_t columns, const size_t work_len, double_t work[], double_t inv_mat[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
 
-    if (rows >= (INT32_MAX / columns))
+    if ((rows == 0U) || (columns == 0U))
+    {
+        return EFSB_LAPACK_ERROR_INPUT;
+    }
+    if (rows >= (static_cast<size_t>(INT32_MAX) / columns))
     {
         return EFSB_LAPACK_ERROR_INPUT;
     }
@@ -532,16 +537,10 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(
         return retval;
     }
 
-    // Compute pseudoinverse A^+ = V * S^+ * U^T
-    // LAPACK storage is column-major.
-    // - U is (rows x min_dim) with leading dimension = rows
-    // - V^T is (min_dim x columns) with leading dimension = min_dim
-    // Output inv_mat is (columns x rows) in column-major order.
-
     const double_t epsilon = 1.0e-12;  // Small threshold for numerical stability
 
     // Initialize the output inverse matrix with zeros
-    memset(inv_mat, 0, columns * rows * sizeof(double_t));
+    std::fill_n(inv_mat, columns * rows, 0.0);
 
     // Accumulate: inv_mat(i,j) += V(i,k) * (1/s_k) * U(j,k)
     // where inv_mat is (columns x rows).
@@ -571,14 +570,14 @@ FsbLinalgErrorType fsb_linalg_pseudoinverse(
     return retval;
 }
 
-FsbLinalgErrorType fsb_linalg_leastsquares_solve(
+extern "C" FsbLinalgErrorType fsb_linalg_leastsquares_solve(
     const double_t mat[], const size_t rows, const size_t columns, const double_t b_vec[], const size_t nrhs,
     const size_t work_len, double_t work[], double_t x_vec[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
 
-    if (rows == 0 || columns == 0 || nrhs == 0 || work_len == 0 ||
-        (rows >= (INT32_MAX / columns) || (nrhs >= INT32_MAX / columns) || (nrhs >= INT32_MAX / rows)))
+    if (rows == 0U || columns == 0U || nrhs == 0U || work_len == 0U ||
+        (rows >= (static_cast<size_t>(INT32_MAX) / columns) || (nrhs >= static_cast<size_t>(INT32_MAX) / columns) || (nrhs >= static_cast<size_t>(INT32_MAX) / rows)))
     {
         // Input dimensions are too large
         retval = EFSB_LAPACK_ERROR_INPUT;
@@ -599,14 +598,11 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
         double_t* a_copy = work;
         double_t* b_work = &work[size_a];
         // Copy matrix A to work buffer
-        for (size_t idx = 0; idx < size_a; ++idx)
-        {
-            a_copy[idx] = mat[idx];
-        }
+        std::copy_n(mat, size_a, a_copy);
         // Copy b_vec to b_work
-        for (size_t col = 0; col < nrhs; ++col)
+        for (size_t col = 0U; col < nrhs; ++col)
         {
-            for (size_t row = 0; row < rows; ++row)
+            for (size_t row = 0U; row < rows; ++row)
             {
                 b_work[col * size_ldb + row] = b_vec[col * rows + row];
             }
@@ -615,11 +611,11 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
         // Set up parameters for dgels
         const char* trans_opt = "N";  // No transpose
         const size_t trans_opt_size = 1U;
-        const lapack_int l_rows = (lapack_int)rows;
-        const lapack_int l_cols = (lapack_int)columns;
-        const lapack_int l_nrhs = (lapack_int)nrhs;
+        const lapack_int l_rows = static_cast<lapack_int>(rows);
+        const lapack_int l_cols = static_cast<lapack_int>(columns);
+        const lapack_int l_nrhs = static_cast<lapack_int>(nrhs);
         const lapack_int lda = l_rows;
-        const lapack_int ldb = (lapack_int)size_ldb;  // leading dimension of b
+        const lapack_int ldb = static_cast<lapack_int>(size_ldb);  // leading dimension of b
         lapack_int info = 0;
 
         // Query workspace size
@@ -635,8 +631,8 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
         }
         else
         {
-            lwork = (lapack_int)(work_query);
-            const size_t s_lwork = (size_t)lwork;
+            lwork = static_cast<lapack_int>(work_query);
+            const size_t s_lwork = static_cast<size_t>(lwork);
             // Check if we have enough workspace
             if (work_len < (work_len_ab + s_lwork))
             {
@@ -668,9 +664,9 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
         {
             // b_work to x_vec conversion
             const size_t output_rows = columns;
-            for (size_t col = 0; col < nrhs; ++col)
+            for (size_t col = 0U; col < nrhs; ++col)
             {
-                for (size_t row = 0; row < output_rows; ++row)
+                for (size_t row = 0U; row < output_rows; ++row)
                 {
                     x_vec[col * output_rows + row] = b_work[col * size_ldb + row];
                 }

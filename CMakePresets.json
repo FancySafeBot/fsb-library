@@ -54,14 +54,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Instrument"
       }
-    },
-    {
-      "name": "codeql",
-      "displayName": "Build for CodeQL Analysis",
-      "inherits": "debug",
-      "cacheVariables": {
-        "FSB_BUILD_OPENBLAS": "ON"
-      }
     }
   ],
   "buildPresets": [
@@ -94,12 +86,6 @@
       "displayName": "FSB Library Test Address Sanitizer Build",
       "configurePreset": "instrument",
       "targets": ["fsbcore_test", "fsbposix_test", "fsburdf_test"]
-    },
-    {
-      "name": "codeql",
-      "displayName": "FSB Library CodeQL Build",
-      "configurePreset": "codeql",
-      "targets": ["fsbcore_test", "fsbposix_test"]
     }
   ],
   "testPresets": [
@@ -160,20 +146,6 @@
         {
           "type": "test",
           "name": "coverage"
-        }
-      ]
-    },
-    {
-      "name": "codeql",
-      "displayName": "FSB Library CodeQL Workflow",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "codeql"
-        },
-        {
-          "type": "build",
-          "name": "codeql"
         }
       ]
     }
