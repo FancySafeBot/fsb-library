@@ -6,7 +6,7 @@
 
 #include "openblas/lapack.h"
 
-extern "C" FsbLinalgErrorType fsb_linalg_svd(
+FsbLinalgErrorType fsb_linalg_svd(
                const double_t mat[], const size_t rows, const size_t cols,
                const bool u_full, const bool v_full,
                const size_t work_len, double_t work[],
@@ -87,7 +87,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_svd(
     return retval;
 }
 
-extern "C" FsbLinalgErrorType fsb_linalg_matrix_eig(
+FsbLinalgErrorType fsb_linalg_matrix_eig(
         const double_t mat[], const size_t dim, const size_t work_len, double_t work[],
         double_t val_real[], double_t val_imag[],
         double_t vec_real[], double_t vec_imag[])
@@ -212,7 +212,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_matrix_eig(
     return retval;
 }
 
-extern "C" FsbLinalgErrorType fsb_linalg_sym_lt_eig(
+FsbLinalgErrorType fsb_linalg_sym_lt_eig(
     const double_t mat[], const size_t dim, const size_t work_len, double_t work[],
     double_t val[], double_t vec[])
 {
@@ -292,7 +292,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_sym_lt_eig(
     return retval;
 }
 
-extern "C" FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
+FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
     const double_t mat[], const size_t dim, double_t mat_chol[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
@@ -336,7 +336,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
     return retval;
 }
 
-extern "C" FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_t b_vec[],
+FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_t b_vec[],
                                              const size_t nrhs, const size_t dim,
                                              const size_t work_len, double_t work[],
                                              double_t x_vec[])
@@ -398,7 +398,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], co
     return retval;
 }
 
-extern "C" bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, const size_t work_len, double_t work[])
+bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, const size_t work_len, double_t work[])
 {
     bool retval = false;
     if ((dim > 0U) && (dim < (static_cast<size_t>(INT32_MAX) / dim)))
@@ -422,7 +422,7 @@ extern "C" bool fsb_linalg_is_posdef(const double_t mat[], const size_t dim, con
  *  The factorization has the form
  *     A = P * L * U
  */
-extern "C" FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
+FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     const double_t mat[], const double_t y_vec[], const size_t nrhs, const size_t dim, const size_t work_len,
     const size_t iwork_len, double_t work[], lapack_int iwork[], double_t x_vec[])
 {
@@ -488,7 +488,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
     return retval;
 }
 
-extern "C" FsbLinalgErrorType fsb_linalg_pseudoinverse(
+FsbLinalgErrorType fsb_linalg_pseudoinverse(
     const double_t mat[], const size_t rows, const size_t columns, const size_t work_len, double_t work[], double_t inv_mat[])
 {
     FsbLinalgErrorType retval = EFSB_LAPACK_ERROR_NONE;
@@ -570,7 +570,7 @@ extern "C" FsbLinalgErrorType fsb_linalg_pseudoinverse(
     return retval;
 }
 
-extern "C" FsbLinalgErrorType fsb_linalg_leastsquares_solve(
+FsbLinalgErrorType fsb_linalg_leastsquares_solve(
     const double_t mat[], const size_t rows, const size_t columns, const double_t b_vec[], const size_t nrhs,
     const size_t work_len, double_t work[], double_t x_vec[])
 {

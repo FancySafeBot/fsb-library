@@ -200,23 +200,23 @@ FsbLinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const M
     const size_t nrhs = 1U; // number of right-hand sides
     // Solve the least squares problem J * qv = velocity
     // where J is the Jacobian and qv is the joint velocity vector.
-    const double_t bvec[FSB_CART_SIZE]
+    const std::array<double_t, FSB_CART_SIZE> bvec
         = {cart_velocity.angular.x,
            cart_velocity.angular.y,
            cart_velocity.angular.z,
            cart_velocity.linear.x,
            cart_velocity.linear.y,
            cart_velocity.linear.z};
-    double_t work[512U] = {}; // workspace for least squares solve
-    const size_t work_len = 512U; // length of workspace
+    std::array<double_t, 512U> work = {}; // workspace for least squares solve
+    constexpr size_t work_len = work.size();
     return fsb_linalg_leastsquares_solve(
         jacobian.j.data(),
         FSB_CART_SIZE,
         dofs,
-        bvec,
+        bvec.data(),
         nrhs,
         work_len,
-        work,
+        work.data(),
         joint_velocity.qv.data());
 }
 
@@ -230,7 +230,7 @@ FsbLinalgErrorType inverse_acceleration_kinematics(
         = {vector_subtract(cart_acceleration.angular, cart_acc.angular),
            vector_subtract(cart_acceleration.linear, cart_acc.linear)};
 
-    const double bvec[FSB_CART_SIZE]
+    const std::array<double_t, FSB_CART_SIZE> bvec
         = {cart_motion.angular.x,
            cart_motion.angular.y,
            cart_motion.angular.z,
@@ -238,16 +238,16 @@ FsbLinalgErrorType inverse_acceleration_kinematics(
            cart_motion.linear.y,
            cart_motion.linear.z};
     const size_t nrhs = 1U;
-    double_t     work[512U] = {}; // workspace for least squares solve
-    const size_t work_len = 512U; // length of workspace
+    std::array<double_t, 512U> work = {}; // workspace for least squares solve
+    constexpr size_t work_len = work.size();
     return fsb_linalg_leastsquares_solve(
         jacobian.j.data(),
         FSB_CART_SIZE,
         dofs,
-        bvec,
+        bvec.data(),
         nrhs,
         work_len,
-        work,
+        work.data(),
         joint_acceleration.qv.data());
 }
 

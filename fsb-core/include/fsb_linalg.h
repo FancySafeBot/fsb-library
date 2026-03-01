@@ -1,18 +1,9 @@
 #pragma once
 #include <math.h>
-#include <stddef.h>
-#include <stdbool.h>
-
-#ifdef __cplusplus
 #include <array>
-#endif
+#include <cstddef>
 
 #include "openblas/lapack.h"
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /**
  * @defgroup LinearAlgebra Linear Algebra
@@ -226,21 +217,13 @@ FsbLinalgErrorType fsb_linalg_leastsquares_solve(
     size_t work_len, double_t work[], double_t x_vec[]);
 
 /**
- * @brief Example demonstrating DGELS (least squares solver) usage
- */
-void sample_dgels_example(void);
-
-/**
  * @}
  */
-
-#ifdef __cplusplus
-}
 
 /**
  * @brief C++ convenience wrappers that accept std::array.
  *
- * These are header-only and forward to the C ABI functions above.
+ * These are header-only and forward to the C++ functions above.
  */
 template <size_t Rows, size_t Cols, size_t WorkLen>
 inline FsbLinalgErrorType fsb_linalg_svd_array(
@@ -358,4 +341,3 @@ inline FsbLinalgErrorType fsb_linalg_leastsquares_solve_array(
         x_vec.data());
 }
 
-#endif
