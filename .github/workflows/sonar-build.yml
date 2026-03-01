@@ -10,9 +10,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-env:
-  BUILD_TYPE: coverage
-
 jobs:
 
   prep:
@@ -35,7 +32,8 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     env:
-      BUILD_WRAPPER_OUT_DIR: build/${{ env.BUILD_TYPE }}
+      BUILD_TYPE: coverage
+      BUILD_WRAPPER_OUT_DIR: build/coverage
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
