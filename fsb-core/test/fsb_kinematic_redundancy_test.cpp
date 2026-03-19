@@ -122,7 +122,7 @@ TEST_CASE("Pseudoinverse of Panda Jacobian" * doctest::description("[fsb_kinemat
 
     fsb::Jacobian jac_pinv = {};
     const auto err = fsb::jacobian_pseudoinverse(jac, jac_pinv, dofs);
-    REQUIRE(err == EFSB_LAPACK_ERROR_NONE);
+    REQUIRE(err == fsb::LinalgErrorType::ERROR_NONE);
 
     const double eps = 1.0e-8;
     for (size_t col = 0U; col < 6U; ++col)
@@ -146,7 +146,7 @@ TEST_CASE("Pseudoinverse of identity Jacobian" * doctest::description("[fsb_kine
 
     fsb::Jacobian jac_pinv = {};
     const auto err = fsb::jacobian_pseudoinverse(jac, jac_pinv, dofs);
-    REQUIRE(err == EFSB_LAPACK_ERROR_NONE);
+    REQUIRE(err == fsb::LinalgErrorType::ERROR_NONE);
 
     // jac_pinv is dofs x 6 (column-major) stored in a Jacobian-sized buffer.
     for (size_t col = 0U; col < 6U; ++col)
@@ -174,7 +174,7 @@ TEST_CASE("Pseudoinverse satisfies Moore-Penrose identities" * doctest::descript
 
     fsb::Jacobian jac_pinv = {};
     const auto err = fsb::jacobian_pseudoinverse(jac, jac_pinv, dofs);
-    REQUIRE(err == EFSB_LAPACK_ERROR_NONE);
+    REQUIRE(err == fsb::LinalgErrorType::ERROR_NONE);
 
     // Validate Moore–Penrose conditions:
     // 1) J * J+ * J == J
@@ -239,7 +239,7 @@ TEST_CASE("Pseudoinverse works for rank-deficient Jacobian" * doctest::descripti
 
     fsb::Jacobian jac_pinv = {};
     const auto err = fsb::jacobian_pseudoinverse(jac, jac_pinv, dofs);
-    REQUIRE(err == EFSB_LAPACK_ERROR_NONE);
+    REQUIRE(err == fsb::LinalgErrorType::ERROR_NONE);
 
     // Check J * J+ * J == J (most important identity for rank-deficient case)
     constexpr double eps = 1.0e-8;
@@ -277,7 +277,7 @@ TEST_CASE("Nullspace motion is zero for 6x6 identity Jacobian" * doctest::descri
     {
         fsb::Jacobian jac_pinv = {};
         const auto err = fsb::jacobian_pseudoinverse(jac, jac_pinv, dofs);
-        REQUIRE(err == EFSB_LAPACK_ERROR_NONE);
+        REQUIRE(err == fsb::LinalgErrorType::ERROR_NONE);
 
         const fsb::JointSpace qn = fsb::compute_nullspace_motion(jac, jac_pinv, qd, dofs);
         for (size_t i = 0U; i < dofs; ++i)
@@ -310,7 +310,7 @@ TEST_CASE("Nullspace projection preserves pure nullspace component" * doctest::d
     {
         fsb::Jacobian jac_pinv = {};
         const auto err = fsb::jacobian_pseudoinverse(jac, jac_pinv, dofs);
-        REQUIRE(err == EFSB_LAPACK_ERROR_NONE);
+        REQUIRE(err == fsb::LinalgErrorType::ERROR_NONE);
 
         const fsb::JointSpace qn = fsb::compute_nullspace_motion(jac, jac_pinv, qd, dofs);
         for (size_t i = 0U; i < 6U; ++i)

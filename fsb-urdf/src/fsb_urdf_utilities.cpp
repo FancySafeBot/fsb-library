@@ -48,7 +48,7 @@ Real string_to_real(const std::string& str, UrdfError& err)
 {
     const char* start = str.c_str();
     char*       end = nullptr;
-    double_t    value = std::strtod(start, &end);
+    fsb::Real    value = std::strtod(start, &end);
 
     if (end == str)
     {

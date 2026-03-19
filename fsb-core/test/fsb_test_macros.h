@@ -5,8 +5,6 @@
 #include <doctest/doctest.h>
 #include "fsb_types.h"
 
-// Approx formula:
-
 /**
  * @brief Custom floating point comparison for unit tests
  *

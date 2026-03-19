@@ -100,8 +100,8 @@ TEST_CASE("Velocity Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb
 
     // compute joint velocity from jacobian and target velocity
     fsb::JointSpace joint_velocity = {};
-    const FsbLinalgErrorType linalg_err = fsb::inverse_velocity_kinematics(jac, ee_velocity, ee_dofs, joint_velocity);
-    REQUIRE(linalg_err == FsbLinalgErrorType::EFSB_LAPACK_ERROR_NONE);
+    const fsb::LinalgErrorType linalg_err = fsb::inverse_velocity_kinematics(jac, ee_velocity, ee_dofs, joint_velocity);
+    REQUIRE(linalg_err == fsb::LinalgErrorType::ERROR_NONE);
 
     // Compute forward velocity kinematics to verify
     joint_pva.velocity = joint_velocity;
@@ -190,8 +190,8 @@ TEST_CASE("Velocity Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb
 
 //     // compute joint velocity from jacobian and target velocity
 //     fsb::JointSpace joint_velocity = {};
-//     const FsbLinalgErrorType linalg_err = fsb::inverse_velocity_kinematics(jac, ee_velocity, ee_dofs, joint_velocity);
-//     REQUIRE(linalg_err == FsbLinalgErrorType::EFSB_LAPACK_ERROR_NONE);
+//     const fsb::LinalgErrorType linalg_err = fsb::inverse_velocity_kinematics(jac, ee_velocity, ee_dofs, joint_velocity);
+//     REQUIRE(linalg_err == fsb::LinalgErrorType::ERROR_NONE);
 
 //     fsb::inverse_acceleration_kinematics(jac, ee_velocity, ee_acceleration, ee_dofs, joint_velocity, joint_pva.velocity, joint_pva.acceleration);
 

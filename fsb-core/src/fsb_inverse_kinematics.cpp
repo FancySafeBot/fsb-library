@@ -51,18 +51,18 @@ static Real optim_pose_error(
            + squared_error.linear.x + squared_error.linear.y + squared_error.linear.z;
 }
 
-static FsbLinalgErrorType optim_solve_joint_matrix(
+static fsb::LinalgErrorType optim_solve_joint_matrix(
     const JointMatrix& joint_mat, const JointSpace& joint_vec, const size_t dofs, JointSpace& result)
 {
     // Create lapack input, work, and output variables
     const size_t                   nrhs = 1U;
     const size_t                   dim = dofs;
     constexpr size_t               WorkLen = MaxSize::kDofs * MaxSize::kDofs;
-    std::array<double_t, WorkLen>  work = {};
+    std::array<Real, WorkLen>  work = {};
     const size_t                   iwork_len = MaxSize::kDofs;
     std::array<lapack_int, MaxSize::kDofs> iwork = {};
     // solve for x_vec
-    return fsb_linalg_matrix_sqr_solve(
+    return fsb::linalg_matrix_sqr_solve(
         joint_mat.j.data(),
         joint_vec.qv.data(),
         nrhs,
@@ -128,9 +128,9 @@ static InverseKinematicsResult optim_levenberg_marquardt(
             increment_matrix.j[joint_matrix_index(index, index, dofs)] += joint_weights.qv[index];
         }
         // Solve for increment dq = - Mj.inverse() * g
-        const FsbLinalgErrorType solve_result
+        const fsb::LinalgErrorType solve_result
             = optim_solve_joint_matrix(increment_matrix, joint_gradient, dofs, joint_offset);
-        if (solve_result != EFSB_LAPACK_ERROR_NONE)
+        if (solve_result != fsb::LinalgErrorType::ERROR_NONE)
         {
             // error
             result.info = InverseKinematicsInfo::SINGULAR_UPDATE_MATRIX;
@@ -193,23 +193,23 @@ InverseKinematicsResult compute_inverse_kinematics(
     return result;
 }
 
-FsbLinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const MotionVector& cart_velocity, size_t dofs, JointSpace& joint_velocity)
+fsb::LinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const MotionVector& cart_velocity, size_t dofs, JointSpace& joint_velocity)
 {
     dofs = std::min(dofs, MaxSize::kDofs);
 
     const size_t nrhs = 1U; // number of right-hand sides
     // Solve the least squares problem J * qv = velocity
     // where J is the Jacobian and qv is the joint velocity vector.
-    const std::array<double_t, FSB_CART_SIZE> bvec
+    const std::array<Real, FSB_CART_SIZE> bvec
         = {cart_velocity.angular.x,
            cart_velocity.angular.y,
            cart_velocity.angular.z,
            cart_velocity.linear.x,
            cart_velocity.linear.y,
            cart_velocity.linear.z};
-    std::array<double_t, 512U> work = {}; // workspace for least squares solve
+    std::array<Real, 512U> work = {}; // workspace for least squares solve
     constexpr size_t work_len = work.size();
-    return fsb_linalg_leastsquares_solve(
+    return fsb::linalg_leastsquares_solve(
         jacobian.j.data(),
         FSB_CART_SIZE,
         dofs,
@@ -220,7 +220,7 @@ FsbLinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const M
         joint_velocity.qv.data());
 }
 
-FsbLinalgErrorType inverse_acceleration_kinematics(
+fsb::LinalgErrorType inverse_acceleration_kinematics(
     const Jacobian& jacobian, const Jacobian& jacobian_derivative,
     const MotionVector& cart_acceleration, const JointSpace& joint_velocity, const size_t dofs,
     JointSpace& joint_acceleration)
@@ -230,7 +230,7 @@ FsbLinalgErrorType inverse_acceleration_kinematics(
         = {vector_subtract(cart_acceleration.angular, cart_acc.angular),
            vector_subtract(cart_acceleration.linear, cart_acc.linear)};
 
-    const std::array<double_t, FSB_CART_SIZE> bvec
+    const std::array<Real, FSB_CART_SIZE> bvec
         = {cart_motion.angular.x,
            cart_motion.angular.y,
            cart_motion.angular.z,
@@ -238,9 +238,9 @@ FsbLinalgErrorType inverse_acceleration_kinematics(
            cart_motion.linear.y,
            cart_motion.linear.z};
     const size_t nrhs = 1U;
-    std::array<double_t, 512U> work = {}; // workspace for least squares solve
+    std::array<Real, 512U> work = {}; // workspace for least squares solve
     constexpr size_t work_len = work.size();
-    return fsb_linalg_leastsquares_solve(
+    return fsb::linalg_leastsquares_solve(
         jacobian.j.data(),
         FSB_CART_SIZE,
         dofs,

@@ -36,7 +36,7 @@ struct JointLimits;
  * @param[in]  dofs             Number of degrees of freedom (columns in Jacobian)
  * @return                      Linear algebra error code
  */
-FsbLinalgErrorType
+fsb::LinalgErrorType
 jacobian_pseudoinverse(const Jacobian& jacobian, Jacobian& inverse_jacobian, size_t dofs);
 
 /**

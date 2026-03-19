@@ -88,7 +88,7 @@ InverseKinematicsResult compute_inverse_kinematics(
  * @param[out] joint_velocity Joint velocity vector
  * @return Linear algebra error code
  */
-FsbLinalgErrorType inverse_velocity_kinematics(
+fsb::LinalgErrorType inverse_velocity_kinematics(
     const Jacobian& jacobian, const MotionVector& cart_velocity, size_t dofs,
     JointSpace& joint_velocity);
 
@@ -106,7 +106,7 @@ FsbLinalgErrorType inverse_velocity_kinematics(
  * @param[out] joint_acceleration Joint acceleration vector
  * @return Linear algebra error code
  */
-FsbLinalgErrorType inverse_acceleration_kinematics(
+fsb::LinalgErrorType inverse_acceleration_kinematics(
     const Jacobian& jacobian, const Jacobian& jacobian_derivative,
     const MotionVector& cart_acceleration, const JointSpace& joint_velocity, size_t dofs,
     JointSpace& joint_acceleration);

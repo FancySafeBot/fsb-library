@@ -1,9 +1,12 @@
 #pragma once
+#include <algorithm>
+#include <cstdint>
 #include <math.h>
 #include <array>
 #include <cstddef>
 
 #include "openblas/lapack.h"
+#include "fsb_types.h"
 
 /**
  * @defgroup LinearAlgebra Linear Algebra
@@ -15,46 +18,158 @@
 #define FSB_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define FSB_MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-/**
- * @brief Floating point type
- */
-typedef double double_t;
+namespace fsb {
 
 /**
  * @brief Error codes for linear algebra functions
  */
-typedef enum FsbLapackErrorType
+enum class LinalgErrorType : int
 {
     /**
      * @brief No error
      */
-    EFSB_LAPACK_ERROR_NONE = 0,
+    ERROR_NONE = 0,
     /**
      * @brief Input value error
      */
-    EFSB_LAPACK_ERROR_INPUT = 1,
+    ERROR_INPUT = 1,
     /**
      * @brief Not enough memory
      */
-    EFSB_LAPACK_ERROR_MEMORY = 2,
+    ERROR_MEMORY = 2,
     /**
      * @brief Solution did not converge
      */
-    EFSB_LAPACK_ERROR_CONVERGE = 3,
+    ERROR_CONVERGE = 3,
     /**
      * @brief Work query failed
      */
-    EFSB_LAPACK_ERROR_QUERY = 4,
+    ERROR_QUERY = 4,
     /**
      * @brief Matrix not positive definite
      */
-    EFSB_LAPACK_NOT_POSITIVE_DEFINITE = 5,
+    NOT_POSITIVE_DEFINITE = 5,
     /**
      * @brief Input matrix is singular
      */
-    EFSB_LAPACK_SINGULAR = 6,
-    EFSB_LAPACK_ERROR_NOT_FULL_RANK = 7, ///< Matrix is not full rank
-} FsbLinalgErrorType;
+    SINGULAR = 6,
+    ERROR_NOT_FULL_RANK = 7, ///< Matrix is not full rank
+};
+
+/**
+ * @brief Eigenvalue decomposition for symmetric lower triangular matrix
+ *
+ * @param[in]    mat   input matrix (sxs)
+ * @param[in]    dim   matrix A dimension
+ * @param[in]  work_len    buffer length
+ * @param[in,out]  work    work buffer
+ * @param[out]   val eigenvalues (sx1)
+ * @param[out]   vec column eigenvectors (sxs)
+ *
+ * @return Error code
+ */
+LinalgErrorType linalg_sym_lt_eig(
+    const Real mat[], size_t dim, size_t work_len, Real work[],
+    Real val[], Real vec[]);
+
+/**
+ * @brief Cholesky factorization for symmetric positive definite matrix
+ *
+ * @param mat Input matrix (dim x dim)
+ * @param dim Matrix A dimension s
+ * @param mat_chol Cholesky factorization of input matrix A (dim x dim)
+ * @return Error code
+ */
+LinalgErrorType linalg_cholesky_decomposition(
+    const Real mat[], size_t dim, Real mat_chol[]);
+
+/**
+ * @brief Cholesky solve
+ *
+ * square symmetric positive-definite matrix cholesky solve.
+ * solve for b from x = A b
+ * Variable x is overwritten by b on exit
+ *
+ * @param[in] mat Input matrix (dim x dim)
+ * @param[in] b_vec Right-hand side vector (dim x nrhs)
+ * @param[in] nrhs Number of right-hand side vectors
+ * @param[in] dim Matrix dimension
+ * @param[in] work_len Work buffer length
+ * @param[in,out] work Work buffer
+ * @param[out] x_vec Solution vector (dim x nrhs)
+ * @return Error code
+ */
+LinalgErrorType linalg_cholesky_solve(const Real mat[], const Real b_vec[],
+                                             size_t nrhs, size_t dim,
+                                             size_t work_len, Real work[],
+                                             Real x_vec[]);
+
+/**
+ * @brief Check if lower triangular symmetric matrix is positive definite
+ *
+ * @param[in] mat Input lower triangular matrix (sxs)
+ * @param[in] dim Matrix A dimension
+ * @param[in] work_len Work vector length
+ * @param[in,out] work Work vector
+ * @return true if matrix is positive definite, false otherwise
+ */
+bool linalg_is_posdef(const Real mat[], size_t dim, size_t work_len, Real work[]);
+
+/**
+ * @biref Solve linear system of equations with a square matrix
+ *
+ * @param mat Matrix to solve (dim x dim)
+ * @param y_vec Right-hand side vector (dim x nrhs)
+ * @param nrhs Number of right-hand side vectors
+ * @param dim Matrix A dimension (s)
+ * @param work_len Work vector length
+ * @param iwork_len Integer work vector length
+ * @param work Work vector
+ * @param iwork Integer work vector
+ * @param x_vec Output Solution vector (dim x nrhs)
+ * @return Error code
+ */
+LinalgErrorType linalg_matrix_sqr_solve(
+    const Real mat[], const Real y_vec[], size_t nrhs, size_t dim, size_t work_len,
+    size_t iwork_len, Real work[], lapack_int iwork[], Real x_vec[]);
+
+/**
+ * @brief Inverse of a matrix where number of columns are great er than or equal to number of rows
+ *
+ * Work length must be at least rows * MIN(rows, columns) + MIN(rows, columns) + MIN(rows, columns) * columns
+ * and additional length required by the linalg_svd function.
+ *
+ *  @param mat Input matrix (rows x columns)
+ *  @param rows Number of rows in matrix
+ *  @param columns Number of columns in matrix
+ *  @param work_len Length of work vector
+ *  @param work Work vector
+ *  @param inv_mat Output inverse matrix (columns x rows)
+ *
+ *  @return Error code
+ */
+LinalgErrorType linalg_pseudoinverse(const Real mat[], size_t rows, size_t columns, size_t work_len, Real work[], Real inv_mat[]);
+
+/**
+ * @brief Solve overdetermined or underdetermined system using least squares
+ *
+ * Solves min ||A*X - B|| for X where A is an M-by-N matrix using the
+ * singular value decomposition (SVD) approach. This method handles rank-deficient
+ * least squares problems more robustly than the QR approach.
+ *
+ * @param mat Input matrix A (rows x columns)
+ * @param rows Number of rows in A
+ * @param columns Number of columns in A
+ * @param b_vec Right-hand side matrix B (rows x nrhs)
+ * @param nrhs Number of right-hand side vectors
+ * @param work_len Length of work vector
+ * @param work Work vector
+ * @param x_vec Output solution matrix X (columns x nrhs).
+ * @return Error code
+ */
+LinalgErrorType linalg_leastsquares_solve(
+    const Real mat[], size_t rows, size_t columns, const Real b_vec[], size_t nrhs,
+    size_t work_len, Real work[], Real x_vec[]);
 
 /**
  * @brief SVD decomposition
@@ -78,266 +193,412 @@ typedef enum FsbLapackErrorType
  * @param[out] sing_val      Singular values array S (s x 1)
  * @param[out] unitary_vt     Transpose of unitary matrix V (n x n)
  */
-FsbLinalgErrorType fsb_linalg_svd(
-    const double_t mat[], size_t rows, size_t cols, bool u_full, bool v_full, size_t work_len, double_t work[], double_t unitary_u[],
-    double_t sing_val[], double_t unitary_vt[]);
+inline LinalgErrorType linalg_svd(
+    Span<const Real> mat, size_t rows, size_t cols,
+    bool u_full, bool v_full,
+    Span<Real> work,
+    Span<Real> unitary_u,
+    Span<Real> sing_val,
+    Span<Real> unitary_vt)
+{
+    LinalgErrorType retval = LinalgErrorType::ERROR_NONE;
+
+    if ((rows == 0U) || (cols == 0U) || (cols >= (static_cast<size_t>(INT32_MAX) / rows)))
+    {
+        retval = LinalgErrorType::ERROR_INPUT;
+    }
+    else if (work.size() < (rows * cols))
+    {
+        // not enough buffer for copy of A
+        retval = LinalgErrorType::ERROR_MEMORY;
+    }
+    else
+    {
+        const size_t a_len = rows * cols;
+        Span<Real> a_mat_tmp = work.active(a_len);
+        const size_t work_partial_len = a_len;
+
+        const char* u_opt = (u_full ? "A" : "S");
+        const char* v_opt = (v_full ? "A" : "S");
+        const size_t u_opt_size = 1U;
+        const size_t v_opt_size = 1U;
+
+        // copy A to buffer
+        std::copy_n(mat.data(), a_len, a_mat_tmp.data());
+
+        const lapack_int l_m = static_cast<lapack_int>(rows);
+        const lapack_int l_n = static_cast<lapack_int>(cols);
+        const lapack_int ldvt = static_cast<lapack_int>(((rows < cols) && !v_full) ? rows : cols);
+        Real work_query = 0.0;
+        lapack_int lwork = -1;
+        lapack_int info = 0;
+        dgesvd_(u_opt, v_opt, &l_m, &l_n, a_mat_tmp.data(), &l_m, sing_val.data(), unitary_u.data(), &l_m, unitary_vt.data(), &ldvt, &work_query, &lwork, &info, u_opt_size, v_opt_size);
+        lwork = static_cast<lapack_int>(work_query);
+        const auto s_lwork = static_cast<size_t>(lwork);
+
+        if (info != 0)
+        {
+            /* dgesvd work query failed */
+            retval = LinalgErrorType::ERROR_QUERY;
+        }
+        else if (work.size() < (work_partial_len + s_lwork))
+        {
+            // not enough buffer for svd operation
+            retval = LinalgErrorType::ERROR_MEMORY;
+        }
+        else
+        {
+            // allocate work
+            Span<Real> svd_work = work.active(s_lwork, work_partial_len);
+
+            /* perform SVD */
+            dgesvd_(u_opt, v_opt, &l_m, &l_n, a_mat_tmp.data(), &l_m, sing_val.data(), unitary_u.data(), &l_m, unitary_vt.data(), &ldvt, svd_work.data(), &lwork, &info, u_opt_size, v_opt_size);
+            if (info < 0)
+            {
+                // Some input error
+                retval = LinalgErrorType::ERROR_INPUT;
+            }
+            else if (info > 0)
+            {
+                // DBDSQR did not converge (see DGESVD)
+                retval = LinalgErrorType::ERROR_CONVERGE;
+            }
+            else
+            {
+                // success
+            }
+        }
+    }
+    return retval;
+}
+
+inline LinalgErrorType linalg_matrix_eig(
+    Span<const Real> mat, size_t dim,
+    Span<Real> work,
+    Span<Real> val_real,
+    Span<Real> val_imag,
+    Span<Real> vec_real,
+    Span<Real> vec_imag)
+{
+    LinalgErrorType retval = LinalgErrorType::ERROR_NONE;
+    if ((dim == 0U) || (dim >= (static_cast<size_t>(INT32_MAX) / dim)))
+    {
+        retval = LinalgErrorType::ERROR_INPUT;
+    }
+    else if (work.size() < (dim * dim))
+    {
+        // not enough buffer for copy of A
+        retval = LinalgErrorType::ERROR_MEMORY;
+    }
+    else
+    {
+        const size_t a_len = dim * dim;
+        Span<Real> a_mat_tmp = work.active(a_len);
+        const size_t work_partial_len = a_len;
+
+        // copy A to buffer
+        std::copy_n(mat.data(), a_len, a_mat_tmp.data());
+
+        // work query inputs
+        const char* left_vec_opt = "N";
+        const char* right_vec_opt = "V";
+        const size_t left_opt_size = 1U;
+        const size_t right_opt_size = 1U;
+        const lapack_int l_s = static_cast<lapack_int>(dim);
+        const lapack_int lvd = 1;
+        Real work_query = 0.0;
+        lapack_int lwork = -1;
+        lapack_int info = 0;
+
+        // query work size
+        dgeev_(left_vec_opt, right_vec_opt,
+               &l_s, a_mat_tmp.data(), &l_s,
+               val_real.data(), val_imag.data(),
+               nullptr, &lvd,
+               vec_real.data(), &l_s,
+               &work_query, &lwork, &info,
+               left_opt_size, right_opt_size);
+        lwork = static_cast<lapack_int>(work_query);
+        const size_t s_lwork = static_cast<size_t>(lwork);
+
+        if (info != 0)
+        {
+            /* dgeev_ work query failed */
+            retval = LinalgErrorType::ERROR_QUERY;
+        }
+        else if (work.size() < (work_partial_len + s_lwork))
+        {
+            // not enough buffer for operation
+            retval = LinalgErrorType::ERROR_MEMORY;
+        }
+        else
+        {
+            Span<Real> eig_work = work.active(s_lwork, work_partial_len);
+
+            /* perform decomposition */
+            dgeev_(left_vec_opt, right_vec_opt,
+                &l_s, a_mat_tmp.data(), &l_s,
+                val_real.data(), val_imag.data(),
+                nullptr, &lvd,
+                vec_real.data(), &l_s,
+                eig_work.data(), &lwork, &info,
+                left_opt_size, right_opt_size);
+
+            if (info < 0)
+            {
+                // Some input error
+                retval = LinalgErrorType::ERROR_INPUT;
+            }
+            else if (info > 0)
+            {
+                // did not converge (see dgeev)
+                retval = LinalgErrorType::ERROR_CONVERGE;
+            }
+            else
+            {
+                /* populate vec_imag */
+                size_t idx = 0U;
+                while (idx < dim)
+                {
+                    if (val_imag[idx] > 0.0)
+                    {
+                        /* increment */
+                        idx++;
+                        if (idx < dim)
+                        {
+                            /* complex conjugate pairs */
+                            for (size_t jdx = 0U; jdx < dim; ++jdx)
+                            {
+                                vec_imag[(idx - 1U) * dim + jdx] = vec_real[idx * dim + jdx];
+                                vec_imag[idx * dim + jdx] = -vec_real[idx * dim + jdx];
+                                vec_real[idx * dim + jdx] = vec_real[(idx - 1U) * dim + jdx];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        /* no imaginary vector */
+                        for (size_t jdx = 0U; jdx < dim; ++jdx)
+                        {
+                            vec_imag[idx * dim + jdx] = 0.0;
+                        }
+                    }
+                    /* increment */
+                    idx++;
+                }
+            }
+        }
+    }
+    return retval;
+}
+
+inline LinalgErrorType linalg_sym_lt_eig_array(
+    Span<const Real> mat, size_t dim,
+    Span<Real> work,
+    Span<Real> val,
+    Span<Real> vec)
+{
+    return linalg_sym_lt_eig(
+        mat.data(), dim, work.size(), work.data(),
+        val.data(), vec.data());
+}
+
+inline LinalgErrorType linalg_cholesky_decomposition_array(
+    Span<const Real> mat, size_t dim,
+    Span<Real> mat_chol)
+{
+    return linalg_cholesky_decomposition(mat.data(), dim, mat_chol.data());
+}
+
+inline bool linalg_is_posdef_array(
+    Span<const Real> mat, size_t dim,
+    Span<Real> work)
+{
+    return linalg_is_posdef(mat.data(), dim, work.size(), work.data());
+}
+
+inline LinalgErrorType linalg_cholesky_solve_array(
+    Span<const Real> mat, size_t dim,
+    Span<const Real> b_vec, size_t nrhs,
+    Span<Real> work,
+    Span<Real> x_vec)
+{
+    return linalg_cholesky_solve(
+        mat.data(), b_vec.data(),
+        nrhs, dim,
+        work.size(), work.data(),
+        x_vec.data());
+}
+
+inline LinalgErrorType linalg_matrix_sqr_solve_array(
+    Span<const Real> mat, size_t dim,
+    Span<const Real> y_vec, size_t nrhs,
+    Span<Real> work,
+    Span<lapack_int> iwork,
+    Span<Real> x_vec)
+{
+    return linalg_matrix_sqr_solve(
+        mat.data(), y_vec.data(),
+        nrhs, dim,
+        work.size(), iwork.size(),
+        work.data(), iwork.data(),
+        x_vec.data());
+}
+
+inline LinalgErrorType linalg_pseudoinverse_array(
+    Span<const Real> mat, size_t rows, size_t cols,
+    Span<Real> work,
+    Span<Real> inv_mat)
+{
+    return linalg_pseudoinverse(
+        mat.data(), rows, cols,
+        work.size(), work.data(),
+        inv_mat.data());
+}
+
+inline LinalgErrorType linalg_leastsquares_solve_array(
+    Span<const Real> mat, size_t rows, size_t cols,
+    Span<const Real> b_vec, size_t nrhs,
+    Span<Real> work,
+    Span<Real> x_vec)
+{
+    return linalg_leastsquares_solve(
+        mat.data(), rows, cols,
+        b_vec.data(), nrhs,
+        work.size(), work.data(),
+        x_vec.data());
+}
 
 /**
- * @brief Eigenvalue decomposition
- *
- * @param[in]  mat          input matrix (sxs)
- * @param[in]  dim          matrix A dimension
- * @param[in]  work_len    buffer
- * @param[in,out]  work    buffer
- * @param[out] val_real  real components of the eigenvalues (sx1)
- * @param[out] val_imag  imaginary components of the eigenvalues (sx1)
- * @param[out] vec_real  real components of the eigenvectors (sxs)
- * @param[out] vec_imag  imaginary components of the eigenvectors (sxs)
- *
- * @return     error code
+ * @brief Typed container wrappers — accept Array with explicit runtime
+ * sizes, call .active() to form Span views, then forward to the Span-based overloads above.
  */
-FsbLinalgErrorType fsb_linalg_matrix_eig(
-    const double_t mat[], size_t dim, size_t work_len, double_t work[],
-    double_t val_real[], double_t val_imag[],
-    double_t vec_real[], double_t vec_imag[]);
+template <size_t MaxMat, size_t MaxWorkLen, size_t MaxU, size_t MaxS, size_t MaxVT>
+inline LinalgErrorType linalg_svd_array(
+    const Array<MaxMat>& mat, size_t rows, size_t cols,
+    bool u_full, bool v_full,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxU>& unitary_u,
+    Array<MaxS>& sing_val, size_t s_dim,
+    Array<MaxVT>& unitary_vt)
+{
+    return linalg_svd(
+        mat.active(rows * cols), rows, cols,
+        u_full, v_full,
+        work.active(work_len),
+        unitary_u.active(rows * rows),
+        sing_val.active(s_dim),
+        unitary_vt.active(s_dim * cols));
+}
 
-/**
- * @brief Eigenvalue decomposition for symmetric lower triangular matrix
- *
- * @param[in]    mat   input matrix (sxs)
- * @param[in]    dim   matrix A dimension
- * @param[in]  work_len    buffer length
- * @param[in,out]  work    work buffer
- * @param[out]   val eigenvalues (sx1)
- * @param[out]   vec column eigenvectors (sxs)
- *
- * @return Error code
- */
-FsbLinalgErrorType fsb_linalg_sym_lt_eig(
-    const double_t mat[], size_t dim, size_t work_len, double_t work[],
-    double_t val[], double_t vec[]);
+template <size_t MaxMat, size_t MaxWorkLen, size_t MaxEig, size_t MaxVec>
+inline LinalgErrorType linalg_matrix_eig_array(
+    const Array<MaxMat>& mat, size_t dim,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxEig>& val_real,
+    Array<MaxEig>& val_imag,
+    Array<MaxVec>& vec_real,
+    Array<MaxVec>& vec_imag)
+{
+    return linalg_matrix_eig(
+        mat.active(dim * dim), dim,
+        work.active(work_len),
+        val_real.active(dim),
+        val_imag.active(dim),
+        vec_real.active(dim * dim),
+        vec_imag.active(dim * dim));
+}
 
-/**
- * @brief Cholesky factorization for symmetric positive definite matrix
- *
- * @param mat Input matrix (dim x dim)
- * @param dim Matrix A dimension s
- * @param mat_chol Cholesky factorization of input matrix A (dim x dim)
- * @return Error code
- */
-FsbLinalgErrorType fsb_linalg_cholesky_decomposition(
-    const double_t mat[], size_t dim, double_t mat_chol[]);
+template <size_t MaxMat, size_t MaxWorkLen, size_t MaxEig, size_t MaxVec>
+inline LinalgErrorType linalg_sym_lt_eig_array(
+    const Array<MaxMat>& mat, size_t dim,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxEig>& val,
+    Array<MaxVec>& vec)
+{
+    return linalg_sym_lt_eig_array(
+        mat.active(dim * dim), dim,
+        work.active(work_len),
+        val.active(dim),
+        vec.active(dim * dim));
+}
 
-/**
- * @brief Cholesky solve
- *
- * square symmetric positive-definite matrix cholesky solve.
- * solve for b from x = A b
- * Variable x is overwritten by b on exit
- *
- * @param[in] mat Input matrix (dim x dim)
- * @param[in] b_vec Right-hand side vector (dim x nrhs)
- * @param[in] nrhs Number of right-hand side vectors
- * @param[in] dim Matrix dimension
- * @param[in] work_len Work buffer length
- * @param[in,out] work Work buffer
- * @param[out] x_vec Solution vector (dim x nrhs)
- * @return Error code
- */
-FsbLinalgErrorType fsb_linalg_cholesky_solve(const double_t mat[], const double_t b_vec[],
-                                             size_t nrhs, size_t dim,
-                                             size_t work_len, double_t work[],
-                                             double_t x_vec[]);
+template <size_t MaxMat>
+inline LinalgErrorType linalg_cholesky_decomposition_array(
+    const Array<MaxMat>& mat, size_t dim,
+    Array<MaxMat>& mat_chol)
+{
+    return linalg_cholesky_decomposition_array(
+        mat.active(dim * dim), dim,
+        mat_chol.active(dim * dim));
+}
 
-/**
- * @brief Check if lower triangular symmetric matrix is positive definite
- *
- * @param[in] mat Input lower triangular matrix (sxs)
- * @param[in] dim Matrix A dimension
- * @param[in] work_len Work vector length
- * @param[in,out] work Work vector
- * @return true if matrix is positive definite, false otherwise
- */
-bool fsb_linalg_is_posdef(const double_t mat[], size_t dim, size_t work_len, double_t work[]);
+template <size_t MaxMat, size_t MaxWorkLen>
+inline bool linalg_is_posdef_array(
+    const Array<MaxMat>& mat, size_t dim,
+    Array<MaxWorkLen>& work, size_t work_len)
+{
+    return linalg_is_posdef_array(mat.active(dim * dim), dim, work.active(work_len));
+}
 
-/**
- * @biref Solve linear system of equations with a square matrix
- *
- * @param mat Matrix to solve (dim x dim)
- * @param y_vec Right-hand side vector (dim x nrhs)
- * @param nrhs Number of right-hand side vectors
- * @param dim Matrix A dimension (s)
- * @param work_len Work vector length
- * @param iwork_len Integer work vector length
- * @param work Work vector
- * @param iwork Integer work vector
- * @param x_vec Output Solution vector (dim x nrhs)
- * @return Error code
- */
-FsbLinalgErrorType fsb_linalg_matrix_sqr_solve(
-    const double_t mat[], const double_t y_vec[], size_t nrhs, size_t dim, size_t work_len,
-    size_t iwork_len, double_t work[], lapack_int iwork[], double_t x_vec[]);
+template <size_t MaxMat, size_t MaxVec, size_t MaxWorkLen>
+inline LinalgErrorType linalg_cholesky_solve_array(
+    const Array<MaxMat>& mat, size_t dim,
+    const Array<MaxVec>& b_vec, size_t nrhs,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxVec>& x_vec)
+{
+    return linalg_cholesky_solve_array(
+        mat.active(dim * dim), dim,
+        b_vec.active(dim * nrhs), nrhs,
+        work.active(work_len),
+        x_vec.active(dim * nrhs));
+}
 
-/**
- * @brief Inverse of a matrix where number of columns are great er than or equal to number of rows
- *
- * Work length must be at least rows * MIN(rows, columns) + MIN(rows, columns) + MIN(rows, columns) * columns
- * and additional length required by the fsb_linalg_svd function.
- *
- *  @param mat Input matrix (rows x columns)
- *  @param rows Number of rows in matrix
- *  @param columns Number of columns in matrix
- *  @param work_len Length of work vector
- *  @param work Work vector
- *  @param inv_mat Output inverse matrix (columns x rows)
- *
- *  @return Error code
- */
-FsbLinalgErrorType fsb_linalg_pseudoinverse(const double_t mat[], size_t rows, size_t columns, size_t work_len, double_t work[], double_t inv_mat[]);
+template <size_t MaxMat, size_t MaxVec, size_t MaxWorkLen, size_t MaxIWorkLen>
+inline LinalgErrorType linalg_matrix_sqr_solve_array(
+    const Array<MaxMat>& mat, size_t dim,
+    const Array<MaxVec>& y_vec, size_t nrhs,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxIWorkLen, lapack_int>& iwork, size_t iwork_len,
+    Array<MaxVec>& x_vec)
+{
+    return linalg_matrix_sqr_solve_array(
+        mat.active(dim * dim), dim,
+        y_vec.active(dim * nrhs), nrhs,
+        work.active(work_len),
+        iwork.active(iwork_len),
+        x_vec.active(dim * nrhs));
+}
 
-/**
- * @brief Solve overdetermined or underdetermined system using least squares
- *
- * Solves min ||A*X - B|| for X where A is an M-by-N matrix using the
- * singular value decomposition (SVD) approach. This method handles rank-deficient
- * least squares problems more robustly than the QR approach.
- *
- * @param mat Input matrix A (rows x columns)
- * @param rows Number of rows in A
- * @param columns Number of columns in A
- * @param b_vec Right-hand side matrix B (rows x nrhs)
- * @param nrhs Number of right-hand side vectors
- * @param work_len Length of work vector
- * @param work Work vector
- * @param x_vec Output solution matrix X (columns x nrhs).
- * @return Error code
- */
-FsbLinalgErrorType fsb_linalg_leastsquares_solve(
-    const double_t mat[], size_t rows, size_t columns, const double_t b_vec[], size_t nrhs,
-    size_t work_len, double_t work[], double_t x_vec[]);
+template <size_t MaxMat, size_t MaxInv, size_t MaxWorkLen>
+inline LinalgErrorType linalg_pseudoinverse_array(
+    const Array<MaxMat>& mat, size_t rows, size_t cols,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxInv>& inv_mat)
+{
+    return linalg_pseudoinverse_array(
+        mat.active(rows * cols), rows, cols,
+        work.active(work_len),
+        inv_mat.active(cols * rows));
+}
+
+template <size_t MaxMat, size_t MaxB, size_t MaxX, size_t MaxWorkLen>
+inline LinalgErrorType linalg_leastsquares_solve_array(
+    const Array<MaxMat>& mat, size_t rows, size_t cols,
+    const Array<MaxB>& b_vec, size_t nrhs,
+    Array<MaxWorkLen>& work, size_t work_len,
+    Array<MaxX>& x_vec)
+{
+    return linalg_leastsquares_solve_array(
+        mat.active(rows * cols), rows, cols,
+        b_vec.active(rows * nrhs), nrhs,
+        work.active(work_len),
+        x_vec.active(cols * nrhs));
+}
 
 /**
  * @}
  */
 
-/**
- * @brief C++ convenience wrappers that accept std::array.
- *
- * These are header-only and forward to the C++ functions above.
- */
-template <size_t Rows, size_t Cols, size_t WorkLen>
-inline FsbLinalgErrorType fsb_linalg_svd_array(
-    const std::array<double_t, Rows * Cols>& mat,
-    bool u_full,
-    bool v_full,
-    std::array<double_t, WorkLen>& work,
-    std::array<double_t, Rows * Rows>& unitary_u,
-    std::array<double_t, FSB_MIN(Rows, Cols)>& sing_val,
-    std::array<double_t, Cols * Cols>& unitary_vt)
-{
-    return fsb_linalg_svd(
-        mat.data(), Rows, Cols,
-        u_full, v_full,
-        WorkLen, work.data(),
-        unitary_u.data(), sing_val.data(), unitary_vt.data());
-}
-
-template <size_t Dim, size_t WorkLen>
-inline FsbLinalgErrorType fsb_linalg_matrix_eig_array(
-    const std::array<double_t, Dim * Dim>& mat,
-    std::array<double_t, WorkLen>& work,
-    std::array<double_t, Dim>& val_real,
-    std::array<double_t, Dim>& val_imag,
-    std::array<double_t, Dim * Dim>& vec_real,
-    std::array<double_t, Dim * Dim>& vec_imag)
-{
-    return fsb_linalg_matrix_eig(
-        mat.data(), Dim, WorkLen, work.data(),
-        val_real.data(), val_imag.data(),
-        vec_real.data(), vec_imag.data());
-}
-
-template <size_t Dim, size_t WorkLen>
-inline FsbLinalgErrorType fsb_linalg_sym_lt_eig_array(
-    const std::array<double_t, Dim * Dim>& mat,
-    std::array<double_t, WorkLen>& work,
-    std::array<double_t, Dim>& val,
-    std::array<double_t, Dim * Dim>& vec)
-{
-    return fsb_linalg_sym_lt_eig(
-        mat.data(), Dim, WorkLen, work.data(),
-        val.data(), vec.data());
-}
-
-template <size_t Dim>
-inline FsbLinalgErrorType fsb_linalg_cholesky_decomposition_array(
-    const std::array<double_t, Dim * Dim>& mat,
-    std::array<double_t, Dim * Dim>& mat_chol)
-{
-    return fsb_linalg_cholesky_decomposition(mat.data(), Dim, mat_chol.data());
-}
-
-template <size_t Dim, size_t WorkLen>
-inline bool fsb_linalg_is_posdef_array(
-    const std::array<double_t, Dim * Dim>& mat,
-    std::array<double_t, WorkLen>& work)
-{
-    return fsb_linalg_is_posdef(mat.data(), Dim, WorkLen, work.data());
-}
-
-template <size_t Dim, size_t Nrhs, size_t WorkLen>
-inline FsbLinalgErrorType fsb_linalg_cholesky_solve_array(
-    const std::array<double_t, Dim * Dim>& mat,
-    const std::array<double_t, Dim * Nrhs>& b_vec,
-    std::array<double_t, WorkLen>& work,
-    std::array<double_t, Dim * Nrhs>& x_vec)
-{
-    return fsb_linalg_cholesky_solve(
-        mat.data(), b_vec.data(),
-        Nrhs, Dim,
-        WorkLen, work.data(),
-        x_vec.data());
-}
-
-template <size_t Dim, size_t Nrhs, size_t WorkLen, size_t IWorkLen>
-inline FsbLinalgErrorType fsb_linalg_matrix_sqr_solve_array(
-    const std::array<double_t, Dim * Dim>& mat,
-    const std::array<double_t, Dim * Nrhs>& y_vec,
-    std::array<double_t, WorkLen>& work,
-    std::array<lapack_int, IWorkLen>& iwork,
-    std::array<double_t, Dim * Nrhs>& x_vec)
-{
-    return fsb_linalg_matrix_sqr_solve(
-        mat.data(), y_vec.data(),
-        Nrhs, Dim,
-        WorkLen, IWorkLen,
-        work.data(), iwork.data(),
-        x_vec.data());
-}
-
-template <size_t Rows, size_t Cols, size_t WorkLen>
-inline FsbLinalgErrorType fsb_linalg_pseudoinverse_array(
-    const std::array<double_t, Rows * Cols>& mat,
-    std::array<double_t, WorkLen>& work,
-    std::array<double_t, Cols * Rows>& inv_mat)
-{
-    return fsb_linalg_pseudoinverse(
-        mat.data(), Rows, Cols,
-        WorkLen, work.data(),
-        inv_mat.data());
-}
-
-template <size_t Rows, size_t Cols, size_t Nrhs, size_t WorkLen>
-inline FsbLinalgErrorType fsb_linalg_leastsquares_solve_array(
-    const std::array<double_t, Rows * Cols>& mat,
-    const std::array<double_t, Rows * Nrhs>& b_vec,
-    std::array<double_t, WorkLen>& work,
-    std::array<double_t, Cols * Nrhs>& x_vec)
-{
-    return fsb_linalg_leastsquares_solve(
-        mat.data(), Rows, Cols,
-        b_vec.data(), Nrhs,
-        WorkLen, work.data(),
-        x_vec.data());
-}
-
+} // namespace fsb
