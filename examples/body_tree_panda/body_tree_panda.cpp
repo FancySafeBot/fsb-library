@@ -92,13 +92,13 @@ int main() {
 
     const fsb::ForwardKinematicsOption opt = fsb::ForwardKinematicsOption::POSE;
     fsb::JointPva joint_pva = {};
-    joint_pva.position.q[0] = 0.0;
-    joint_pva.position.q[1] = -0.3;
-    joint_pva.position.q[2] = 0.0;
-    joint_pva.position.q[3] = 2.2;
-    joint_pva.position.q[4] = 0.0;
-    joint_pva.position.q[5] = -2.0;
-    joint_pva.position.q[6] = 0.79;
+    joint_pva.position[0] = 0.0;
+    joint_pva.position[1] = -0.3;
+    joint_pva.position[2] = 0.0;
+    joint_pva.position[3] = 2.2;
+    joint_pva.position[4] = 0.0;
+    joint_pva.position[5] = -2.0;
+    joint_pva.position[6] = 0.79;
     fsb::CartesianPva base_pva = {};
     base_pva.pose = fsb::transform_identity();
 

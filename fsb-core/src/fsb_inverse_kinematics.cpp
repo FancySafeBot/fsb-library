@@ -63,15 +63,11 @@ static fsb::LinalgErrorType optim_solve_joint_matrix(
     std::array<lapack_int, MaxSize::kDofs> iwork = {};
     // solve for x_vec
     return fsb::linalg_matrix_sqr_solve(
-        joint_mat.j.data(),
-        joint_vec.qv.data(),
-        nrhs,
-        dim,
-        WorkLen,
-        iwork_len,
-        work.data(),
-        iwork.data(),
-        result.qv.data());
+        fsb::Span<const Real>(joint_mat.j.data(), dim * dim), dim,
+        fsb::Span<const Real>(joint_vec.data(), dim * nrhs), nrhs,
+        fsb::Span<Real>(work.data(), WorkLen),
+        fsb::Span<lapack_int>(iwork.data(), iwork_len),
+        fsb::Span<Real>(result.data(), dim * nrhs));
 }
 
 static InverseKinematicsResult optim_levenberg_marquardt(
@@ -115,7 +111,7 @@ static InverseKinematicsResult optim_levenberg_marquardt(
         JointSpace joint_weights = {};
         for (size_t index = 0U; index < dofs; ++index)
         {
-            joint_weights.qv[index] = obj_err + params.damping_factor;
+            joint_weights[index] = obj_err + params.damping_factor;
         }
         // Gradient vector g = J.transpose() * We * e;
         const JointSpace joint_gradient
@@ -125,7 +121,7 @@ static InverseKinematicsResult optim_levenberg_marquardt(
             = jacobian_transpose_multiply_jacobian(result.jacobian, params.objective_weights, dofs);
         for (size_t index = 0U; index < dofs; ++index)
         {
-            increment_matrix.j[joint_matrix_index(index, index, dofs)] += joint_weights.qv[index];
+            increment_matrix.j[joint_matrix_index(index, index, dofs)] += joint_weights[index];
         }
         // Solve for increment dq = - Mj.inverse() * g
         const fsb::LinalgErrorType solve_result
@@ -208,16 +204,11 @@ fsb::LinalgErrorType inverse_velocity_kinematics(const Jacobian& jacobian, const
            cart_velocity.linear.y,
            cart_velocity.linear.z};
     std::array<Real, 512U> work = {}; // workspace for least squares solve
-    constexpr size_t work_len = work.size();
     return fsb::linalg_leastsquares_solve(
-        jacobian.j.data(),
-        FSB_CART_SIZE,
-        dofs,
-        bvec.data(),
-        nrhs,
-        work_len,
-        work.data(),
-        joint_velocity.qv.data());
+        fsb::Span<const Real>(jacobian.j.data(), FSB_CART_SIZE * dofs), FSB_CART_SIZE, dofs,
+        fsb::Span<const Real>(bvec.data(), FSB_CART_SIZE * nrhs), nrhs,
+        fsb::Span<Real>(work.data(), work.size()),
+        fsb::Span<Real>(joint_velocity.data(), dofs * nrhs));
 }
 
 fsb::LinalgErrorType inverse_acceleration_kinematics(
@@ -239,16 +230,11 @@ fsb::LinalgErrorType inverse_acceleration_kinematics(
            cart_motion.linear.z};
     const size_t nrhs = 1U;
     std::array<Real, 512U> work = {}; // workspace for least squares solve
-    constexpr size_t work_len = work.size();
     return fsb::linalg_leastsquares_solve(
-        jacobian.j.data(),
-        FSB_CART_SIZE,
-        dofs,
-        bvec.data(),
-        nrhs,
-        work_len,
-        work.data(),
-        joint_acceleration.qv.data());
+        fsb::Span<const Real>(jacobian.j.data(), FSB_CART_SIZE * dofs), FSB_CART_SIZE, dofs,
+        fsb::Span<const Real>(bvec.data(), FSB_CART_SIZE * nrhs), nrhs,
+        fsb::Span<Real>(work.data(), work.size()),
+        fsb::Span<Real>(joint_acceleration.data(), dofs * nrhs));
 }
 
 } // namespace fsb

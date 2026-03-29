@@ -109,9 +109,9 @@ TEST_CASE(
         0U
     };
     fsb::JointPva joint_pva = {};
-    joint_pva.position.q[0] = joint_qpos;
-    joint_pva.velocity.qv[0] = joint_qvel;
-    joint_pva.acceleration.qv[0] = joint_qacc;
+    joint_pva.position[0] = joint_qpos;
+    joint_pva.velocity[0] = joint_qvel;
+    joint_pva.acceleration[0] = joint_qacc;
 
     // call joint_parent_child_pva
     const fsb::CartesianPva pva_actual = fsb::joint_parent_child_pva(joint, joint_pva);
@@ -146,9 +146,9 @@ TEST_CASE(
         0U
     };
     fsb::JointPva joint_pva = {};
-    joint_pva.position.q[0] = 0.2;
-    joint_pva.velocity.qv[0] = 0.4;
-    joint_pva.acceleration.qv[0] = -0.5;
+    joint_pva.position[0] = 0.2;
+    joint_pva.velocity[0] = 0.4;
+    joint_pva.acceleration[0] = -0.5;
     // Expected
     const fsb::CartesianPva pva_expected{
         {{0.8658406131180871, -0.2843509043081139, -0.373283005655497, 0.17356380262961224},
@@ -214,18 +214,18 @@ TEST_CASE(
         0U
     };
     fsb::JointPva joint_pva = {};
-    joint_pva.position.q[0] = joint_qpos.qw;
-    joint_pva.position.q[1] = joint_qpos.qx;
-    joint_pva.position.q[2] = joint_qpos.qy;
-    joint_pva.position.q[3] = joint_qpos.qz;
+    joint_pva.position[0] = joint_qpos.qw;
+    joint_pva.position[1] = joint_qpos.qx;
+    joint_pva.position[2] = joint_qpos.qy;
+    joint_pva.position[3] = joint_qpos.qz;
 
-    joint_pva.velocity.qv[0] = joint_qvel.x;
-    joint_pva.velocity.qv[1] = joint_qvel.y;
-    joint_pva.velocity.qv[2] = joint_qvel.z;
+    joint_pva.velocity[0] = joint_qvel.x;
+    joint_pva.velocity[1] = joint_qvel.y;
+    joint_pva.velocity[2] = joint_qvel.z;
 
-    joint_pva.acceleration.qv[0] = joint_qacc.x;
-    joint_pva.acceleration.qv[1] = joint_qacc.y;
-    joint_pva.acceleration.qv[2] = joint_qacc.z;
+    joint_pva.acceleration[0] = joint_qacc.x;
+    joint_pva.acceleration[1] = joint_qacc.y;
+    joint_pva.acceleration[2] = joint_qacc.z;
 
     // Run joint_parent_child_pva
     const fsb::CartesianPva pva_actual = fsb::joint_parent_child_pva(joint, joint_pva);
@@ -275,27 +275,27 @@ TEST_CASE(
     };
     fsb::JointPva joint_pva = {};
 
-    joint_pva.position.q[0] = joint_qpos_ang.qw;
-    joint_pva.position.q[1] = joint_qpos_ang.qx;
-    joint_pva.position.q[2] = joint_qpos_ang.qy;
-    joint_pva.position.q[3] = joint_qpos_ang.qz;
-    joint_pva.position.q[4] = joint_qpos_lin.x;
-    joint_pva.position.q[5] = joint_qpos_lin.y;
-    joint_pva.position.q[6] = joint_qpos_lin.z;
+    joint_pva.position[0] = joint_qpos_ang.qw;
+    joint_pva.position[1] = joint_qpos_ang.qx;
+    joint_pva.position[2] = joint_qpos_ang.qy;
+    joint_pva.position[3] = joint_qpos_ang.qz;
+    joint_pva.position[4] = joint_qpos_lin.x;
+    joint_pva.position[5] = joint_qpos_lin.y;
+    joint_pva.position[6] = joint_qpos_lin.z;
 
-    joint_pva.velocity.qv[0] = joint_qvel_ang.x;
-    joint_pva.velocity.qv[1] = joint_qvel_ang.y;
-    joint_pva.velocity.qv[2] = joint_qvel_ang.z;
-    joint_pva.velocity.qv[3] = joint_qvel_lin.x;
-    joint_pva.velocity.qv[4] = joint_qvel_lin.y;
-    joint_pva.velocity.qv[5] = joint_qvel_lin.z;
+    joint_pva.velocity[0] = joint_qvel_ang.x;
+    joint_pva.velocity[1] = joint_qvel_ang.y;
+    joint_pva.velocity[2] = joint_qvel_ang.z;
+    joint_pva.velocity[3] = joint_qvel_lin.x;
+    joint_pva.velocity[4] = joint_qvel_lin.y;
+    joint_pva.velocity[5] = joint_qvel_lin.z;
 
-    joint_pva.acceleration.qv[0] = joint_qacc_ang.x;
-    joint_pva.acceleration.qv[1] = joint_qacc_ang.y;
-    joint_pva.acceleration.qv[2] = joint_qacc_ang.z;
-    joint_pva.acceleration.qv[3] = joint_qacc_lin.x;
-    joint_pva.acceleration.qv[4] = joint_qacc_lin.y;
-    joint_pva.acceleration.qv[5] = joint_qacc_lin.z;
+    joint_pva.acceleration[0] = joint_qacc_ang.x;
+    joint_pva.acceleration[1] = joint_qacc_ang.y;
+    joint_pva.acceleration[2] = joint_qacc_ang.z;
+    joint_pva.acceleration[3] = joint_qacc_lin.x;
+    joint_pva.acceleration[4] = joint_qacc_lin.y;
+    joint_pva.acceleration[5] = joint_qacc_lin.z;
 
     // Expected
     const fsb::CartesianPva pva_expected{
@@ -344,14 +344,14 @@ TEST_CASE(
     const fsb::Real qdd= 1.5;
 
     fsb::JointPva j_rev = {};
-    j_rev.position.q[0] = q;
-    j_rev.velocity.qv[0] = qd;
-    j_rev.acceleration.qv[0] = qdd;
+    j_rev.position[0] = q;
+    j_rev.velocity[0] = qd;
+    j_rev.acceleration[0] = qdd;
 
     fsb::JointPva j_nrm = {};
-    j_nrm.position.q[0] = -q;
-    j_nrm.velocity.qv[0] = -qd;
-    j_nrm.acceleration.qv[0] = -qdd;
+    j_nrm.position[0] = -q;
+    j_nrm.velocity[0] = -qd;
+    j_nrm.acceleration[0] = -qdd;
 
     const fsb::CartesianPva pva_rev = fsb::joint_parent_child_pva(joint_rev, j_rev);
     const fsb::CartesianPva pva_nrm = fsb::joint_parent_child_pva(joint_nrm, j_nrm);
@@ -389,14 +389,14 @@ TEST_CASE(
     const fsb::Real qdd= -0.5;
 
     fsb::JointPva j_rev = {};
-    j_rev.position.q[0] = q;
-    j_rev.velocity.qv[0] = qd;
-    j_rev.acceleration.qv[0] = qdd;
+    j_rev.position[0] = q;
+    j_rev.velocity[0] = qd;
+    j_rev.acceleration[0] = qdd;
 
     fsb::JointPva j_nrm = {};
-    j_nrm.position.q[0] = -q;
-    j_nrm.velocity.qv[0] = -qd;
-    j_nrm.acceleration.qv[0] = -qdd;
+    j_nrm.position[0] = -q;
+    j_nrm.velocity[0] = -qd;
+    j_nrm.acceleration[0] = -qdd;
 
     const fsb::CartesianPva pva_rev = fsb::joint_parent_child_pva(joint_rev, j_rev);
     const fsb::CartesianPva pva_nrm = fsb::joint_parent_child_pva(joint_nrm, j_nrm);

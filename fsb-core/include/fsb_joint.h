@@ -51,24 +51,12 @@ enum class JointType : uint8_t
 /**
  * @brief Joint space position in generalized coordinates
  */
-struct JointSpacePosition
-{
-    /**
-     * @brief Joint space position data array
-     */
-    std::array<Real, MaxSize::kCoordinates> q;
-};
+using JointSpacePosition = Array<MaxSize::kCoordinates>;
 
 /**
  * @brief Joint space differential of generalized coordinates
  */
-struct JointSpace
-{
-    /**
-     * @brief Joint space differential data array
-     */
-    std::array<Real, MaxSize::kDofs> qv;
-};
+using JointSpace = Array<MaxSize::kDofs>;
 
 /**
  * Joint position, velocity and acceleration

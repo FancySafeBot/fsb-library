@@ -156,7 +156,7 @@ TEST_CASE("Eigenvalue decomposition of symmetric positive definite" * doctest::d
     fsb::Array<adim> eig_val_actual = {};
     fsb::Array<adim * adim> eig_vec_actual = {};
     // Process
-    const fsb::LinalgErrorType err_actual = fsb::linalg_sym_lt_eig_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_sym_lt_eig(
         a_mat.active(adim * adim), adim,
         work.active(work_len),
         eig_val_actual.active(adim),
@@ -195,7 +195,7 @@ TEST_CASE("Cholesky factorization of not positive definite matrix" * doctest::de
     // Actual
     fsb::Array<adim * adim> chol_actual = {};
     // Process
-    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_decomposition_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_decomposition(
         a_mat.active(adim * adim), adim,
         chol_actual.active(adim * adim));
 
@@ -222,7 +222,7 @@ TEST_CASE("Cholesky factorization of symmetric positive definite matrix" * docte
     // Actual
     fsb::Array<adim * adim> chol_actual = {};
     // Process
-    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_decomposition_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_decomposition(
         a_mat.active(adim * adim), adim,
         chol_actual.active(adim * adim));
 
@@ -253,7 +253,7 @@ TEST_CASE("Cholesky solve not positive definite matrix" * doctest::description("
     const fsb::Array<adim * nrhs> x_vec_expected = {};
     // Process
     fsb::Array<adim * nrhs> x_vec_actual = {};
-    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_solve_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_solve(
         a_mat.active(adim * adim), adim,
         b_vec.active(adim * nrhs), nrhs,
         work.active(work_len),
@@ -286,7 +286,7 @@ TEST_CASE("Cholesky solve symmetric positive definite matrix" * doctest::descrip
         28.583333333333265, -7.666666666666648, 1.333333333333330, 142.333333333333030, -38.666666666666579, 6.333333333333320}};
     // Process
     fsb::Array<adim * nrhs> x_vec_actual = {};
-    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_solve_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_cholesky_solve(
         a_mat.active(adim * adim), adim,
         b_vec.active(adim * nrhs), nrhs,
         work.active(work_len),
@@ -330,7 +330,7 @@ TEST_CASE("Least squares solution underdetermined system" * doctest::description
 
     // Process
     fsb::Array<columns * nrhs> x_actual = {};
-    const fsb::LinalgErrorType err_actual = fsb::linalg_leastsquares_solve_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_leastsquares_solve(
         a_mat.active(rows * columns), rows, columns,
         b_vec.active(rows * nrhs), nrhs,
         work.active(work_len),
@@ -374,7 +374,7 @@ TEST_CASE("Least squares solution overdetermined system" * doctest::description(
 
     // Process
     fsb::Array<columns * nrhs> x_actual = {};
-    const fsb::LinalgErrorType err_actual = fsb::linalg_leastsquares_solve_array(
+    const fsb::LinalgErrorType err_actual = fsb::linalg_leastsquares_solve(
         a_mat.active(rows * columns), rows, columns,
         b_vec.active(rows * nrhs), nrhs,
         work.active(work_len),

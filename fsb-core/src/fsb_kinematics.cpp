@@ -84,42 +84,42 @@ JointSpacePosition joint_add_offset(
             {
                 // Compose quaternions: q_new = q_offset * q_current
                 const Quaternion q_current
-                    = {result.q[joint.coord_index + 0U],
-                       result.q[joint.coord_index + 1U],
-                       result.q[joint.coord_index + 2U],
-                       result.q[joint.coord_index + 3U]};
+                    = {result[joint.coord_index + 0U],
+                       result[joint.coord_index + 1U],
+                       result[joint.coord_index + 2U],
+                       result[joint.coord_index + 3U]};
                 const Vec3 q_offset
-                    = {joint_offset.qv[joint.dof_index + 0U],
-                       joint_offset.qv[joint.dof_index + 1U],
-                       joint_offset.qv[joint.dof_index + 2U]};
+                    = {joint_offset[joint.dof_index + 0U],
+                       joint_offset[joint.dof_index + 1U],
+                       joint_offset[joint.dof_index + 2U]};
                 const Quaternion q_new = quat_boxplus(q_current, q_offset);
-                result.q[joint.coord_index + 0U] = q_new.qw;
-                result.q[joint.coord_index + 1U] = q_new.qx;
-                result.q[joint.coord_index + 2U] = q_new.qy;
-                result.q[joint.coord_index + 3U] = q_new.qz;
+                result[joint.coord_index + 0U] = q_new.qw;
+                result[joint.coord_index + 1U] = q_new.qx;
+                result[joint.coord_index + 2U] = q_new.qy;
+                result[joint.coord_index + 3U] = q_new.qz;
                 break;
             }
             case JointType::CARTESIAN:
             {
                 // Compose quaternions: q_new = q_offset * q_current
                 const Quaternion q_current
-                    = {result.q[joint.coord_index + 0U],
-                       result.q[joint.coord_index + 1U],
-                       result.q[joint.coord_index + 2U],
-                       result.q[joint.coord_index + 3U]};
+                    = {result[joint.coord_index + 0U],
+                       result[joint.coord_index + 1U],
+                       result[joint.coord_index + 2U],
+                       result[joint.coord_index + 3U]};
                 const Vec3 q_offset
-                    = {joint_offset.qv[joint.dof_index + 0U],
-                       joint_offset.qv[joint.dof_index + 1U],
-                       joint_offset.qv[joint.dof_index + 2U]};
+                    = {joint_offset[joint.dof_index + 0U],
+                       joint_offset[joint.dof_index + 1U],
+                       joint_offset[joint.dof_index + 2U]};
                 const Quaternion q_new = quat_boxplus(q_current, q_offset);
-                result.q[joint.coord_index + 0U] = q_new.qw;
-                result.q[joint.coord_index + 1U] = q_new.qx;
-                result.q[joint.coord_index + 2U] = q_new.qy;
-                result.q[joint.coord_index + 3U] = q_new.qz;
+                result[joint.coord_index + 0U] = q_new.qw;
+                result[joint.coord_index + 1U] = q_new.qx;
+                result[joint.coord_index + 2U] = q_new.qy;
+                result[joint.coord_index + 3U] = q_new.qz;
                 // Add translation part
                 for (size_t ind = 0; ind < 3; ++ind)
                 {
-                    result.q[joint.coord_index + 4U + ind] += joint_offset.qv[joint.dof_index + 4U + ind];
+                    result[joint.coord_index + 4U + ind] += joint_offset[joint.dof_index + 4U + ind];
                 }
                 break;
             }
@@ -131,15 +131,15 @@ JointSpacePosition joint_add_offset(
             case JointType::PRISMATIC_Z:
             {
                 // single dof offset
-                result.q[joint.coord_index] += joint_offset.qv[joint.dof_index];
+                result[joint.coord_index] += joint_offset[joint.dof_index];
                 break;
             }
             case JointType::PLANAR:
             {
                 // three dof offset
-                result.q[joint.coord_index] += joint_offset.qv[joint.dof_index];
-                result.q[joint.coord_index + 1U] += joint_offset.qv[joint.dof_index + 1U];
-                result.q[joint.coord_index + 2U] += joint_offset.qv[joint.dof_index + 2U];
+                result[joint.coord_index] += joint_offset[joint.dof_index];
+                result[joint.coord_index + 1U] += joint_offset[joint.dof_index + 1U];
+                result[joint.coord_index + 2U] += joint_offset[joint.dof_index + 2U];
                 break;
             }
             case JointType::FIXED:
@@ -168,44 +168,44 @@ JointSpace joint_difference(
             {
                 // SO(3) difference: log(q_a * inv(q_b))
                 const Quaternion q_a
-                    = {joint_position_a.q[joint.coord_index + 0U],
-                       joint_position_a.q[joint.coord_index + 1U],
-                       joint_position_a.q[joint.coord_index + 2U],
-                       joint_position_a.q[joint.coord_index + 3U]};
+                    = {joint_position_a[joint.coord_index + 0U],
+                       joint_position_a[joint.coord_index + 1U],
+                       joint_position_a[joint.coord_index + 2U],
+                       joint_position_a[joint.coord_index + 3U]};
                 const Quaternion q_b
-                    = {joint_position_b.q[joint.coord_index + 0U],
-                       joint_position_b.q[joint.coord_index + 1U],
-                       joint_position_b.q[joint.coord_index + 2U],
-                       joint_position_b.q[joint.coord_index + 3U]};
+                    = {joint_position_b[joint.coord_index + 0U],
+                       joint_position_b[joint.coord_index + 1U],
+                       joint_position_b[joint.coord_index + 2U],
+                       joint_position_b[joint.coord_index + 3U]};
                 const Vec3 diff = quat_boxminus(q_a, q_b);
-                result.qv[joint.dof_index + 0U] = diff.x;
-                result.qv[joint.dof_index + 1U] = diff.y;
-                result.qv[joint.dof_index + 2U] = diff.z;
+                result[joint.dof_index + 0U] = diff.x;
+                result[joint.dof_index + 1U] = diff.y;
+                result[joint.dof_index + 2U] = diff.z;
                 break;
             }
             case JointType::CARTESIAN:
             {
                 // SO(3) difference for rotation
                 const Quaternion q_a
-                    = {joint_position_a.q[joint.coord_index + 0U],
-                       joint_position_a.q[joint.coord_index + 1U],
-                       joint_position_a.q[joint.coord_index + 2U],
-                       joint_position_a.q[joint.coord_index + 3U]};
+                    = {joint_position_a[joint.coord_index + 0U],
+                       joint_position_a[joint.coord_index + 1U],
+                       joint_position_a[joint.coord_index + 2U],
+                       joint_position_a[joint.coord_index + 3U]};
                 const Quaternion q_b
-                    = {joint_position_b.q[joint.coord_index + 0U],
-                       joint_position_b.q[joint.coord_index + 1U],
-                       joint_position_b.q[joint.coord_index + 2U],
-                       joint_position_b.q[joint.coord_index + 3U]};
+                    = {joint_position_b[joint.coord_index + 0U],
+                       joint_position_b[joint.coord_index + 1U],
+                       joint_position_b[joint.coord_index + 2U],
+                       joint_position_b[joint.coord_index + 3U]};
                 const Vec3 diff_rot = quat_boxminus(q_a, q_b);
-                result.qv[joint.dof_index + 0U] = diff_rot.x;
-                result.qv[joint.dof_index + 1U] = diff_rot.y;
-                result.qv[joint.dof_index + 2U] = diff_rot.z;
+                result[joint.dof_index + 0U] = diff_rot.x;
+                result[joint.dof_index + 1U] = diff_rot.y;
+                result[joint.dof_index + 2U] = diff_rot.z;
                 // translation difference
                 for (size_t ind = 0; ind < 3; ++ind)
                 {
-                    result.qv[joint.dof_index + 3U + ind] =
-                        joint_position_a.q[joint.coord_index + 4U + ind] -
-                        joint_position_b.q[joint.coord_index + 4U + ind];
+                    result[joint.dof_index + 3U + ind] =
+                        joint_position_a[joint.coord_index + 4U + ind] -
+                        joint_position_b[joint.coord_index + 4U + ind];
                 }
                 break;
             }
@@ -216,16 +216,16 @@ JointSpace joint_difference(
             case JointType::PRISMATIC_Y:
             case JointType::PRISMATIC_Z:
             {
-                result.qv[joint.dof_index] =
-                    joint_position_a.q[joint.coord_index] - joint_position_b.q[joint.coord_index];
+                result[joint.dof_index] =
+                    joint_position_a[joint.coord_index] - joint_position_b[joint.coord_index];
                 break;
             }
             case JointType::PLANAR:
             {
                 // three dof offset
-                result.qv[joint.dof_index] = joint_position_a.q[joint.coord_index] - joint_position_b.q[joint.coord_index];
-                result.qv[joint.dof_index + 1U] = joint_position_a.q[joint.coord_index + 1U] - joint_position_b.q[joint.coord_index + 1U];
-                result.qv[joint.dof_index + 2U] = joint_position_a.q[joint.coord_index + 2U] - joint_position_b.q[joint.coord_index + 2U];
+                result[joint.dof_index] = joint_position_a[joint.coord_index] - joint_position_b[joint.coord_index];
+                result[joint.dof_index + 1U] = joint_position_a[joint.coord_index + 1U] - joint_position_b[joint.coord_index + 1U];
+                result[joint.dof_index + 2U] = joint_position_a[joint.coord_index + 2U] - joint_position_b[joint.coord_index + 2U];
                 break;
             }
             case JointType::FIXED:

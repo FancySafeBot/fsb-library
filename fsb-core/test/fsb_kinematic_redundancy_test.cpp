@@ -262,14 +262,14 @@ TEST_CASE("Nullspace motion is zero for 6x6 identity Jacobian" * doctest::descri
     const fsb::Jacobian jac = make_identity_jacobian_6xn(dofs);
 
     fsb::JointSpace qd = {};
-    qd.qv = {0.2, -0.1, 0.05, 0.33, -0.7, 1.25};
+    qd = {0.2, -0.1, 0.05, 0.33, -0.7, 1.25};
 
     // Overload without explicit pseudoinverse
     {
         const fsb::JointSpace qn = fsb::compute_nullspace_motion(jac, qd, dofs);
         for (size_t i = 0U; i < dofs; ++i)
         {
-            REQUIRE(qn.qv[i] == FsbApprox(0.0));
+            REQUIRE(qn[i] == FsbApprox(0.0));
         }
     }
 
@@ -282,7 +282,7 @@ TEST_CASE("Nullspace motion is zero for 6x6 identity Jacobian" * doctest::descri
         const fsb::JointSpace qn = fsb::compute_nullspace_motion(jac, jac_pinv, qd, dofs);
         for (size_t i = 0U; i < dofs; ++i)
         {
-            REQUIRE(qn.qv[i] == FsbApprox(0.0));
+            REQUIRE(qn[i] == FsbApprox(0.0));
         }
     }
 }
@@ -294,16 +294,16 @@ TEST_CASE("Nullspace projection preserves pure nullspace component" * doctest::d
     const fsb::Jacobian jac = make_identity_jacobian_6xn(dofs);
 
     fsb::JointSpace qd = {};
-    qd.qv = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4};
+    qd = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4};
 
     // Without explicit pseudoinverse
     {
         const fsb::JointSpace qn = fsb::compute_nullspace_motion(jac, qd, dofs);
         for (size_t i = 0U; i < 6U; ++i)
         {
-            REQUIRE(qn.qv[i] == FsbApprox(0.0));
+            REQUIRE(qn[i] == FsbApprox(0.0));
         }
-        REQUIRE(qn.qv[6] == FsbApprox(0.4));
+        REQUIRE(qn[6] == FsbApprox(0.4));
     }
 
     // With explicit pseudoinverse
@@ -315,9 +315,9 @@ TEST_CASE("Nullspace projection preserves pure nullspace component" * doctest::d
         const fsb::JointSpace qn = fsb::compute_nullspace_motion(jac, jac_pinv, qd, dofs);
         for (size_t i = 0U; i < 6U; ++i)
         {
-            REQUIRE(qn.qv[i] == FsbApprox(0.0));
+            REQUIRE(qn[i] == FsbApprox(0.0));
         }
-        REQUIRE(qn.qv[6] == FsbApprox(0.4));
+        REQUIRE(qn[6] == FsbApprox(0.4));
     }
 }
 
@@ -326,9 +326,9 @@ TEST_CASE("Joint limit avoidance pushes away from limits and clamps" * doctest::
     constexpr size_t dofs = 3U;
 
     fsb::JointSpacePosition q = {};
-    q.q[0] = -0.9;
-    q.q[1] = 0.0;
-    q.q[2] = 0.9;
+    q[0] = -0.9;
+    q[1] = 0.0;
+    q[2] = 0.9;
 
     fsb::JointLimits limits = {};
     for (size_t i = 0U; i < dofs; ++i)
@@ -344,21 +344,21 @@ TEST_CASE("Joint limit avoidance pushes away from limits and clamps" * doctest::
 
     const fsb::JointSpace qd = fsb::joint_limit_avoidance_objective(q, limits, dofs, 0.1);
 
-    REQUIRE(qd.qv[0] > 0.0);
-    REQUIRE(qd.qv[1] == FsbApprox(0.0));
-    REQUIRE(qd.qv[2] < 0.0);
+    REQUIRE(qd[0] > 0.0);
+    REQUIRE(qd[1] == FsbApprox(0.0));
+    REQUIRE(qd[2] < 0.0);
 
     // Midpoint with symmetric limits produces ~0.
-    q.q[0] = 0.0;
+    q[0] = 0.0;
     limits.set[0] = true;
     const fsb::JointSpace qd_mid = fsb::joint_limit_avoidance_objective(q, limits, dofs, 0.1);
-    REQUIRE(qd_mid.qv[0] == FsbApprox(0.0));
+    REQUIRE(qd_mid[0] == FsbApprox(0.0));
 
     // Clamp check: make it saturate.
-    q.q[0] = -0.999;
+    q[0] = -0.999;
     limits.max_velocity[0] = 0.05;
     const fsb::JointSpace qd_clamped = fsb::joint_limit_avoidance_objective(q, limits, dofs, 100.0);
-    REQUIRE(qd_clamped.qv[0] == FsbApprox(0.05));
+    REQUIRE(qd_clamped[0] == FsbApprox(0.05));
 }
 
 TEST_SUITE_END();

@@ -40,3 +40,7 @@ build
 # IDE
 .idea
 cmake-build-*
+.zed
+
+# Python
+venv

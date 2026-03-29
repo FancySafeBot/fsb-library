@@ -112,7 +112,7 @@ compute_kinematics(const size_t body_index, const fsb::ComputeKinematics& kinema
         fsb::JointSpacePosition joint_position = {};
         for (size_t i = 0; (i < num_joint_coords) && (i < joint.size()); ++i)
         {
-            joint_position.q[i] = joint[i];
+            joint_position[i] = joint[i];
         }
         // compute forward kinematics
         fsb::BodyCartesianPva cartesian_pva = {};

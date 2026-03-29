@@ -62,43 +62,43 @@ static void joint_torque_from_force(
     const Real s_neg = joint.reversed ? -1.0 : 1.0;
     if (joint.type == JointType::REVOLUTE_X)
     {
-        joint_torque.qv[joint.dof_index] = s_neg * joint_force.torque.x;
+        joint_torque[joint.dof_index] = s_neg * joint_force.torque.x;
     }
     if (joint.type == JointType::REVOLUTE_Y)
     {
-        joint_torque.qv[joint.dof_index] = s_neg * joint_force.torque.y;
+        joint_torque[joint.dof_index] = s_neg * joint_force.torque.y;
     }
     if (joint.type == JointType::REVOLUTE_Z)
     {
-        joint_torque.qv[joint.dof_index] = s_neg * joint_force.torque.z;
+        joint_torque[joint.dof_index] = s_neg * joint_force.torque.z;
     }
     else if (joint.type == JointType::PRISMATIC_X)
     {
-        joint_torque.qv[joint.dof_index] = s_neg * joint_force.force.x;
+        joint_torque[joint.dof_index] = s_neg * joint_force.force.x;
     }
     else if (joint.type == JointType::PRISMATIC_Y)
     {
-        joint_torque.qv[joint.dof_index] = s_neg * joint_force.force.y;
+        joint_torque[joint.dof_index] = s_neg * joint_force.force.y;
     }
     else if (joint.type == JointType::PRISMATIC_Z)
     {
-        joint_torque.qv[joint.dof_index] = s_neg * joint_force.force.z;
+        joint_torque[joint.dof_index] = s_neg * joint_force.force.z;
     }
     else if (joint.type == JointType::SPHERICAL)
     {
-        joint_torque.qv[joint.dof_index] = joint_force.torque.x;
-        joint_torque.qv[joint.dof_index + 1U] = joint_force.torque.y;
-        joint_torque.qv[joint.dof_index + 2U] = joint_force.torque.z;
+        joint_torque[joint.dof_index] = joint_force.torque.x;
+        joint_torque[joint.dof_index + 1U] = joint_force.torque.y;
+        joint_torque[joint.dof_index + 2U] = joint_force.torque.z;
     }
     else if (joint.type == JointType::CARTESIAN)
     {
-        joint_torque.qv[joint.dof_index] = joint_force.torque.x;
-        joint_torque.qv[joint.dof_index + 1U] = joint_force.torque.y;
-        joint_torque.qv[joint.dof_index + 2U] = joint_force.torque.z;
+        joint_torque[joint.dof_index] = joint_force.torque.x;
+        joint_torque[joint.dof_index + 1U] = joint_force.torque.y;
+        joint_torque[joint.dof_index + 2U] = joint_force.torque.z;
 
-        joint_torque.qv[joint.dof_index + 3U] = joint_force.force.x;
-        joint_torque.qv[joint.dof_index + 4U] = joint_force.force.y;
-        joint_torque.qv[joint.dof_index + 5U] = joint_force.force.z;
+        joint_torque[joint.dof_index + 3U] = joint_force.force.x;
+        joint_torque[joint.dof_index + 4U] = joint_force.force.y;
+        joint_torque[joint.dof_index + 5U] = joint_force.force.z;
     }
     else
     {

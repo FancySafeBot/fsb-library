@@ -339,26 +339,26 @@ static Jacobian jacobian_derivative_all_revolute_prismatic(
                        jacobian.j[jacobian_index(2U, i)]};
                 // linear part of of Hessian slice i, column k
                 const Vec3 jvk_dqi = vector_cross(jwi, jvk);
-                result.j[jacobian_index(3U, k)] += jvk_dqi.x * joint_velocity.qv[i];
-                result.j[jacobian_index(4U, k)] += jvk_dqi.y * joint_velocity.qv[i];
-                result.j[jacobian_index(5U, k)] += jvk_dqi.z * joint_velocity.qv[i];
+                result.j[jacobian_index(3U, k)] += jvk_dqi.x * joint_velocity[i];
+                result.j[jacobian_index(4U, k)] += jvk_dqi.y * joint_velocity[i];
+                result.j[jacobian_index(5U, k)] += jvk_dqi.z * joint_velocity[i];
 
                 // angular part of Hessian slice i, column k
                 if (is_revolute(dof_joint_type[k]) && (i != k))
                 {
                     const Vec3 jwk_dqi = vector_cross(jwi, jwk);
-                    result.j[jacobian_index(0U, k)] += jwk_dqi.x * joint_velocity.qv[i];
-                    result.j[jacobian_index(1U, k)] += jwk_dqi.y * joint_velocity.qv[i];
-                    result.j[jacobian_index(2U, k)] += jwk_dqi.z * joint_velocity.qv[i];
+                    result.j[jacobian_index(0U, k)] += jwk_dqi.x * joint_velocity[i];
+                    result.j[jacobian_index(1U, k)] += jwk_dqi.y * joint_velocity[i];
+                    result.j[jacobian_index(2U, k)] += jwk_dqi.z * joint_velocity[i];
                 }
 
                 // linear part of of Hessian slice k, column i (symmetric with slice i, column k)
                 // jvi_dqk = jvk_dqi, off-diagonal only
                 if (i != k)
                 {
-                    result.j[jacobian_index(3U, i)] += jvk_dqi.x * joint_velocity.qv[k];
-                    result.j[jacobian_index(4U, i)] += jvk_dqi.y * joint_velocity.qv[k];
-                    result.j[jacobian_index(5U, i)] += jvk_dqi.z * joint_velocity.qv[k];
+                    result.j[jacobian_index(3U, i)] += jvk_dqi.x * joint_velocity[k];
+                    result.j[jacobian_index(4U, i)] += jvk_dqi.y * joint_velocity[k];
+                    result.j[jacobian_index(5U, i)] += jvk_dqi.z * joint_velocity[k];
                 }
             }
         }
@@ -523,12 +523,12 @@ MotionVector jacobian_multiply(
     dofs = std::min(dofs, MaxSize::kDofs);
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
-        result.angular.x += jacobian.j[jacobian_index(0U, ind)] * joint_motion.qv[ind];
-        result.angular.y += jacobian.j[jacobian_index(1U, ind)] * joint_motion.qv[ind];
-        result.angular.z += jacobian.j[jacobian_index(2U, ind)] * joint_motion.qv[ind];
-        result.linear.x += jacobian.j[jacobian_index(3U, ind)] * joint_motion.qv[ind];
-        result.linear.y += jacobian.j[jacobian_index(4U, ind)] * joint_motion.qv[ind];
-        result.linear.z += jacobian.j[jacobian_index(5U, ind)] * joint_motion.qv[ind];
+        result.angular.x += jacobian.j[jacobian_index(0U, ind)] * joint_motion[ind];
+        result.angular.y += jacobian.j[jacobian_index(1U, ind)] * joint_motion[ind];
+        result.angular.z += jacobian.j[jacobian_index(2U, ind)] * joint_motion[ind];
+        result.linear.x += jacobian.j[jacobian_index(3U, ind)] * joint_motion[ind];
+        result.linear.y += jacobian.j[jacobian_index(4U, ind)] * joint_motion[ind];
+        result.linear.z += jacobian.j[jacobian_index(5U, ind)] * joint_motion[ind];
     }
     return result;
 }
@@ -540,7 +540,7 @@ JointSpace jacobian_transpose_multiply(
     dofs = std::min(dofs, MaxSize::kDofs);
     for (size_t ind = 0U; ind < dofs; ++ind)
     {
-        result.qv[ind] =
+        result[ind] =
             jacobian.j[jacobian_index(0U, ind)] * cartesian_motion.angular.x +
             jacobian.j[jacobian_index(1U, ind)] * cartesian_motion.angular.y +
             jacobian.j[jacobian_index(2U, ind)] * cartesian_motion.angular.z +

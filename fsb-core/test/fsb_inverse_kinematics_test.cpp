@@ -17,13 +17,13 @@ TEST_CASE("Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb_inverse_
 
     // input position and velocity vector
     fsb::JointSpacePosition initial_config = {};
-    initial_config.q[0] = 1.0;
-    initial_config.q[1] = -0.32;
-    initial_config.q[2] = 0.08;
-    initial_config.q[3] = -2.15;
-    initial_config.q[4] = 0.04;
-    initial_config.q[5] = -2.0;
-    initial_config.q[6] = 0.78;
+    initial_config[0] = 1.0;
+    initial_config[1] = -0.32;
+    initial_config[2] = 0.08;
+    initial_config[3] = -2.15;
+    initial_config[4] = 0.04;
+    initial_config[5] = -2.0;
+    initial_config[6] = 0.78;
     // target pose
     const fsb::Transform target_pose = {
     {0.9218430590013226, -0.3843272787743501, 0.04613060152655873, -0.019232393605190336},
@@ -62,13 +62,13 @@ TEST_CASE("Velocity Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb
 
     // input position and velocity vector
     fsb::JointSpacePosition initial_config = {};
-    initial_config.q[0] = 1.0;
-    initial_config.q[1] = -0.32;
-    initial_config.q[2] = 0.08;
-    initial_config.q[3] = -2.15;
-    initial_config.q[4] = 0.04;
-    initial_config.q[5] = -2.0;
-    initial_config.q[6] = 0.78;
+    initial_config[0] = 1.0;
+    initial_config[1] = -0.32;
+    initial_config[2] = 0.08;
+    initial_config[3] = -2.15;
+    initial_config[4] = 0.04;
+    initial_config[5] = -2.0;
+    initial_config[6] = 0.78;
     // target velocity
     const fsb::MotionVector ee_velocity = {
         {0.1524867004188218, 0.07158684500011234, 0.2475327097076538},
@@ -135,13 +135,13 @@ TEST_CASE("Velocity Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb
 
 //     // input position and velocity vector
 //     fsb::JointSpacePosition initial_config = {};
-//     initial_config.q[0] = 1.0;
-//     initial_config.q[1] = -0.32;
-//     initial_config.q[2] = 0.08;
-//     initial_config.q[3] = -2.15;
-//     initial_config.q[4] = 0.04;
-//     initial_config.q[5] = -2.0;
-//     initial_config.q[6] = 0.78;
+//     initial_config[0] = 1.0;
+//     initial_config[1] = -0.32;
+//     initial_config[2] = 0.08;
+//     initial_config[3] = -2.15;
+//     initial_config[4] = 0.04;
+//     initial_config[5] = -2.0;
+//     initial_config[6] = 0.78;
 //     // target velocity
 //     const fsb::MotionVector ee_velocity = {
 //         {0.1524867004188218, 0.07158684500011234, 0.2475327097076538},

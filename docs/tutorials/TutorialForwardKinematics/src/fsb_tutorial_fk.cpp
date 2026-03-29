@@ -40,7 +40,7 @@ int main(void) {
     const fsb::Transform& ee_pose = cartesian_pva.body[ee_index].pose;
     std::cout << "Input Joint Position:\n";
     for (size_t i = 0; i < body_tree.get_num_coordinates(); ++i) {
-        std::cout << "  q" << i << ": " << joint_position.q[i] << "\n";
+        std::cout << "  q" << i << ": " << joint_position[i] << "\n";
     }
     std::cout << "End effector pose:\n";
     std::cout << "  Position: (" << ee_pose.translation.x << ", " << ee_pose.translation.y << ", " << ee_pose.translation.z << ")\n";

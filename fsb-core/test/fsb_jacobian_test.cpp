@@ -82,20 +82,20 @@ TEST_CASE("Jacobian Panda" * doctest::description("[fsb_jacobian][fsb::calculate
 
     // input position and velocity vector
     fsb::JointPva joint_pva = {};
-    joint_pva.position.q[0] = 0.0;
-    joint_pva.position.q[1] = -0.3;
-    joint_pva.position.q[2] = 0.0;
-    joint_pva.position.q[3] = -2.2;
-    joint_pva.position.q[4] = 0.0;
-    joint_pva.position.q[5] = 2.0;
-    joint_pva.position.q[6] = 0.79;
-    joint_pva.velocity.qv[0] = 0.1;
-    joint_pva.velocity.qv[1] = 0.2;
-    joint_pva.velocity.qv[2] = 0.3;
-    joint_pva.velocity.qv[3] = 0.4;
-    joint_pva.velocity.qv[4] = 0.5;
-    joint_pva.velocity.qv[5] = 0.6;
-    joint_pva.velocity.qv[6] = 0.7;
+    joint_pva.position[0] = 0.0;
+    joint_pva.position[1] = -0.3;
+    joint_pva.position[2] = 0.0;
+    joint_pva.position[3] = -2.2;
+    joint_pva.position[4] = 0.0;
+    joint_pva.position[5] = 2.0;
+    joint_pva.position[6] = 0.79;
+    joint_pva.velocity[0] = 0.1;
+    joint_pva.velocity[1] = 0.2;
+    joint_pva.velocity[2] = 0.3;
+    joint_pva.velocity[3] = 0.4;
+    joint_pva.velocity[4] = 0.5;
+    joint_pva.velocity[5] = 0.6;
+    joint_pva.velocity[6] = 0.7;
 
     // Expected
     fsb::Jacobian jac_expected = {
@@ -160,13 +160,13 @@ TEST_CASE("Jacobian Panda Metrics" * doctest::description("[fsb_jacobian][fsb::c
     fsb::BodyTree panda_tree = create_panda_body_tree(ee_index);
     // input position
     fsb::JointPva joint_pva = {};
-    joint_pva.position.q[0] = 0.0;
-    joint_pva.position.q[1] = -0.3;
-    joint_pva.position.q[2] = 0.0;
-    joint_pva.position.q[3] = -2.2;
-    joint_pva.position.q[4] = 0.0;
-    joint_pva.position.q[5] = 2.0;
-    joint_pva.position.q[6] = 0.79;
+    joint_pva.position[0] = 0.0;
+    joint_pva.position[1] = -0.3;
+    joint_pva.position[2] = 0.0;
+    joint_pva.position[3] = -2.2;
+    joint_pva.position[4] = 0.0;
+    joint_pva.position[5] = 2.0;
+    joint_pva.position[6] = 0.79;
 
     // Expected condition numbers
     const double expected_cond_num_linear = 7.64310978274591;
@@ -239,13 +239,13 @@ TEST_CASE("Jacobian single reversed joint flips one column" * doctest::descripti
 
     // Joint positions: choose arbitrary non-zero values
     fsb::JointPva q_a = {};
-    q_a.position.q[0] = 0.4; // rev z
-    q_a.position.q[1] = 0.25; // prism z (meters)
-    q_a.position.q[2] = -0.7; // rev z
+    q_a.position[0] = 0.4; // rev z
+    q_a.position[1] = 0.25; // prism z (meters)
+    q_a.position[2] = -0.7; // rev z
 
     // For tree B, negate only the reversed joint coordinate to keep FK poses identical
     fsb::JointPva q_b = q_a;
-    q_b.position.q[reversed_dof_col] = -q_a.position.q[reversed_dof_col];
+    q_b.position[reversed_dof_col] = -q_a.position[reversed_dof_col];
 
     // Forward kinematics for both trees
     const fsb::CartesianPva base_pva = {fsb::transform_identity(), {}, {}};
@@ -473,9 +473,9 @@ TEST_CASE("Jacobian derivative from Hessian RPR" * doctest::description("[fsb_ja
 
     // Compute jacobian derivative via provided function
     fsb::JointSpace joint_velocity = {};
-    joint_velocity.qv[0] = joint_pva.velocity.qv[0];
-    joint_velocity.qv[1] = joint_pva.velocity.qv[1];
-    joint_velocity.qv[2] = joint_pva.velocity.qv[2];
+    joint_velocity[0] = joint_pva.velocity[0];
+    joint_velocity[1] = joint_pva.velocity[1];
+    joint_velocity[2] = joint_pva.velocity[2];
     fsb::Jacobian jac_dot = {};
     const fsb::JacobianError jd_err
         = fsb::jacobian_derivative(body3_index, body_tree, jac, joint_velocity, jac_dot);

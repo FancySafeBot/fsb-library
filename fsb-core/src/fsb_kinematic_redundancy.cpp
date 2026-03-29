@@ -22,7 +22,9 @@ jacobian_pseudoinverse(const Jacobian& jacobian, Jacobian& inverse_jacobian, con
     std::array<Real, WorkLen> work = {};
     // run pseudoinverse
     return fsb::linalg_pseudoinverse(
-        jacobian.j.data(), FSB_CART_SIZE, dofs, WorkLen, work.data(), inverse_jacobian.j.data());
+        fsb::Span<const Real>(jacobian.j.data(), FSB_CART_SIZE * dofs), FSB_CART_SIZE, dofs,
+        fsb::Span<Real>(work.data(), WorkLen),
+        fsb::Span<Real>(inverse_jacobian.j.data(), dofs * FSB_CART_SIZE));
 }
 
 JointSpace compute_nullspace_motion(
@@ -34,12 +36,12 @@ JointSpace compute_nullspace_motion(
     MotionVector cart_motion = {};
     for (size_t col = 0; col < dofs; ++col)
     {
-        cart_motion.angular.x += jacobian.j[jacobian_index(0U, col)] * joint_motion.qv[col];
-        cart_motion.angular.y += jacobian.j[jacobian_index(1U, col)] * joint_motion.qv[col];
-        cart_motion.angular.z += jacobian.j[jacobian_index(2U, col)] * joint_motion.qv[col];
-        cart_motion.linear.x += jacobian.j[jacobian_index(3U, col)] * joint_motion.qv[col];
-        cart_motion.linear.y += jacobian.j[jacobian_index(4U, col)] * joint_motion.qv[col];
-        cart_motion.linear.z += jacobian.j[jacobian_index(5U, col)] * joint_motion.qv[col];
+        cart_motion.angular.x += jacobian.j[jacobian_index(0U, col)] * joint_motion[col];
+        cart_motion.angular.y += jacobian.j[jacobian_index(1U, col)] * joint_motion[col];
+        cart_motion.angular.z += jacobian.j[jacobian_index(2U, col)] * joint_motion[col];
+        cart_motion.linear.x += jacobian.j[jacobian_index(3U, col)] * joint_motion[col];
+        cart_motion.linear.y += jacobian.j[jacobian_index(4U, col)] * joint_motion[col];
+        cart_motion.linear.z += jacobian.j[jacobian_index(5U, col)] * joint_motion[col];
     }
 
     // Then, compute qn = J+ * (J * qd) = J+ * cart_motion
@@ -58,14 +60,17 @@ JointSpace compute_nullspace_motion(
     motion_vec[5] = cart_motion.linear.z;
     // run least squares solve
     fsb::LinalgErrorType const linalg_err = fsb::linalg_leastsquares_solve(
-        jacobian.j.data(), FSB_CART_SIZE, dofs, motion_vec.data(), NRHS, WorkLen, work.data(), joint_null.data());
+        fsb::Span<const Real>(jacobian.j.data(), FSB_CART_SIZE * dofs), FSB_CART_SIZE, dofs,
+        fsb::Span<const Real>(motion_vec.data(), FSB_CART_SIZE * NRHS), NRHS,
+        fsb::Span<Real>(work.data(), WorkLen),
+        fsb::Span<Real>(joint_null.data(), dofs * NRHS));
 
     // Compute nullspace motion: (I - J+ * J) * qd = qd - J+ * J * qd
     if (linalg_err == fsb::LinalgErrorType::ERROR_NONE)
     {
         for (size_t ind = 0U; ind < dofs; ++ind)
         {
-            result.qv[ind] = joint_motion.qv[ind] - joint_null[ind];
+            result[ind] = joint_motion[ind] - joint_null[ind];
         }
     }
     return result;
@@ -81,19 +86,19 @@ JointSpace compute_nullspace_motion(
     MotionVector cart_motion = {};
     for (size_t col = 0; col < dofs; ++col)
     {
-        cart_motion.angular.x += jacobian.j[jacobian_index(0U, col)] * joint_motion.qv[col];
-        cart_motion.angular.y += jacobian.j[jacobian_index(1U, col)] * joint_motion.qv[col];
-        cart_motion.angular.z += jacobian.j[jacobian_index(2U, col)] * joint_motion.qv[col];
-        cart_motion.linear.x += jacobian.j[jacobian_index(3U, col)] * joint_motion.qv[col];
-        cart_motion.linear.y += jacobian.j[jacobian_index(4U, col)] * joint_motion.qv[col];
-        cart_motion.linear.z += jacobian.j[jacobian_index(5U, col)] * joint_motion.qv[col];
+        cart_motion.angular.x += jacobian.j[jacobian_index(0U, col)] * joint_motion[col];
+        cart_motion.angular.y += jacobian.j[jacobian_index(1U, col)] * joint_motion[col];
+        cart_motion.angular.z += jacobian.j[jacobian_index(2U, col)] * joint_motion[col];
+        cart_motion.linear.x += jacobian.j[jacobian_index(3U, col)] * joint_motion[col];
+        cart_motion.linear.y += jacobian.j[jacobian_index(4U, col)] * joint_motion[col];
+        cart_motion.linear.z += jacobian.j[jacobian_index(5U, col)] * joint_motion[col];
     }
 
     // Then, compute J+ * (J * qd) = J+ * cart_motion
     JointSpace projection = {};
     for (size_t row = 0; row < dofs; ++row)
     {
-        projection.qv[row]
+        projection[row]
             = inverse_jacobian.j[joint_matrix_index(row, 0U, dofs)] * cart_motion.angular.x
               + inverse_jacobian.j[joint_matrix_index(row, 1U, dofs)] * cart_motion.angular.y
               + inverse_jacobian.j[joint_matrix_index(row, 2U, dofs)] * cart_motion.angular.z
@@ -105,7 +110,7 @@ JointSpace compute_nullspace_motion(
     // Compute nullspace motion: (I - J+ * J) * qd = qd - J+ * J * qd
     for (size_t i = 0; i < dofs; ++i)
     {
-        result.qv[i] = joint_motion.qv[i] - projection.qv[i];
+        result[i] = joint_motion[i] - projection[i];
     }
 
     return result;
@@ -137,7 +142,7 @@ JointSpace joint_limit_avoidance_objective(
             continue;
         }
 
-        const Real q = joint_positions.q[i];
+        const Real q = joint_positions[i];
         const Real qmin = joint_limits.lower_position[i];
         const Real qmax = joint_limits.upper_position[i];
 
@@ -168,7 +173,7 @@ JointSpace joint_limit_avoidance_objective(
             }
         }
 
-        result.qv[i] = qdot;
+        result[i] = qdot;
     }
 
     return result;

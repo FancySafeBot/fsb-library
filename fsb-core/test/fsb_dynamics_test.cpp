@@ -41,9 +41,9 @@ TEST_CASE("Inverse dynamics" * doctest::description("[fsb_dynamics][fsb::inverse
     // Expected
     // fsb::BodyForce expected_body_force = {};
     fsb::JointSpace expected_joint_torque = {};
-    expected_joint_torque.qv[0] = -1.0903032895805924;
-    expected_joint_torque.qv[1] = -2.9215345457188304;
-    expected_joint_torque.qv[2] = 1.469521518393904;
+    expected_joint_torque[0] = -1.0903032895805924;
+    expected_joint_torque[1] = -2.9215345457188304;
+    expected_joint_torque[2] = 1.469521518393904;
 
     // Process
     // RPR model
@@ -62,9 +62,9 @@ TEST_CASE("Inverse dynamics" * doctest::description("[fsb_dynamics][fsb::inverse
         body_tree, body_pva, external_force, actual_body_force);
 
     // Check
-    CHECK(actual_joint_torque.qv[0] == FsbApprox(expected_joint_torque.qv[0]));
-    CHECK(actual_joint_torque.qv[1] == FsbApprox(expected_joint_torque.qv[1]));
-    CHECK(actual_joint_torque.qv[2] == FsbApprox(expected_joint_torque.qv[2]));
+    CHECK(actual_joint_torque[0] == FsbApprox(expected_joint_torque[0]));
+    CHECK(actual_joint_torque[1] == FsbApprox(expected_joint_torque[1]));
+    CHECK(actual_joint_torque[2] == FsbApprox(expected_joint_torque[2]));
 }
 
 TEST_SUITE_END();
