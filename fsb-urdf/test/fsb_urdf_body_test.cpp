@@ -3,7 +3,7 @@
 #include "fsb_urdf_body.h"
 #include "fsb_test_macros.h"
 
-TEST_SUITE_BEGIN("urdf_body");
+TEST_SUITE("urdf_body") {
 
 TEST_CASE("Parse empty body" * doctest::description("[urdf_body][fsb::urdf::urdf_parse_inertia_mass]"))
 {
@@ -74,4 +74,4 @@ TEST_CASE("Parse body" * doctest::description("[urdf_body][fsb::urdf::urdf_parse
     REQUIRE(body_expected.mass_props.com.z == body_actual.mass_props.com.z);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

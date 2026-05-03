@@ -3,7 +3,7 @@
 #include "fsb_urdf_joint.h"
 #include "fsb_test_macros.h"
 
-TEST_SUITE_BEGIN("urdf_joint");
+TEST_SUITE("urdf_joint") {
 
 TEST_CASE("Parse empty joint" * doctest::description("[urdf_joint][fsb::urdf_parse_joint]"))
 {
@@ -459,4 +459,4 @@ TEST_CASE("Failed joint parsing with invalid joint type" * doctest::description(
     REQUIRE(expected_error_type == err.get_type());
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

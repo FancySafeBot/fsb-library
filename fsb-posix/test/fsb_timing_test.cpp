@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-TEST_SUITE_BEGIN("timing");
+TEST_SUITE("timing") {
 
 TEST_CASE("Periodic timer 100 Hz" * doctest::description("[fsb::PeriodicTimer]"))
 {
@@ -117,4 +117,4 @@ TEST_CASE("Periodic timer fail initialize with zero step size" * doctest::descri
 //
 // }
 
-TEST_SUITE_END();
+} // TEST_SUITE

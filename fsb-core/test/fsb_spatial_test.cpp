@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_spatial.h"
 
-TEST_SUITE_BEGIN("spatial");
+TEST_SUITE("spatial") {
 
 TEST_CASE("Coordinate transform to spatial RBDA convention" * doctest::description("[fsb_spatial][fsb::transform_to_spatial]"))
 {
@@ -106,4 +106,4 @@ TEST_CASE("Spatial velocity in body-fixed frame converted to space frame"  * doc
 
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

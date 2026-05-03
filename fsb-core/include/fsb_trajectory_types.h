@@ -62,10 +62,11 @@ struct TrajState3
 /**
  * @brief Abstract class for segments
  */
-class SegmentBase
+template <typename TrajStateType>
+class Segment
 {
 public:
-    virtual ~SegmentBase() = default;
+    virtual ~Segment() = default;
 
     /**
      * @brief Get start time of the segment.
@@ -84,67 +85,30 @@ public:
      * @return Final time.
      */
     [[nodiscard]] virtual Real get_final_time() const = 0;
-};
 
-/**
- * @brief Abstract class for scalar motion
- */
-class Segment : public SegmentBase
-{
-public:
     /**
      * @brief Evaluate the segment at a given time.
      * @param[in] t_eval Time at which to evaluate the segment.
      * @return Trajectory state at the given time.
      */
-    [[nodiscard]] virtual TrajState evaluate(Real t_eval) const = 0;
+    [[nodiscard]] virtual TrajStateType evaluate(Real t_eval) const = 0;
 
     /**
      * @brief Get final state of the segment.
      * @return Final state at the end of the segment.
      */
-    [[nodiscard]] virtual TrajState get_final_state() const = 0;
+    [[nodiscard]] virtual TrajStateType get_final_state() const = 0;
+
+    /**
+     * @brief Get initial state of the segment.
+     * @return Initial state at the beginning of the segment.
+     */
+    [[nodiscard]] virtual TrajStateType get_initial_state() const = 0;
 };
 
-/**
- * @brief Abstract class for motion in x, y, and z coordinates
- */
-class Segment3 : public SegmentBase
-{
-public:
-    /**
-     * @brief Evaluate the segment at a given time.
-     * @param[in] t_eval Time at which to evaluate the segment.
-     * @return Trajectory state in 3D at the given time.
-     */
-    [[nodiscard]] virtual TrajState3 evaluate(Real t_eval) const = 0;
-
-    /**
-     * @brief Get final state of the segment.
-     * @return Final state in 3D at the end of the segment.
-     */
-    [[nodiscard]] virtual TrajState3 get_final_state() const = 0;
-};
-
-/**
- * @brief Abstract class for motion in Cartesian coordinates
- */
-class Segment6 : public SegmentBase
-{
-public:
-    /**
-     * @brief Evaluate the segment at a given time.
-     * @param[in] t_eval Time at which to evaluate the segment.
-     * @return Cartesian position, velocity, and acceleration at the given time.
-     */
-    [[nodiscard]] virtual CartesianPva evaluate(Real t_eval) const = 0;
-
-    /**
-     * @brief Get final state of the segment.
-     * @return Final Cartesian position, velocity, and acceleration at the end of the segment.
-     */
-    [[nodiscard]] virtual CartesianPva get_final_state() const = 0;
-};
+using SegmentScalar = Segment<TrajState>;
+using Segment3 = Segment<TrajState3>;
+using SegmentCartesian = Segment<CartesianPva>;
 
 /**
  * @}

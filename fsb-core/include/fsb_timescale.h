@@ -16,7 +16,7 @@ namespace fsb
  */
 
 /**
- * @brief Apply timescale to trajectory position, velocity, and acceeleration
+ * @brief Apply timescale to trajectory position, velocity, and acceleration
  *
  * @note The jerk is not scaled and is set to 0 on output
  *

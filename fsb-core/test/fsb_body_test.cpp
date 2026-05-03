@@ -4,7 +4,7 @@
 #include "fsb_body.h"
 #include "fsb_rotation.h"
 
-TEST_SUITE_BEGIN("body");
+TEST_SUITE("body") {
 
 TEST_CASE("Rotate inertia" * doctest::description("[fsb_body][fsb::body_rotate_inertia]"))
 {
@@ -176,4 +176,4 @@ TEST_CASE("Validate Inertia is positive definite" * doctest::description("[fsb_b
     REQUIRE(retval_expected == retval_actual);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

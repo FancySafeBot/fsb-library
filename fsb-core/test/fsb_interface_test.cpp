@@ -4,7 +4,7 @@
 #include "fsb_body_tree_sample.h"
 #include "fsb_compute_kinematics.h"
 
-TEST_SUITE_BEGIN("interface");
+TEST_SUITE("interface") {
 
 TEST_CASE("Interface forward kinematics" * doctest::description("[fsb_compute_kinematics][fsb::BodyTree::add_body]"))
 {
@@ -109,3 +109,5 @@ TEST_CASE("Interface forward kinematics" * doctest::description("[fsb_compute_ki
     REQUIRE(expected_body3_pva.acceleration.angular.z == FsbApprox(body3_pva.acceleration.angular.z));
 
 }
+
+} // TEST_SUITE

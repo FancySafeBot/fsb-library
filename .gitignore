@@ -44,3 +44,7 @@ cmake-build-*
 
 # Python
 venv
+
+# URDF visual meshes and textures
+meshes/
+visual/

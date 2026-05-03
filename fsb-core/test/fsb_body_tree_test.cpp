@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_body_tree.h"
 
-TEST_SUITE_BEGIN("body_tree");
+TEST_SUITE("body_tree") {
 
 TEST_CASE("Add body to tree with errors" * doctest::description("[fsb_kinematics][fsb::BodyTree::add_body]"))
 {
@@ -383,4 +383,4 @@ TEST_CASE("Add body to tree" * doctest::description("[fsb_kinematics][fsb::BodyT
 
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

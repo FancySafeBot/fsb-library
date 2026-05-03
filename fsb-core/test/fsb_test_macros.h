@@ -5,6 +5,8 @@
 #include <doctest/doctest.h>
 #include "fsb_types.h"
 
+namespace {
+
 /**
  * @brief Custom floating point comparison for unit tests
  *
@@ -24,4 +26,6 @@ struct FsbApprox : doctest::Approx
 inline doctest::String toString(const FsbApprox& in)
 {
     return doctest::toString(in.m_value);
+}
+
 }

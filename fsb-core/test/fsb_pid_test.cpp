@@ -4,7 +4,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_pid.h"
 
-TEST_SUITE_BEGIN("pid");
+TEST_SUITE("pid") {
 
 TEST_CASE("Trapezoidal Sample PID" * doctest::description("[fsb::PidController]"))
 {
@@ -66,4 +66,4 @@ TEST_CASE("Backwards Sample PID" * doctest::description("[fsb::PidController]"))
     }
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

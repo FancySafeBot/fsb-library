@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_linalg.h"
 
-TEST_SUITE_BEGIN("linalg");
+TEST_SUITE("linalg") {
 
 TEST_CASE("Singular Value Decomposition" * doctest::description("[fsb_linalg][fsb::linalg_svd]"))
 {
@@ -702,4 +702,4 @@ TEST_CASE("Least squares overdetermined typed container overload" * doctest::des
     }
 }
 
-TEST_SUITE_END();
+}

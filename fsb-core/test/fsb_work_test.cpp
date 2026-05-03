@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_work.h"
 
-TEST_SUITE_BEGIN("work");
+TEST_SUITE("work") {
 
 TEST_CASE("allocate_deallocate_basic" * doctest::description("[fsb::WorkArray]"))
 {
@@ -105,4 +105,4 @@ TEST_CASE("lifo_and_marker_restore" * doctest::description("[fsb::WorkArray]"))
     REQUIRE(8U == work.get_remaining());
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

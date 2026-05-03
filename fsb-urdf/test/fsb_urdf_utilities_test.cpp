@@ -2,7 +2,7 @@
 #include <doctest/doctest.h>
 #include "fsb_urdf_utilities.h"
 
-TEST_SUITE_BEGIN("urdf_string_conversions");
+TEST_SUITE("urdf_string_conversions") {
 
 TEST_CASE("Convert string to Quaternion" * doctest::description("[fsb_string_conversions][fsb::urdf::string_to_quaternion]"))
 {
@@ -73,4 +73,4 @@ TEST_CASE("Convert string to real value" * doctest::description("[fsb_string_con
     REQUIRE(val_actual == val_expected);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

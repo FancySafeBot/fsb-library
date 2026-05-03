@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_quaternion.h"
 
-TEST_SUITE_BEGIN("quaternion");
+TEST_SUITE("quaternion") {
 
 TEST_CASE("Quaternion multiply" * doctest::description("[fsb_quaternion][fsb::quat_multiply]"))
 {
@@ -330,4 +330,4 @@ TEST_CASE("Set rotation about z-axis" * doctest::description("[fsb_quaternion][f
     REQUIRE(q_actual.qz == FsbApprox(q_expected.qz));
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

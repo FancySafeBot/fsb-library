@@ -5,7 +5,7 @@
 #include "fsb_jacobian.h"
 #include "fsb_rotation.h"
 
-TEST_SUITE_BEGIN("jacobian");
+TEST_SUITE("jacobian") {
 
 TEST_CASE("Jacobian RPR" * doctest::description("[fsb_jacobian][fsb::calculate_jacobian]"))
 {
@@ -498,4 +498,4 @@ TEST_CASE("Jacobian derivative from Hessian RPR" * doctest::description("[fsb_ja
     }
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

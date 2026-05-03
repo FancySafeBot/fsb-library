@@ -23,6 +23,7 @@ set(FSBCORE_HEADERS
     include/fsb_trajectory_types.h
     include/fsb_trajectory_segment.h
     include/fsb_trapezoidal_velocity.h
+    include/fsb_trapezoidal_position.h
     include/fsb_pid.h
     include/fsb_quintic.h
     include/fsb_timescale.h
@@ -33,7 +34,8 @@ set(FSBCORE_HEADERS
     include/fsb_kinematic_redundancy.h
     include/fsb_linalg.h
     include/fsb_cubic.h
-    include/fsb_trajectory_path.h)
+    include/fsb_path.h
+    include/fsb_spline.h)
 set(FSBCORE_SOURCES
     src/fsb_linalg3.cpp
     src/fsb_quaternion.cpp
@@ -45,6 +47,7 @@ set(FSBCORE_SOURCES
     src/fsb_kinematics.cpp
     src/fsb_jacobian.cpp
     src/fsb_trapezoidal_velocity.cpp
+    src/fsb_trapezoidal_position.cpp
     src/fsb_trajectory_segment.cpp
     src/fsb_pid.cpp
     src/fsb_quintic.cpp
@@ -56,7 +59,7 @@ set(FSBCORE_SOURCES
     src/fsb_inverse_kinematics.cpp
     src/fsb_kinematic_redundancy.cpp
     src/fsb_linalg.cpp
-    src/fsb_trajectory_path.cpp)
+    src/fsb_path.cpp)
 
 # target name
 set(FSBCORE_TARGET_NAME fsbcore)

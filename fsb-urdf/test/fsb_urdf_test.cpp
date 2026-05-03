@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-TEST_SUITE_BEGIN("urdf_parse");
+TEST_SUITE("urdf_parse") {
 
 TEST_CASE("Parse URDF file" * doctest::description("[urdf_parse][fsb::parse_urdf_file]"))
 {
@@ -76,4 +76,4 @@ TEST_CASE("Parse URDF ur5 joint limits" * doctest::description("[urdf_parse][fsb
     REQUIRE(max_velocity == doctest::Approx(expected_max_velocity));
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

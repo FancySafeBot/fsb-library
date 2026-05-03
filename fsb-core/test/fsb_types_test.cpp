@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_types.h"
 
-TEST_SUITE_BEGIN("types");
+TEST_SUITE("types") {
 
 // ---------------------------------------------------------------------------
 // Span
@@ -105,4 +105,4 @@ TEST_CASE("Array active saturates at MaxDim" * doctest::description("[fsb::Array
     REQUIRE(span.size() == 4U);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

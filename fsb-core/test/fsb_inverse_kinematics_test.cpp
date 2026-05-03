@@ -6,7 +6,7 @@
 #include "fsb_body_tree_sample.h"
 #include "fsb_rotation.h"
 
-TEST_SUITE_BEGIN("inverse_kinematics");
+TEST_SUITE("inverse_kinematics") {
 
 TEST_CASE("Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb_inverse_kinematics]"))
 {
@@ -219,4 +219,4 @@ TEST_CASE("Velocity Inverse Kinematics Panda 7 DoF" * doctest::description("[fsb
 
 // }
 
-TEST_SUITE_END();
+} // TEST_SUITE

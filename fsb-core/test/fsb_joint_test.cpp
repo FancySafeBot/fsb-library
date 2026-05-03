@@ -3,8 +3,6 @@
 #include "fsb_test_macros.h"
 #include "fsb_joint.h"
 
-TEST_SUITE_BEGIN("joint");
-
 static void check_fsb_motion_vector(const fsb::MotionVector& v_actual, const fsb::MotionVector& v_expected, const fsb::Real eps = FsbApprox::default_epsilon)
 {
     REQUIRE(v_actual.angular.x == FsbApprox(v_expected.angular.x, eps));
@@ -28,6 +26,8 @@ static void check_fsb_transform(const fsb::Transform& tr_actual, const fsb::Tran
     REQUIRE(tr_actual.translation.y == FsbApprox(tr_expected.translation.y));
     REQUIRE(tr_actual.translation.z == FsbApprox(tr_expected.translation.z));
 }
+
+TEST_SUITE("joint") {
 
 TEST_CASE(
     "Fixed joint pva"
@@ -321,9 +321,9 @@ TEST_CASE(
     }
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE
 
-TEST_SUITE_BEGIN("joint_reversed");
+TEST_SUITE("joint_reversed") {
 
 TEST_CASE(
     "Revolute Z reversed equivalence"
@@ -415,4 +415,4 @@ TEST_CASE(
     }
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

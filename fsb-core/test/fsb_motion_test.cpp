@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_motion.h"
 
-TEST_SUITE_BEGIN("motion");
+TEST_SUITE("motion") {
 
 TEST_CASE("Transform identity" * doctest::description("[fsb_motion][fsb::transform_identity]"))
 {
@@ -717,4 +717,4 @@ TEST_CASE("Get body offset" * doctest::description("[fsb_motion][fsb::coord_tran
 //     REQUIRE(acc_actual.linear.z == FsbApprox(acc_expected.linear.z, acc_eps));
 // }
 
-TEST_SUITE_END();
+} // TEST_SUITE

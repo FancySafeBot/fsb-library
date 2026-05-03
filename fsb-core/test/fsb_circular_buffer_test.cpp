@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_circular_buffer.h"
 
-TEST_SUITE_BEGIN("circular_buffer");
+TEST_SUITE("circular_buffer") {
 
 
 TEST_CASE("Create" * doctest::description("[fsb::CircularBuffer]"))
@@ -170,4 +170,4 @@ TEST_CASE("empty_buffer" * doctest::description("[fsb::CircularBuffer]"))
     REQUIRE(0 == buffer.get_filled());
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

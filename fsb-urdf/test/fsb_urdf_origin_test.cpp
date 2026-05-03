@@ -3,7 +3,7 @@
 #include "fsb_urdf_origin.h"
 #include "fsb_test_macros.h"
 
-TEST_SUITE_BEGIN("urdf_origin");
+TEST_SUITE("urdf_origin") {
 
 TEST_CASE("Parse identity origin XML" * doctest::description("[urdf_origin][fsb::urdf::urdf_parse_origin]"))
 {
@@ -424,4 +424,4 @@ TEST_CASE("Invalid origin offset rotation" * doctest::description("[urdf_origin]
     REQUIRE(expected_err_description == err.get_description());
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

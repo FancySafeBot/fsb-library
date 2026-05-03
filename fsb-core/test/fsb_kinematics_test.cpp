@@ -3,7 +3,7 @@
 #include "fsb_kinematics.h"
 #include "fsb_body_tree_sample.h"
 
-TEST_SUITE_BEGIN("kinematics");
+TEST_SUITE("kinematics") {
 
 TEST_CASE("Forward Kinematics RPR fixed base" * doctest::description("[fsb_kinematics][fsb::forward_kinematics]"))
 {
@@ -392,4 +392,4 @@ TEST_CASE("Forward Kinematics SRS" * doctest::description("[fsb_kinematics][fsb:
     REQUIRE(expected_body3_pva.acceleration.angular.y == FsbApprox(acceleration.angular.y));
     REQUIRE(expected_body3_pva.acceleration.angular.z == FsbApprox(acceleration.angular.z));
 }
-TEST_SUITE_END();
+} // TEST_SUITE

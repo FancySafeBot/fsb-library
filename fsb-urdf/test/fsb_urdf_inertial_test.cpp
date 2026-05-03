@@ -3,7 +3,7 @@
 #include "fsb_urdf_inertial.h"
 #include "fsb_test_macros.h"
 
-TEST_SUITE_BEGIN("urdf_inertial");
+TEST_SUITE("urdf_inertial") {
 
 
 TEST_CASE("Parse inertial missing mass" * doctest::description("[urdf_inertial][fsb::urdf::urdf_parse_inertia_mass]"))
@@ -271,4 +271,4 @@ TEST_CASE("Parse inertial" * doctest::description("[urdf_inertial][fsb::urdf::ur
     REQUIRE(inertia_actual.iyz == inertia_expected.iyz);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

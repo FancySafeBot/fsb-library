@@ -5,7 +5,7 @@
 #include "fsb_kinematics.h"
 #include "fsb_dynamics.h"
 
-TEST_SUITE_BEGIN("dynamics");
+TEST_SUITE("dynamics") {
 
 TEST_CASE("Inverse dynamics" * doctest::description("[fsb_dynamics][fsb::inverse_dynamics]"))
 {
@@ -67,4 +67,4 @@ TEST_CASE("Inverse dynamics" * doctest::description("[fsb_dynamics][fsb::inverse
     CHECK(actual_joint_torque[2] == FsbApprox(expected_joint_torque[2]));
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

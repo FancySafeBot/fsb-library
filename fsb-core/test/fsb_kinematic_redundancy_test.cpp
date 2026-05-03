@@ -10,7 +10,7 @@
 #include "fsb_kinematic_redundancy.h"
 #include <iostream>
 
-TEST_SUITE_BEGIN("kinematic_redundancy");
+TEST_SUITE("kinematic_redundancy") {
 
 static std::array<double, 36U> mat6_mul_jacobian_pinv(
     const fsb::Jacobian& jac, const fsb::Jacobian& jac_pinv, const size_t dofs)
@@ -361,4 +361,4 @@ TEST_CASE("Joint limit avoidance pushes away from limits and clamps" * doctest::
     REQUIRE(qd_clamped[0] == FsbApprox(0.05));
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

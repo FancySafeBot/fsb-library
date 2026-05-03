@@ -9,7 +9,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_queue.h"
 
-TEST_SUITE_BEGIN("queue");
+TEST_SUITE("queue") {
 
 TEST_CASE("Queue" * doctest::description("[fsb::Queue]"))
 {
@@ -89,4 +89,4 @@ TEST_CASE("Queue Multithreading" * doctest::description("[fsb::Queue]"))
     cons_thread.join();
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

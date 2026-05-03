@@ -4,7 +4,7 @@
 #include "fsb_linalg3.h"
 #include "fsb_types.h"
 
-TEST_SUITE_BEGIN("linalg3");
+TEST_SUITE("linalg3") {
 
 TEST_CASE("Eigenvalues of 3x3 symmetic positive definite" * doctest::description("[fsb::mat3_posdef_symmetric_eigenvalues]"))
 {
@@ -60,4 +60,4 @@ TEST_CASE("Eigenvectors of 3x3 symmetic positive definite" * doctest::descriptio
     REQUIRE(actual_eigenvec2.z == FsbApprox(expected_eigenvec2.z));
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

@@ -2,8 +2,9 @@
 #include <doctest/doctest.h>
 #include "fsb_test_macros.h"
 #include "fsb_trapezoidal_velocity.h"
+#include "fsb_trapezoidal_position.h"
 
-TEST_SUITE_BEGIN("trapezoidal");
+TEST_SUITE("trapezoidal") {
 
 TEST_CASE("Zero duration trajectory" * doctest::description("[fsb::VelocityTrapezoidal]"))
 {
@@ -584,67 +585,330 @@ TEST_CASE("Velocity Case 8" * doctest::description("[fsb::VelocityTrapezoidal]")
     }
 }
 
-TEST_SUITE_END();
-//
-// static void test_trapezoidal_velocity_8()
-// {
-//
-//     // Trapezoidal test case parameters
-//     // --------------------------------
-//
-//     // constraints
-//     const fsb::real_t max_acceleration = 300.0;
-//     const fsb::real_t max_jerk  = 1000.0;
-//
-//     // start time
-//     const fsb::real_t start_time = 0.0;
-//
-//     // initial state
-//     fsb::TrajState initial_state;
-//     initial_state.position = 0.0;
-//     initial_state.velocity = 0.0;
-//     initial_state.acceleration = -20.0;
-//     initial_state.jerk = 0.0;
-//
-//     // target
-//     const fsb::real_t final_velocity = 20.0;
-//     const fsb::real_t final_acceleration = 10.0;
-//
-//     // Inputs and expected output
-//     // --------------------------
-//
-//     // floating point tolerance
-//     const fsb::real_t tolerance = 1e-05;
-//     // SetTargetPosition duration
-//     const fsb::real_t expected_duration = 0.2946049894151541;
-//     // Evaluate inputs and expected values
-//     const fsb::real_t input_time[9] = {
-//         -0.029460498941515412, -5.892099788303083e-06, 0.0, 5.892099788303083e-06, 0.14730249470757706, 0.2945990973153658, 0.2946049894151541, 0.2946108815149424, 0.32406548835666954
-//     };
-//     const fsb::TrajState expected_output[9] = {
-//         { 0.0, 0.0, -20.0, 0.0 }, { 0.0, 0.0, -20.0, 0.0 }, { 0.0, 0.0, -20.0, 1000.0 }, { -3.4713430663902645e-10, -0.000117824637346104, -19.9941079002117, 1000.0 }, { 0.31571528468449284, 7.902962579386344, 127.30249470757707, 1000.0 }, { 2.6215866781232573, 19.999941061643696, 10.005892099788326, -1000.0 }, { 2.6217045199454043, 20.0, 10.000000000000028, -1000.0 }, { 2.6218223621147545, 20.000058920997883, 10.0, 0.0 }, { 3.215254103765128, 20.294604989415156, 10.0, 0.0 }
-//     };
-//
-//     // Run trapezoidal test trajectory
-//     // -------------------------------
-//
-//     // trapezoidal object
-//     fsb::TrapezoidalVelocity traj;
-//     // set parameters
-//     traj.Reset(start_time, initial_state);
-//     // Generate trajectory
-//     fsb::TrapezoidalStatus set_target_status = traj.goto_velocity(start_time, initial_state, final_velocity, final_acceleration,
-//                                                                      max_acceleration, max_jerk);
-//     TEST_ASSERT_EQUAL(fsb::TrapezoidalStatus::SUCCESS, set_target_status);
-//     TEST_ASSERT_FLOAT_WITHIN(tolerance, expected_duration, traj.get_duration());
-//
-//     // Evaluate
-//     const size_t num_input_values = ARRAY_SIZE(input_time);
-//     for (size_t k = 0; k < num_input_values; ++k) {
-//         fsb::TrajState actual_output = traj.Evaluate(input_time[k]);
-//         TEST_ASSERT_FLOAT_WITHIN(tolerance, expected_output[k].position, actual_output.position);
-//         TEST_ASSERT_FLOAT_WITHIN(tolerance, expected_output[k].velocity, actual_output.velocity);
-//         TEST_ASSERT_FLOAT_WITHIN(tolerance, expected_output[k].acceleration, actual_output.acceleration);
-//         TEST_ASSERT_FLOAT_WITHIN(tolerance, expected_output[k].jerk, actual_output.jerk);
-//     }
-// }
+} // TEST_SUITE
+
+TEST_SUITE("trapezoidal_position") {
+
+TEST_CASE("Position invalid inputs" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    fsb::TrapezoidalPosition traj = {};
+
+    // zero max velocity
+    REQUIRE(fsb::TrapezoidalStatus::MAX_VALUE_BELOW_TOLERANCE ==
+            traj.generate(0.0, 0.0, 1.0, 0.0, 10.0, 100.0));
+    // zero max acceleration
+    REQUIRE(fsb::TrapezoidalStatus::MAX_VALUE_BELOW_TOLERANCE ==
+            traj.generate(0.0, 0.0, 1.0, 5.0, 0.0, 100.0));
+    // zero max jerk
+    REQUIRE(fsb::TrapezoidalStatus::MAX_VALUE_BELOW_TOLERANCE ==
+            traj.generate(0.0, 0.0, 1.0, 5.0, 10.0, 0.0));
+}
+
+TEST_CASE("Position zero displacement" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    const fsb::Real tolerance = 1e-10;
+
+    // Inputs
+    const fsb::Real max_velocity = 5.0;
+    const fsb::Real max_acceleration = 10.0;
+    const fsb::Real max_jerk = 100.0;
+    const fsb::Real start_time = 1.5;
+    const fsb::Real initial_position = 3.0;
+    const fsb::Real final_position = 3.0;
+
+    const fsb::Real expected_duration = 0.0;
+    constexpr size_t num_input_values = 3;
+    const fsb::Real input_time[num_input_values] = { 0.0, 1.5, 3.0 };
+    const fsb::TrajState expected_output[num_input_values] = {
+        { 3.0, 0.0, 0.0, 0.0 },
+        { 3.0, 0.0, 0.0, 0.0 },
+        { 3.0, 0.0, 0.0, 0.0 }
+    };
+
+    fsb::TrapezoidalPosition traj = {};
+    const fsb::TrapezoidalStatus status = traj.generate(
+        start_time, initial_position, final_position,
+        max_velocity, max_acceleration, max_jerk);
+
+    REQUIRE(fsb::TrapezoidalStatus::SUCCESS == status);
+    REQUIRE(expected_duration == FsbApprox(traj.get_duration()));
+
+    for (size_t k = 0; k < num_input_values; ++k)
+    {
+        const fsb::TrajState actual = traj.evaluate(input_time[k]);
+        REQUIRE(expected_output[k].position     == FsbApprox(actual.position, tolerance));
+        REQUIRE(expected_output[k].velocity     == FsbApprox(actual.velocity, tolerance));
+        REQUIRE(expected_output[k].acceleration == FsbApprox(actual.acceleration, tolerance));
+        REQUIRE(expected_output[k].jerk         == FsbApprox(actual.jerk, tolerance));
+    }
+}
+
+TEST_CASE("Position forward with cruise" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    // p0=0, pf=10, vmax=5, amax=10, jmax=100
+    // v_thresh = amax^2/jmax = 1.0
+    // d_accel(vmax) = 5^2/(2*10) + 5*10/(2*100) = 1.25 + 0.25 = 1.5
+    // d_no_cruise = 3.0 < 10.0  => cruise phase
+    // t_ramp = vmax/amax + amax/jmax = 0.6
+    // t_cruise = (10 - 3) / 5 = 1.4
+    // total duration = 2*0.6 + 1.4 = 2.6
+    // Timeline: [0, 0.6] accel, [0.6, 2.0] cruise, [2.0, 2.6] decel
+
+    const fsb::Real tolerance = 1e-10;
+
+    // Inputs
+    const fsb::Real max_velocity = 5.0;
+    const fsb::Real max_acceleration = 10.0;
+    const fsb::Real max_jerk = 100.0;
+    const fsb::Real start_time = 0.0;
+    const fsb::Real initial_position = 0.0;
+    const fsb::Real final_position = 10.0;
+
+    const fsb::Real expected_duration = 2.6;
+    constexpr size_t num_input_values = 8;
+    const fsb::Real input_time[num_input_values] = {
+        -0.5,    // before start: extrapolate backwards (clamp at initial)
+         0.0,    // start
+         0.1,    // inside accel ramp phase 1 (constant jerk up), end of jerk-up phase
+         0.6,    // end of accel ramp
+         1.3,    // mid-cruise
+         2.0,    // end of cruise / start of decel ramp
+         2.6,    // end of decel ramp
+         3.5     // after end: extrapolate forwards (clamp at final)
+    };
+    const fsb::TrajState expected_output[num_input_values] = {
+        { 0.0,                  0.0, 0.0,   0.0  },  // before start (clamp to initial state, j=0)
+        { 0.0,                  0.0, 0.0, 100.0  },  // t=0.0: jerk begins
+        { 1.0/60.0,             0.5, 10.0, 100.0 },  // t=0.1: end of jerk-up phase 1
+        { 1.5,                  5.0, 0.0,  -100.0 },  // t=0.6: end of accel ramp
+        { 5.0,                  5.0, 0.0,   0.0  },  // t=1.3: mid-cruise
+        { 8.5,                  5.0, 0.0,   0.0  },  // t=2.0: end of cruise
+        { 10.0,                 0.0, 0.0,   0.0  },  // t=2.6: end of trajectory
+        { 10.0,                 0.0, 0.0,   0.0  }   // after end: clamped
+    };
+
+    fsb::TrapezoidalPosition traj = {};
+    const fsb::TrapezoidalStatus status = traj.generate(
+        start_time, initial_position, final_position,
+        max_velocity, max_acceleration, max_jerk);
+
+    REQUIRE(fsb::TrapezoidalStatus::SUCCESS == status);
+    REQUIRE(expected_duration == FsbApprox(traj.get_duration(), tolerance));
+
+    for (size_t k = 0; k < num_input_values; ++k)
+    {
+        const fsb::TrajState actual = traj.evaluate(input_time[k]);
+        REQUIRE(expected_output[k].position     == FsbApprox(actual.position, tolerance));
+        REQUIRE(expected_output[k].velocity     == FsbApprox(actual.velocity, tolerance));
+        REQUIRE(expected_output[k].acceleration == FsbApprox(actual.acceleration, tolerance));
+        REQUIRE(expected_output[k].jerk         == FsbApprox(actual.jerk, tolerance));
+    }
+}
+
+TEST_CASE("Position no cruise plateau accel" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    // p0=0, pf=2, vmax=5, amax=10, jmax=100
+    // v_thresh = 1.0, d_no_cruise(vmax=5) = 3.0 > 2.0  => no cruise
+    // Plateau solve: v^2 + v*1.0 - 2*10 = 0  =>  v = (-1 + 9)/2 = 4.0
+    // d_accel(4) = 16/20 + 4*10/200 = 0.8 + 0.2 = 1.0  => 2*1.0 = 2.0 OK
+    // t_ramp = 4/10 + 10/100 = 0.5, total = 1.0
+    // Timeline: [0, 0.5] accel, [0.5, 1.0] decel
+
+    const fsb::Real tolerance = 1e-10;
+
+    const fsb::Real max_velocity = 5.0;
+    const fsb::Real max_acceleration = 10.0;
+    const fsb::Real max_jerk = 100.0;
+    const fsb::Real start_time = 0.0;
+    const fsb::Real initial_position = 0.0;
+    const fsb::Real final_position = 2.0;
+
+    const fsb::Real expected_duration = 1.0;
+    constexpr size_t num_input_values = 5;
+    // t=0.1: end of accel jerk-up: p=1/60, v=0.5, a=10
+    // t=0.4 (end of const-accel phase): p=37/60, v=3.5, a=10, j=0 (segment boundary)
+    // t=0.5: end of accel ramp: p=1.0, v=4.0, a=0
+    // t=1.0: end of decel ramp: p=2.0, v=0.0, a=0.0, j=100 (decel ramp jerk-up final segment)
+    const fsb::Real input_time[num_input_values] = {
+        0.0, 0.1, 0.4, 0.5, 1.0
+    };
+    const fsb::TrajState expected_output[num_input_values] = {
+        { 0.0,                0.0, 0.0,  100.0 },
+        { 1.0/60.0,           0.5, 10.0, 100.0 },
+        { 37.0/60.0,          3.5, 10.0,   0.0 },
+        { 1.0,                4.0, 0.0, -100.0 },
+        { 2.0,                0.0, 0.0,  100.0 }
+    };
+
+    fsb::TrapezoidalPosition traj = {};
+    const fsb::TrapezoidalStatus status = traj.generate(
+        start_time, initial_position, final_position,
+        max_velocity, max_acceleration, max_jerk);
+
+    REQUIRE(fsb::TrapezoidalStatus::SUCCESS == status);
+    REQUIRE(expected_duration == FsbApprox(traj.get_duration(), tolerance));
+
+    for (size_t k = 0; k < num_input_values; ++k)
+    {
+        const fsb::TrajState actual = traj.evaluate(input_time[k]);
+        REQUIRE(expected_output[k].position     == FsbApprox(actual.position, tolerance));
+        REQUIRE(expected_output[k].velocity     == FsbApprox(actual.velocity, tolerance));
+        REQUIRE(expected_output[k].acceleration == FsbApprox(actual.acceleration, tolerance));
+        REQUIRE(expected_output[k].jerk         == FsbApprox(actual.jerk, tolerance));
+    }
+}
+
+TEST_CASE("Position no cruise triangle accel" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    // p0=0, pf=0.1, vmax=5, amax=10, jmax=100
+    // v_thresh = 1.0
+    // Triangle: v_peak = (0.05 * sqrt(100))^(2/3) = (0.05*10)^(2/3) = 0.5^(2/3) = 0.6299605...
+    // v_peak < v_thresh => confirmed triangle
+    // t_j = sqrt(v_peak/jmax) = 0.07937..., total = 4*t_j = 0.31748..., no cruise, no const-accel
+
+    const fsb::Real tolerance = 1e-9;
+
+    const fsb::Real max_velocity = 5.0;
+    const fsb::Real max_acceleration = 10.0;
+    const fsb::Real max_jerk = 100.0;
+    const fsb::Real start_time = 0.0;
+    const fsb::Real initial_position = 0.0;
+    const fsb::Real final_position = 0.1;
+
+    // v_peak = (0.05 * sqrt(100))^(2/3)
+    const fsb::Real v_peak = 0.62996052494743658;
+    const fsb::Real t_j = 0.079370052598409974;
+    const fsb::Real expected_duration = 4.0 * t_j;
+
+    // At t=2*t_j: peak of velocity profile (midpoint)
+    //   Position = 0.05 (half of total displacement)
+    //   Velocity = v_peak
+    //   Acceleration = 0 (transition between jerk-up and jerk-down of each ramp)
+    constexpr size_t num_input_values = 4;
+    const fsb::Real input_time[num_input_values] = {
+        0.0, t_j, 2.0*t_j, 4.0*t_j
+    };
+    const fsb::TrajState expected_output[num_input_values] = {
+        { 0.0,    0.0,    0.0,    100.0 },
+        { 100.0*t_j*t_j*t_j/6.0, 100.0*t_j*t_j/2.0, 100.0*t_j, 100.0 },
+        { 0.05,   v_peak, 0.0,   -100.0  },
+        { 0.1,    0.0,    0.0,   100.0   }
+    };
+
+    fsb::TrapezoidalPosition traj = {};
+    const fsb::TrapezoidalStatus status = traj.generate(
+        start_time, initial_position, final_position,
+        max_velocity, max_acceleration, max_jerk);
+
+    REQUIRE(fsb::TrapezoidalStatus::SUCCESS == status);
+    REQUIRE(expected_duration == FsbApprox(traj.get_duration(), tolerance));
+
+    for (size_t k = 0; k < num_input_values; ++k)
+    {
+        const fsb::TrajState actual = traj.evaluate(input_time[k]);
+        REQUIRE(expected_output[k].position     == FsbApprox(actual.position, tolerance));
+        REQUIRE(expected_output[k].velocity     == FsbApprox(actual.velocity, tolerance));
+        REQUIRE(expected_output[k].acceleration == FsbApprox(actual.acceleration, tolerance));
+        REQUIRE(expected_output[k].jerk         == FsbApprox(actual.jerk, tolerance));
+    }
+}
+
+TEST_CASE("Position negative motion" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    // p0=5, pf=0, vmax=5, amax=10, jmax=100
+    // Symmetric to fwd_cruise with displacement=-5 instead of +10
+    // d_no_cruise(vmax=5) = 3.0 < 5.0 => has cruise
+    // t_cruise = (5-3)/5 = 0.4, total = 2*0.6 + 0.4 = 1.6
+    // velocity is negative: -5.0 during cruise
+
+    const fsb::Real tolerance = 1e-10;
+
+    const fsb::Real max_velocity = 5.0;
+    const fsb::Real max_acceleration = 10.0;
+    const fsb::Real max_jerk = 100.0;
+    const fsb::Real start_time = 0.0;
+    const fsb::Real initial_position = 5.0;
+    const fsb::Real final_position = 0.0;
+
+    const fsb::Real expected_duration = 1.6;
+    constexpr size_t num_input_values = 5;
+    const fsb::Real input_time[num_input_values] = {
+        0.0, 0.6, 1.0, 1.6, 2.0
+    };
+    // At t=0.6: end of accel ramp, p = 5.0 - 1.5 = 3.5, v = -5
+    // At t=1.0: mid-cruise, p = 3.5 + (-5)*0.4 = 1.5, v = -5
+    // At t=1.6: end, p = 0.0, v = 0.0
+    const fsb::TrajState expected_output[num_input_values] = {
+        { 5.0,  0.0,  0.0, -100.0  },
+        { 3.5, -5.0,  0.0,  100.0  },
+        { 1.5, -5.0,  0.0,  0.0  },
+        { 0.0,  0.0,  0.0,  0.0  },
+        { 0.0,  0.0,  0.0,  0.0  }
+    };
+
+    fsb::TrapezoidalPosition traj = {};
+    const fsb::TrapezoidalStatus status = traj.generate(
+        start_time, initial_position, final_position,
+        max_velocity, max_acceleration, max_jerk);
+
+    REQUIRE(fsb::TrapezoidalStatus::SUCCESS == status);
+    REQUIRE(expected_duration == FsbApprox(traj.get_duration(), tolerance));
+
+    for (size_t k = 0; k < num_input_values; ++k)
+    {
+        const fsb::TrajState actual = traj.evaluate(input_time[k]);
+        REQUIRE(expected_output[k].position     == FsbApprox(actual.position, tolerance));
+        REQUIRE(expected_output[k].velocity     == FsbApprox(actual.velocity, tolerance));
+        REQUIRE(expected_output[k].acceleration == FsbApprox(actual.acceleration, tolerance));
+        REQUIRE(expected_output[k].jerk         == FsbApprox(actual.jerk, tolerance));
+    }
+}
+
+TEST_CASE("Position non-zero start time" * doctest::description("[fsb::TrapezoidalPosition]"))
+{
+    // Same as fwd_cruise but with start_time=2.0
+    // p0=0, pf=10, vmax=5, amax=10, jmax=100, t_start=2.0
+    // Timeline: [2.0, 2.6] accel, [2.6, 4.0] cruise, [4.0, 4.6] decel
+    // total duration = 2.6 (same as t_start=0 case)
+
+    const fsb::Real tolerance = 1e-10;
+
+    const fsb::Real max_velocity = 5.0;
+    const fsb::Real max_acceleration = 10.0;
+    const fsb::Real max_jerk = 100.0;
+    const fsb::Real start_time = 2.0;
+    const fsb::Real initial_position = 0.0;
+    const fsb::Real final_position = 10.0;
+
+    const fsb::Real expected_duration = 2.6;
+    constexpr size_t num_input_values = 5;
+    const fsb::Real input_time[num_input_values] = {
+        0.0, 2.0, 2.6, 4.0, 4.6
+    };
+    const fsb::TrajState expected_output[num_input_values] = {
+        { 0.0,  0.0, 0.0, 0.0 },  // before start: clamped (initial state, j=0)
+        { 0.0,  0.0, 0.0, 100.0 },// t=start
+        { 1.5,  5.0, 0.0, 0.0 },  // t=2.6: end of accel ramp
+        { 8.5,  5.0, 0.0, 0.0 },  // t=4.0: end of cruise
+        { 10.0, 0.0, 0.0, 100.0 } // t=4.6: end (decel ramp final jerk-up segment)
+    };
+
+    fsb::TrapezoidalPosition traj = {};
+    const fsb::TrapezoidalStatus status = traj.generate(
+        start_time, initial_position, final_position,
+        max_velocity, max_acceleration, max_jerk);
+
+    REQUIRE(fsb::TrapezoidalStatus::SUCCESS == status);
+    REQUIRE(expected_duration == FsbApprox(traj.get_duration(), tolerance));
+
+    for (size_t k = 0; k < num_input_values; ++k)
+    {
+        const fsb::TrajState actual = traj.evaluate(input_time[k]);
+        REQUIRE(expected_output[k].position     == FsbApprox(actual.position, tolerance));
+        REQUIRE(expected_output[k].velocity     == FsbApprox(actual.velocity, tolerance));
+        REQUIRE(expected_output[k].acceleration == FsbApprox(actual.acceleration, tolerance));
+        REQUIRE(expected_output[k].jerk         == FsbApprox(actual.jerk, tolerance));
+    }
+}
+
+} // TEST_SUITE

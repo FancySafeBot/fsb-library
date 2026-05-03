@@ -15,42 +15,57 @@ namespace fsb
  * @{
  */
 
-struct PathPoint
+struct PathMotion
 {
-    Transform pose = transform_identity();
-    Real      displacement = 0.0;
-    Vec3      direction = {};
+    Real displacement = 0.0;
+    Vec3 direction = {};
+    Real velocity = 0.0;
+    Real acceleration_normal = 0.0;
+    Real acceleration_tangential = 0.0;
 };
 
 struct PathPva
 {
-    Real position = 0.0;
-    Real velocity = 0.0;
-    Real acceleration = 0.0;
+    CartesianPva pva = {};
+    PathMotion motion = {};
 };
 
-class PathSegment : public Segment6
+class Path final : public Segment<PathPva>
 {
 public:
+
+    [[nodiscard]] Real get_start_time() const override final
+    {
+        return m_start_time;
+    }
+
+    [[nodiscard]] Real get_duration() const override final
+    {
+        return m_duration;
+    }
+
+    [[nodiscard]] Real get_final_time() const override final
+    {
+        return m_start_time + m_duration;
+    }
+
     /**
      * @brief Evaluate the segment at a given time.
      * @param[in] t_eval Time at which to evaluate the segment.
      * @return Cartesian position, velocity, and acceleration at the given time.
      */
-    CartesianPva evaluate(Real t_eval) const final;
-
-    /**
-     *
-     * @param displacement Position, velocity and acceleration along path
-     * @return Cartesian pose, velocity, and acceleration at the given displacement along the path
-     */
-    CartesianPva evaluate_path(const PathPva& displacement);
+    PathPva evaluate(Real t_eval) const override final;
 
     /**
      * @brief Get final state of the segment.
      * @return Final Cartesian position, velocity, and acceleration at the end of the segment.
      */
-    CartesianPva get_final_state() const final;
+    PathPva get_final_state() const override final;
+
+    [[nodiscard]] PathPva get_initial_state() const override final
+    {
+        return evaluate(m_start_time);
+    }
 
 private:
     CartesianPva m_initial = {};
@@ -58,10 +73,9 @@ private:
 
     Real m_start_displacement = 0.0;
     Real m_arc_length = 0.0;
+    Real m_start_time = 0.0;
+    Real m_duration = 0.0;
 };
-
-class PathTrajectory : public Segment6
-{};
 
 /**
  * @}

@@ -5,7 +5,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_trapezoidal_velocity.h"
 
-TEST_SUITE_BEGIN("trajectory_segment");
+TEST_SUITE("trajectory_segment") {
 
 TEST_CASE("Smart pointer array of segments" * doctest::description("[fsb::Segment]"))
 {
@@ -24,11 +24,11 @@ TEST_CASE("Smart pointer array of segments" * doctest::description("[fsb::Segmen
     seg3.generate(seg2.get_final_time(), 0.5, seg3_init_state, 0.0);
 
     // list of segments as trajectory
-    std::array<std::unique_ptr<fsb::Segment>, num_segments> traj = {};
+    std::array<std::unique_ptr<fsb::SegmentScalar>, num_segments> traj = {};
     traj[0] = std::make_unique<fsb::SegmentConstJerk>(seg0);
     traj[1] = std::make_unique<fsb::SegmentConstAcc>(seg1);
     traj[2] = std::make_unique<fsb::SegmentConstJerk>(seg2);
     traj[3] = std::make_unique<fsb::SegmentConstVel>(seg3);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

@@ -3,7 +3,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_timescale.h"
 
-TEST_SUITE_BEGIN("timescale");
+TEST_SUITE("timescale") {
 
 TEST_CASE("Apply timescale" * doctest::description("[fsb::timescale_trajectory]"))
 {
@@ -94,4 +94,4 @@ TEST_CASE("Timescale small limits" * doctest::description("[fsb::Timescale]"))
     REQUIRE(true == set_limits_success);
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

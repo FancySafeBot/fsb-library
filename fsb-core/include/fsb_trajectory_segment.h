@@ -16,7 +16,7 @@ namespace fsb
 /**
  * @brief Constant jerk profile
  */
-class SegmentConstJerk final : public Segment
+class SegmentConstJerk final : public SegmentScalar
 {
 public:
     SegmentConstJerk() = default;
@@ -37,22 +37,31 @@ public:
      * @param[in] t_eval Evaluation time
      * @return Current trajectory state
      */
-    [[nodiscard]] TrajState evaluate(Real t_eval) const override;
+    [[nodiscard]] TrajState evaluate(Real t_eval) const override final;
 
     /**
      * @brief Get final state of segment.
      * @return Get final state at end of segment
      */
-    [[nodiscard]] TrajState get_final_state() const override
+    [[nodiscard]] TrajState get_final_state() const override final
     {
         return evaluate(m_start_time + m_duration);
+    }
+
+    /**
+     * @brief Get initial state of segment.
+     * @return Initial state at start of segment
+     */
+    [[nodiscard]] TrajState get_initial_state() const override final
+    {
+        return evaluate(m_start_time);
     }
 
     /**
      * @brief Get start time of segment.
      * @return Start time.
      */
-    [[nodiscard]] Real get_start_time() const override
+    [[nodiscard]] Real get_start_time() const override final
     {
         return m_start_time;
     }
@@ -62,7 +71,7 @@ public:
      *
      * @return Duration of segment
      */
-    [[nodiscard]] Real get_duration() const override
+    [[nodiscard]] Real get_duration() const override final
     {
         return m_duration;
     }
@@ -72,7 +81,7 @@ public:
      *
      * @return Final time
      */
-    [[nodiscard]] Real get_final_time() const override
+    [[nodiscard]] Real get_final_time() const override final
     {
         return m_start_time + m_duration;
     }
@@ -89,7 +98,7 @@ private:
 /**
  * @brief Constant acceleration profile
  */
-class SegmentConstAcc final : public Segment
+class SegmentConstAcc final : public SegmentScalar
 {
 public:
     SegmentConstAcc() = default;
@@ -111,22 +120,31 @@ public:
      * @param[in] t_eval Evaluation time
      * @return Trajectory state at time of evaluation
      */
-    [[nodiscard]] TrajState evaluate(Real t_eval) const override;
+    [[nodiscard]] TrajState evaluate(Real t_eval) const override final;
 
     /**
      * @brief Get final state of segment.
      * @return Get final state at end of segment
      */
-    [[nodiscard]] TrajState get_final_state() const override
+    [[nodiscard]] TrajState get_final_state() const override final
     {
         return evaluate(m_start_time + m_duration);
+    }
+
+    /**
+     * @brief Get initial state of segment.
+     * @return Initial state at start of segment
+     */
+    [[nodiscard]] TrajState get_initial_state() const override final
+    {
+        return evaluate(m_start_time);
     }
 
     /**
      * @brief Get start time of segment.
      * @return Start time.
      */
-    [[nodiscard]] Real get_start_time() const override
+    [[nodiscard]] Real get_start_time() const override final
     {
         return m_start_time;
     }
@@ -136,7 +154,7 @@ public:
      *
      * @return Duration of segment
      */
-    [[nodiscard]] Real get_duration() const override
+    [[nodiscard]] Real get_duration() const override final
     {
         return m_duration;
     }
@@ -146,7 +164,7 @@ public:
      *
      * @return Final time
      */
-    [[nodiscard]] Real get_final_time() const override
+    [[nodiscard]] Real get_final_time() const override final
     {
         return m_start_time + m_duration;
     }
@@ -162,7 +180,7 @@ private:
 /**
  * @brief Constant velocity profile
  */
-class SegmentConstVel final : public Segment
+class SegmentConstVel final : public SegmentScalar
 {
 public:
     SegmentConstVel() = default;
@@ -183,22 +201,31 @@ public:
      * @param[in] t_eval Evaluation time
      * @return Trajectory state at time of evaluation
      */
-    [[nodiscard]] TrajState evaluate(Real t_eval) const override;
+    [[nodiscard]] TrajState evaluate(Real t_eval) const override final;
 
     /**
      * @brief Get final state of segment.
      * @return Get final state at end of segment
      */
-    [[nodiscard]] TrajState get_final_state() const override
+    [[nodiscard]] TrajState get_final_state() const override final
     {
         return evaluate(m_start_time + m_duration);
+    }
+
+    /**
+     * @brief Get initial state of segment.
+     * @return Initial state at start of segment
+     */
+    [[nodiscard]] TrajState get_initial_state() const override final
+    {
+        return evaluate(m_start_time);
     }
 
     /**
      * @brief Get start time of segment.
      * @return Start time.
      */
-    [[nodiscard]] Real get_start_time() const override
+    [[nodiscard]] Real get_start_time() const override final
     {
         return m_start_time;
     }
@@ -208,7 +235,7 @@ public:
      *
      * @return Duration of segment
      */
-    [[nodiscard]] Real get_duration() const override
+    [[nodiscard]] Real get_duration() const override final
     {
         return m_duration;
     }
@@ -218,7 +245,7 @@ public:
      *
      * @return Final time
      */
-    [[nodiscard]] Real get_final_time() const override
+    [[nodiscard]] Real get_final_time() const override final
     {
         return m_start_time + m_duration;
     }

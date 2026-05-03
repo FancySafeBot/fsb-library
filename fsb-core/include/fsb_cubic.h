@@ -33,7 +33,7 @@ struct CubicCoeffs
 /**
  * @brief Cubic trajectory
  */
-class CubicTrajectory final : public Segment
+class CubicTrajectory final : public SegmentScalar
 {
 public:
     CubicTrajectory() = default;
@@ -66,22 +66,31 @@ public:
      * @param[in] t_eval Time at which to evaluate the trajectory
      * @return Trajectory state containing position, velocity, acceleration, and jerk at `t_eval`
      */
-    [[nodiscard]] TrajState evaluate(Real t_eval) const override;
+    [[nodiscard]] TrajState evaluate(Real t_eval) const override final;
 
     /**
      * @brief Get final state of segment.
      * @return Get final state at end of segment
      */
-    [[nodiscard]] TrajState get_final_state() const override
+    [[nodiscard]] TrajState get_final_state() const override final
     {
         return evaluate(m_start_time + m_duration);
+    }
+
+    /**
+     * @brief Get initial state of segment.
+     * @return Get initial state at start of segment
+     */
+    [[nodiscard]] TrajState get_initial_state() const override final
+    {
+        return evaluate(m_start_time);
     }
 
     /**
      * @brief Get start time of segment.
      * @return Start time.
      */
-    [[nodiscard]] Real get_start_time() const override
+    [[nodiscard]] Real get_start_time() const override final
     {
         return m_start_time;
     }
@@ -91,7 +100,7 @@ public:
      *
      * @return Total duration of trajectory
      */
-    [[nodiscard]] Real get_duration() const override
+    [[nodiscard]] Real get_duration() const override final
     {
         return m_duration;
     }
@@ -101,7 +110,7 @@ public:
      *
      * @return Final time
      */
-    [[nodiscard]] Real get_final_time() const override
+    [[nodiscard]] Real get_final_time() const override final
     {
         return m_start_time + m_duration;
     }

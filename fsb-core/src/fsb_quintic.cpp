@@ -91,7 +91,7 @@ static QuinticCoeffs generate_coefficients(
 //     ]
 //
 
-bool QuinticTrajectory::generate(
+bool Quintic::generate(
     const Real start_time, const Real duration, const TrajState& initial_state,
     const TrajState& final_state)
 {
@@ -108,7 +108,7 @@ bool QuinticTrajectory::generate(
     return is_valid;
 }
 
-TrajState QuinticTrajectory::evaluate(Real t_eval) const
+TrajState Quintic::evaluate(Real t_eval) const
 {
     TrajState result = {};
     t_eval -= m_start_time;

@@ -4,7 +4,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_rotation.h"
 
-TEST_SUITE_BEGIN("rotation");
+TEST_SUITE("rotation") {
 
 TEST_CASE("Skew symmetric matrix from vector" * doctest::description("[fsb_rotation][fsb::skew_symmetric]"))
 {
@@ -357,4 +357,4 @@ TEST_CASE("Convert zero rotation vector to identity quaternion" * doctest::descr
     REQUIRE(q_actual.qz == FsbApprox(q_expected.qz));
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE

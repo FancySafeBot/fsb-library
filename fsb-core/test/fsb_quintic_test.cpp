@@ -4,7 +4,7 @@
 #include "fsb_test_macros.h"
 #include "fsb_quintic.h"
 
-TEST_SUITE_BEGIN("quintic");
+TEST_SUITE("quintic") {
 
 TEST_CASE("Quintic trajectory" * doctest::description("[fsb::QuinticTrajectory]"))
 {
@@ -28,7 +28,7 @@ TEST_CASE("Quintic trajectory" * doctest::description("[fsb::QuinticTrajectory]"
         fsb::TrajState{10.0, 5.0, -3.0, 0.0}
     };
     // Generate
-    fsb::QuinticTrajectory traj = {};
+    fsb::Quintic traj = {};
     const bool gen_success_actual = traj.generate(start_time, duration, initial_state, final_state);
     // Evaluate
     std::array<fsb::TrajState, num_pnts> output_actual = {};
@@ -47,4 +47,4 @@ TEST_CASE("Quintic trajectory" * doctest::description("[fsb::QuinticTrajectory]"
     }
 }
 
-TEST_SUITE_END();
+} // TEST_SUITE
