@@ -127,7 +127,8 @@ set(FSB_COMPILE_FLAGS_COMMON
     -Wmisleading-indentation
     -Wdouble-promotion
     -Wswitch-enum
-    -Wundef)
+    -Wundef
+    -Wno-c99-extensions)
 
 # set flags specific to build
 set(FSB_LINK_FLAGS)

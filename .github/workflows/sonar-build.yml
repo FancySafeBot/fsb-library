@@ -1,17 +1,11 @@
 name: SonarQube
-permissions:
-  contents: read
-  pull-requests: write
-  packages: read
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-
 jobs:
-
   prep:
     runs-on: ubuntu-latest
     outputs:
@@ -37,21 +31,21 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Set up Python 3.12 for gcovr
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
-          python-version: '3.12'
+          python-version: 3.12
 
       - name: install gcovr
         run: |
-          python -m pip install gcovr
+          pip install --only-binary :all: gcovr==8.6
 
       - name: Install Build Wrapper
-        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v7
 
       - name: Run Build Wrapper
         run: |
@@ -61,15 +55,15 @@ jobs:
         run: |
           gcovr --sonarqube > coverage.xml
 
-      - name: Run tests to generate coverage statistics
+      - name: Collect coverage into one XML report
         run: |
-          ctest --test-dir build/${{ env.BUILD_TYPE }}
+          gcovr --sonarqube > coverage.xml
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            --define sonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json
             --define sonar.coverageReportPaths=coverage.xml

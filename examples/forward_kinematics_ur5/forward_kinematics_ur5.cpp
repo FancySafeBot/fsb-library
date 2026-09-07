@@ -11,18 +11,19 @@
 #include <vector>
 #include <argparse/argparse.hpp>
 
+#include "fsb_joint.h"
+#include "fsb_motion.h"
 #include <fsb_urdf.h>
 #include <fsb_urdf_name_map.h>
 #include <fsb_body.h>
 #include <fsb_body_tree.h>
 #include <fsb_kinematics.h>
-#include <fsb_compute_kinematics.h>
 #include <fsb_urdf_error.h>
 #include <fsb_urdf_utilities.h>
 
-static std::vector<std::vector<double>> csv_read(const std::string& csv_path)
+static std::vector<fsb::JointSpacePosition> csv_read(const std::string& csv_path)
 {
-    std::vector<std::vector<double>> result = {};
+    std::vector<fsb::JointSpacePosition> result = {};
 
     // Read joint data from CSV file
     std::ifstream infile(csv_path);
@@ -32,29 +33,33 @@ static std::vector<std::vector<double>> csv_read(const std::string& csv_path)
         return result;
     }
 
-    fsb::urdf::UrdfError urdf_err = {};
+    fsb::urdf::UrdfError parse_err = {};
     std::string line = {};
     while (std::getline(infile, line))
     {
         std::istringstream  input_stream(line);
         std::string         input_value = {};
-        std::vector<double> row_data = {};
+        fsb::JointSpacePosition row_data = {};
+        size_t joint_index = 0;
         while (std::getline(input_stream, input_value, ','))
         {
-            const fsb::Real value = fsb::urdf::string_to_real(input_value, urdf_err);
-            if (!urdf_err.is_error())
+            const fsb::Real value = fsb::urdf::string_to_real(input_value, parse_err);
+            if (parse_err.is_error())
             {
-                row_data.push_back(value);
-            }
-            else
-            {
-                std::cerr << "Error converting row  " << result.size() + 1U
-                          << " and column " << row_data.size() + 1 << ": "
-                          << urdf_err.get_description() << "\n";
+                std::cerr << "Error parsing value '" << input_value << "' in row " << result.size() + 1U
+                          << ": " << parse_err.get_description() << "\n";
                 break;
             }
+            if (joint_index >= row_data.size())
+            {
+                std::cerr << "Too many values in row " << result.size() + 1U
+                          << ": expected at most " << row_data.size() << " values\n";
+                break;
+            }
+            row_data[joint_index] = value;
+            ++joint_index;
         }
-        if (!urdf_err.is_error())
+        if (!parse_err.is_error())
         {
             result.push_back(row_data);
         }
@@ -64,7 +69,7 @@ static std::vector<std::vector<double>> csv_read(const std::string& csv_path)
     return result;
 }
 
-static void csv_write(const std::string& output_csv, const std::vector<std::vector<double>>& data)
+static void csv_write(const std::string& output_csv, const std::vector<fsb::Transform>& data)
 {
     std::ofstream outfile(output_csv);
     if (!outfile.is_open())
@@ -73,59 +78,36 @@ static void csv_write(const std::string& output_csv, const std::vector<std::vect
         return;
     }
 
+    // Header
+    outfile << "translation_x,translation_y,translation_z,rotation_w,rotation_x,rotation_y,rotation_z\n";
+
     // setting precision to max precision for double
     outfile << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10);
-
     for (const auto& row : data)
     {
-        if (!row.empty())
-        {
-            for (size_t i = 0; i < (row.size() - 1U); ++i)
-            {
-                outfile << row[i] << ",";
-            }
-            outfile << row.back();
-        }
+        outfile << row.translation.x << "," << row.translation.y << "," << row.translation.z << ","
+                << row.rotation.qw << "," << row.rotation.qx << "," << row.rotation.qy << "," << row.rotation.qz;
         outfile << "\n";
     }
     outfile.close();
 }
 
-static std::vector<std::vector<double>>
-compute_kinematics(const size_t body_index, const fsb::ComputeKinematics& kinematics, const std::vector<std::vector<double>>& joint_data)
+static std::vector<fsb::Transform>
+compute_kinematics(const size_t body_index, const fsb::BodyTree& body_tree, const std::vector<fsb::JointSpacePosition>& joint_data)
 {
     // preallocate result vector
-    auto result = std::vector<std::vector<double>>(joint_data.size(), std::vector<double>(7U, 0.0));
-
-    const size_t num_joint_coords = kinematics.get_num_coordinates();
-    const size_t num_bodies = kinematics.get_num_bodies();
-    if (body_index >= num_bodies)
-    {
-        std::cerr << "Invalid body index: " << body_index << "\n";
-        return result;
-    }
+    auto result = std::vector<fsb::Transform>(joint_data.size());
 
     for (size_t row = 0; row < joint_data.size(); ++row)
     {
-        const auto& joint = joint_data[row];
-        // Assign joint position from current row of csv data
-        fsb::JointSpacePosition joint_position = {};
-        for (size_t i = 0; (i < num_joint_coords) && (i < joint.size()); ++i)
-        {
-            joint_position[i] = joint[i];
-        }
         // compute forward kinematics
+        const fsb::CartesianPva base_pva = {};
+        const fsb::JointPva joint_pva = {
+            joint_data[row], {}, {}
+        };
         fsb::BodyCartesianPva cartesian_pva = {};
-        kinematics.compute_forward_kinematics_pose(joint_position, cartesian_pva);
-        const fsb::Transform& body_pose = cartesian_pva.body[body_index].pose;
-        // assign result to output data row
-        result[row][0] = body_pose.translation.x;
-        result[row][1] = body_pose.translation.y;
-        result[row][2] = body_pose.translation.z;
-        result[row][3] = body_pose.rotation.qw;
-        result[row][4] = body_pose.rotation.qx;
-        result[row][5] = body_pose.rotation.qy;
-        result[row][6] = body_pose.rotation.qz;
+        fsb::forward_kinematics(body_tree, joint_pva, base_pva, fsb::ForwardKinematicsOption::POSE, cartesian_pva);
+        result[row] = cartesian_pva.body[body_index].pose;
     }
 
     return result;
@@ -178,16 +160,8 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    fsb::ComputeKinematics kinematics = {};
-    const fsb::ComputeKinematicsError kin_err = kinematics.initialize(body_tree);
-    if (kin_err != fsb::ComputeKinematicsError::SUCCESS)
-    {
-        std::cerr << "Error initializing kinematics computation\n";
-        return EXIT_FAILURE;
-    }
-
-    const std::vector<std::vector<double>> joint_data = csv_read(joint_csv);
-    const std::vector<std::vector<double>> cartesian_data = compute_kinematics(body_index, kinematics, joint_data);
+    const std::vector<fsb::JointSpacePosition> joint_data = csv_read(joint_csv);
+    const std::vector<fsb::Transform> cartesian_data = compute_kinematics(body_index, body_tree, joint_data);
     csv_write(output_csv, cartesian_data);
 
     return EXIT_SUCCESS;

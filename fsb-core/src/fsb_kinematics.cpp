@@ -46,9 +46,9 @@ void forward_kinematics(
     const ForwardKinematicsOption opt, BodyCartesianPva& body_cartesian)
 {
     // set base pva, ensure base quaternion is normalized
-    constexpr size_t BaseIndex = 0U;
-    body_cartesian.body[BaseIndex] = base_pva;
-    quat_normalize(body_cartesian.body[BaseIndex].pose.rotation);
+    constexpr size_t kBaseIndex = 0U;
+    body_cartesian.body[kBaseIndex] = base_pva;
+    quat_normalize(body_cartesian.body[kBaseIndex].pose.rotation);
     // propagate through tree
     const size_t num_bodies = body_tree.get_num_bodies();
     for (size_t body_index = 1U; body_index < num_bodies; ++body_index)

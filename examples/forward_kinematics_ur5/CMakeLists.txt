@@ -22,7 +22,8 @@ CPMAddPackage(
 
 target_link_libraries(${EXAMPLE_TARGET_NAME} PRIVATE
     argparse::argparse
-    FancySafeBot::fsburdf)
+    FancySafeBot::fsburdf
+    FancySafeBot::fsbcore)
 
 # Copy data
 file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

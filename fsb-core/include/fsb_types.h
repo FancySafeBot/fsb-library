@@ -104,16 +104,16 @@ public:
     [[nodiscard]] const T* begin() const noexcept { return m_ptr; }
     [[nodiscard]] const T* end()   const noexcept { return m_ptr + m_len; }
 
-    [[nodiscard]] Span<T> active(size_t num, size_t off = 0U) noexcept
+    [[nodiscard]] Span<T> active(size_t num, size_t offset = 0U) noexcept
     {
-        const size_t off_clamped = (off < m_len) ? off : m_len;
+        const size_t off_clamped = (offset < m_len) ? offset : m_len;
         const size_t remaining = m_len - off_clamped;
         const size_t count = (num < remaining) ? num : remaining;
         return Span<T>(m_ptr + off_clamped, count);
     }
-    [[nodiscard]] Span<const T> active(size_t num, size_t off = 0U) const noexcept
+    [[nodiscard]] Span<const T> active(size_t num, size_t offset = 0U) const noexcept
     {
-        const size_t off_clamped = (off < m_len) ? off : m_len;
+        const size_t off_clamped = (offset < m_len) ? offset : m_len;
         const size_t remaining = m_len - off_clamped;
         const size_t count = (num < remaining) ? num : remaining;
         return Span<const T>(m_ptr + off_clamped, count);
@@ -124,17 +124,17 @@ private:
     size_t m_len = 0U;
 };
 
-template<size_t MaxDim, typename Type = Real>
-struct Array : public std::array<Type, MaxDim>
+template<size_t Size, typename Type = Real>
+struct Array : public std::array<Type, Size>
 {
     Span<Type> active(size_t num) noexcept
     {
-        const size_t num_count = (num < MaxDim) ? num : MaxDim;
+        const size_t num_count = (num < Size) ? num : Size;
         return Span<Type>(this->data(), num_count);
     }
     Span<const Type> active(size_t num) const noexcept
     {
-        const size_t num_count = (num < MaxDim) ? num : MaxDim;
+        const size_t num_count = (num < Size) ? num : Size;
         return Span<const Type>(this->data(), num_count);
     }
 };

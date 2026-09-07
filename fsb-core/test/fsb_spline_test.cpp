@@ -12,17 +12,20 @@ TEST_CASE("Spline trajectory" * doctest::description("[fsb::SplineTrajectory]"))
     {
         fsb::Spline<8U> traj = {};
 
-        const bool bad_step = traj.generate(0.0, std::array<fsb::Real, 2U>{0.0, 1.0});
-        const bool not_enough_points = traj.generate(1.0, std::array<fsb::Real, 1U>{0.0});
+        const fsb::SplineError bad_step = traj.generate(0.0, std::array<fsb::Real, 2U>{0.0, 1.0});
+        const fsb::SplineError not_enough_points = traj.generate(1.0, std::array<fsb::Real, 1U>{0.0});
+        const fsb::SplineError too_many_points =
+            traj.generate(1.0, std::array<fsb::Real, 9U>{});
 
-        REQUIRE(bad_step == false);
-        REQUIRE(not_enough_points == false);
+        REQUIRE(bad_step == fsb::SplineError::INVALID_STEP_SIZE);
+        REQUIRE(not_enough_points == fsb::SplineError::NOT_ENOUGH_POINTS);
+        REQUIRE(too_many_points == fsb::SplineError::TOO_MANY_POINTS);
     }
 
     SUBCASE("linear two-point spline has constant velocity")
     {
         fsb::Spline<8U> traj = {};
-        REQUIRE(traj.generate(0.5, std::array<fsb::Real, 2U>{0.0, 1.0}));
+        REQUIRE(traj.generate(0.5, std::array<fsb::Real, 2U>{0.0, 1.0}) == fsb::SplineError::SUCCESS);
 
         REQUIRE(traj.get_start_time() == FsbApprox(0.0));
         REQUIRE(traj.get_duration() == FsbApprox(0.5));
@@ -51,7 +54,7 @@ TEST_CASE("Spline trajectory" * doctest::description("[fsb::SplineTrajectory]"))
     SUBCASE("natural spline has zero endpoint acceleration and clamps evaluation time")
     {
         fsb::Spline<8U> traj = {};
-        REQUIRE(traj.generate(1.0, std::array<fsb::Real, 4U>{0.0, 1.0, 0.0, 1.0}));
+        REQUIRE(traj.generate(1.0, std::array<fsb::Real, 4U>{0.0, 1.0, 0.0, 1.0}) == fsb::SplineError::SUCCESS);
 
         const fsb::TrajState initial_state = traj.get_initial_state();
         const fsb::TrajState final_state = traj.get_final_state();
@@ -69,17 +72,49 @@ TEST_CASE("Spline trajectory" * doctest::description("[fsb::SplineTrajectory]"))
         REQUIRE(above_end.velocity == FsbApprox(at_end.velocity));
     }
 
-    SUBCASE("append extends spline and updates duration")
+    SUBCASE("clamped spline has zero endpoint velocity")
     {
-        fsb::Spline<8U> traj = {};
-        REQUIRE(traj.generate(1.0, std::array<fsb::Real, 2U>{0.0, 1.0}));
-        REQUIRE(traj.append(std::array<fsb::Real, 2U>{2.0, 3.0}));
+        fsb::Spline<6U> spl = {};
+        const std::array<fsb::Real, 6U> points = {0.0, 1.2, 0.2, 1.1, -0.3, 0.0};
 
-        REQUIRE(traj.get_duration() == FsbApprox(3.0));
-        REQUIRE(traj.get_final_time() == FsbApprox(3.0));
+        REQUIRE(spl.generate(0.1, points, fsb::SplineEndCondition::Clamped) == fsb::SplineError::SUCCESS);
 
-        const fsb::TrajState end_state = traj.evaluate(3.0);
-        REQUIRE(end_state.position == FsbApprox(3.0));
+        const fsb::TrajState initial_state = spl.get_initial_state();
+        const fsb::TrajState final_state = spl.get_final_state();
+        REQUIRE(initial_state.velocity == FsbApprox(0.0, 1e-8));
+        REQUIRE(final_state.velocity == FsbApprox(0.0, 1e-8));
+    }
+
+    SUBCASE("clamped and natural produce different endpoint velocity")
+    {
+        const std::array<fsb::Real, 4U> points = {0.0, 1.0, 0.0, 1.0};
+
+        fsb::Spline<8U> natural = {};
+        fsb::Spline<8U> clamped = {};
+
+        REQUIRE(natural.generate(1.0, points, fsb::SplineEndCondition::Natural) == fsb::SplineError::SUCCESS);
+        REQUIRE(clamped.generate(1.0, points, fsb::SplineEndCondition::Clamped) == fsb::SplineError::SUCCESS);
+
+        const fsb::TrajState natural_initial = natural.get_initial_state();
+        const fsb::TrajState clamped_initial = clamped.get_initial_state();
+        REQUIRE(clamped_initial.velocity == FsbApprox(0.0, 1e-8));
+        REQUIRE(natural_initial.velocity != FsbApprox(0.0, 1e-8));
+
+    }
+    SUBCASE("failed updates preserve generated spline")
+    {
+        fsb::Spline<4U> traj = {};
+        REQUIRE(traj.generate(1.0, std::array<fsb::Real, 2U>{0.0, 1.0}) == fsb::SplineError::SUCCESS);
+
+        const fsb::TrajState expected_final_state = traj.get_final_state();
+        const fsb::Real expected_duration = traj.get_duration();
+
+        REQUIRE(traj.generate(0.0, std::array<fsb::Real, 2U>{2.0, 3.0})
+            == fsb::SplineError::INVALID_STEP_SIZE);
+
+        REQUIRE(traj.get_duration() == FsbApprox(expected_duration));
+        REQUIRE(traj.get_final_state().position == FsbApprox(expected_final_state.position));
+        REQUIRE(traj.get_final_state().velocity == FsbApprox(expected_final_state.velocity));
     }
 
 }

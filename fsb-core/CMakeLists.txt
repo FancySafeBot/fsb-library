@@ -34,7 +34,6 @@ set(FSBCORE_HEADERS
     include/fsb_kinematic_redundancy.h
     include/fsb_linalg.h
     include/fsb_cubic.h
-    include/fsb_path.h
     include/fsb_spline.h)
 set(FSBCORE_SOURCES
     src/fsb_linalg3.cpp
@@ -58,8 +57,7 @@ set(FSBCORE_SOURCES
     src/fsb_dynamics.cpp
     src/fsb_inverse_kinematics.cpp
     src/fsb_kinematic_redundancy.cpp
-    src/fsb_linalg.cpp
-    src/fsb_path.cpp)
+    src/fsb_linalg.cpp)
 
 # target name
 set(FSBCORE_TARGET_NAME fsbcore)

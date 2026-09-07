@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(fsb_tutorial
+project(fsb_tutorial_forward_kinematics
     DESCRIPTION "FancySafeBot Tutorial for forward kinematics with a UR5 Manipulator"
     LANGUAGES CXX)
 # Include FetchContent module
